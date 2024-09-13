@@ -9,21 +9,16 @@ import { createContext, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { auth } from "../../firebaseConfig";
 import { useNavigate } from "react-router-dom";
-
-interface AuthContextType {
-  isLogin: boolean;
-  loading: boolean;
-  user: any;
-  Login: () => void;
-  Logout: () => void;
-}
+import dbApi from "../utils/firebaseService";
+import { AuthContextType, User } from "../types";
 
 export const AuthContext = createContext<AuthContextType>({
   isLogin: false,
   loading: false,
-  user: {},
+  user: null,
   Login: () => {},
   Logout: () => {},
+  userExists: undefined,
 });
 
 export const AuthContextProvider = ({ children }) => {
@@ -35,11 +30,22 @@ export const AuthContextProvider = ({ children }) => {
     queryFn: () =>
       new Promise((resolve) => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-          resolve(user);
+          resolve(user as User | null);
         });
         return () => unsubscribe();
       }),
     initialData: null,
+  });
+
+  const { data: userExists } = useQuery({
+    queryKey: ["userExists", user?.uid],
+    queryFn: () => {
+      if (!user) {
+        return Promise.resolve(false);
+      }
+      return dbApi.checkUserExists(user.uid);
+    },
+    enabled: !!user,
   });
 
   const isLogin = !!user;
@@ -73,7 +79,9 @@ export const AuthContextProvider = ({ children }) => {
   }, [navigate, queryClient]);
 
   return (
-    <AuthContext.Provider value={{ isLogin, loading, user, Login, Logout }}>
+    <AuthContext.Provider
+      value={{ isLogin, loading, user, userExists, Login, Logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

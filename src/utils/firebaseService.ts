@@ -4,39 +4,83 @@ import {
   addDoc,
   setDoc,
   getDoc,
+  updateDoc,
+  getDocs,
   onSnapshot,
   serverTimestamp,
   doc,
+  query,
+  where,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
+interface IUserData {
+  uid: string;
+  avatar: string | null;
+  email: string | null;
+  userName: string;
+  gender: string;
+  age: number;
+}
+
 const dbApi = {
-  async addUserData(userData: any) {
+  checkUserExists: async (uid: string) => {
+    const userDoc = await getDoc(doc(db, "users", uid));
+    return userDoc.exists();
+  },
+
+  async createUser(userData: IUserData) {
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (!user) {
-        throw new Error("User not authenticated");
-      }
-
-      // 處理 playback_history 中的時間戳
-      const playbackHistory = userData.playback_history.map((item: any) => ({
-        ...item,
-        last_playback_timestamp: new Date(),
-      }));
-
-      const userDocRef = doc(db, "users", user.uid);
+      const userDocRef = doc(db, "users", userData.uid);
       await setDoc(userDocRef, {
         ...userData,
-        playback_history: playbackHistory,
         created_at: serverTimestamp(),
       });
-      console.log("Document written with ID: ", user.uid);
+      console.log("User created with ID: ", userData.uid);
     } catch (e) {
-      console.error("Error adding document: ", e);
+      console.error("Error creating user: ", e);
     }
   },
 
+  async updateUser(userData: IUserData) {
+    try {
+      const userDocRef = doc(db, "users", userData.uid);
+      await updateDoc(userDocRef, {
+        ...userData,
+        updated_at: serverTimestamp(),
+      });
+      console.log("User updated with ID: ", userData.uid);
+    } catch (e) {
+      console.error("Error updating user: ", e);
+    }
+  },
+
+  async addPlaybackHistory(uid: string, playbackHistory: any) {
+    try {
+      const userDocRef = doc(db, "users", uid);
+      await updateDoc(userDocRef, {
+        playback_history: playbackHistory.map((item: any) => ({
+          ...item,
+          last_playback_timestamp: new Date(),
+        })),
+      });
+      console.log("Playback history added for user ID: ", uid);
+    } catch (e) {
+      console.error("Error adding playback history: ", e);
+    }
+  },
+
+  async handleUserData(userData: IUserData, playbackHistory: any) {
+    const userExists = await this.checkUserExists(userData.uid);
+    if (userExists) {
+      await this.updateUser(userData);
+    } else {
+      await this.createUser(userData);
+    }
+    if (playbackHistory) {
+      await this.addPlaybackHistory(userData.uid, playbackHistory);
+    }
+  },
   subscribeToUserData(callback: (data: any) => void) {
     const auth = getAuth();
     auth.onAuthStateChanged(async (user) => {
@@ -59,6 +103,22 @@ const dbApi = {
         console.error("User not authenticated");
       }
     });
+  },
+
+  async getUserData(uid: string) {
+    try {
+      const userDocRef = doc(db, "users", uid);
+      const docSnap = await getDoc(userDocRef);
+      if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() };
+      } else {
+        console.log("No such document!");
+        return null;
+      }
+    } catch (e) {
+      console.error("Error getting document: ", e);
+      return null;
+    }
   },
 
   async addStoryData(storyData: any) {
@@ -85,6 +145,18 @@ const dbApi = {
     } catch (e) {
       console.error("Error adding script document: ", e);
     }
+  },
+
+  async queryScriptByTags(tagId: string[]) {
+    const scriptRef = collection(db, "scripts");
+    const querySnapshot = await getDocs(
+      query(scriptRef, where("tags", "array-contains-any", tagId))
+    );
+    const scripts = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return scripts;
   },
 };
 export default dbApi;
