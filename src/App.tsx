@@ -11,6 +11,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import HomePage from "./pages/Home";
 import Account from "./pages/Account";
 import LoginComponent from "./pages/Login";
+import StoryContent from "./pages/Content/Story";
 const queryClient = new QueryClient();
 
 function App() {
@@ -21,8 +22,8 @@ function App() {
         <AuthContextProvider>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/:audioID" element={<HomePage />} />
-            <Route path="/:scriptID" element={<HomePage />} />
+            <Route path="/story" element={<StoryContent />} />
+            <Route path="/script/:scriptID" element={<HomePage />} />
             <Route
               element={
                 <PrivateRoute>
