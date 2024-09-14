@@ -5,10 +5,10 @@ import fakeData from "../assets/fakeStory.json";
 
 function AudioWavePlayer() {
   const audioRef = useRef<HTMLDivElement>(null);
-  const [wavesurfer, setWavesurfer] = useState<WaveSurfer | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const wavesurferRef = useRef<WaveSurfer | null>(null);
+  const isPlayingRef = useRef(false);
+  const currentTextRef = useRef<string>("");
   const [currentText, setCurrentText] = useState<string>("");
-  const [currentTime, setCurrentTime] = useState(0);
   useEffect(() => {
     if (audioRef.current) {
       const wavesurfer = WaveSurfer.create({
@@ -21,7 +21,7 @@ function AudioWavePlayer() {
         barRadius: 12,
       });
 
-      setWavesurfer(wavesurfer);
+      wavesurferRef.current = wavesurfer;
 
       let lastUpdateTime = 0;
       let animationFrameId: number;
@@ -29,7 +29,6 @@ function AudioWavePlayer() {
       const updateCurrentTime = () => {
         const currentTime = wavesurfer.getCurrentTime();
         if (currentTime - lastUpdateTime > 0.8) {
-          setCurrentTime(currentTime);
           lastUpdateTime = currentTime;
 
           const currentSegment = fakeData.content.segments.find(
@@ -38,10 +37,15 @@ function AudioWavePlayer() {
               currentTime <= segment.end_time
           );
 
-          if (currentSegment && currentSegment.text !== currentText) {
+          if (
+            currentSegment &&
+            currentSegment.text !== currentTextRef.current
+          ) {
+            currentTextRef.current = currentSegment.text;
             setCurrentText(currentSegment.text);
           }
         }
+        //使用 requestAnimationFrame 來替代 wavesurfer.on("audioprocess") 事件
         animationFrameId = requestAnimationFrame(updateCurrentTime);
       };
 
@@ -55,22 +59,25 @@ function AudioWavePlayer() {
   }, [audioRef]);
 
   const handlePlayPause = () => {
+    const wavesurfer = wavesurferRef.current;
     if (wavesurfer) {
-      if (isPlaying) {
+      if (isPlayingRef.current) {
         wavesurfer.pause();
         console.log("暫停");
       } else {
         wavesurfer.play();
         console.log("播放");
       }
-      setIsPlaying(!isPlaying);
+      isPlayingRef.current = !isPlayingRef.current;
     }
   };
 
   return (
     <div>
       <div id="waveform" ref={audioRef}></div>
-      <button onClick={handlePlayPause}>{isPlaying ? "Pause" : "Play"}</button>
+      <button onClick={handlePlayPause}>
+        {isPlayingRef.current ? "Pause" : "Play"}
+      </button>
       <div className="subtitle">
         <p>{currentText}</p> {/* 顯示字幕 */}
       </div>

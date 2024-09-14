@@ -15,8 +15,13 @@
       },
       {
         "start_time": 4,
-        "end_time": 2000,
+        "end_time": 10,
         "text": "A young hero set out on an adventure."
+      },
+      {
+        "start_time": 11,
+        "end_time": 18,
+        "text": "Without fear, he faced many challenges."
       }
     ],
     "word_timestamps": [
