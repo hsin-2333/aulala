@@ -8,7 +8,8 @@ function AudioWavePlayer() {
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   const isPlayingRef = useRef(false);
   const currentTextRef = useRef<string>("");
-  const [currentText, setCurrentText] = useState<string>("");
+  const [currentText, setCurrentText] = useState<string[]>([]);
+  const [currentSegmentIndex, setCurrentSegmentIndex] = useState<number>(-1);
   useEffect(() => {
     if (audioRef.current) {
       const wavesurfer = WaveSurfer.create({
@@ -31,21 +32,30 @@ function AudioWavePlayer() {
         if (currentTime - lastUpdateTime > 0.8) {
           lastUpdateTime = currentTime;
 
-          const currentSegment = fakeData.content.segments.find(
+          //findIndex 沒找到會回傳 -1
+          const currentSegmentIndex = fakeData.content.segments.findIndex(
             (segment) =>
               currentTime >= segment.start_time &&
               currentTime <= segment.end_time
           );
 
-          if (
-            currentSegment &&
-            currentSegment.text !== currentTextRef.current
-          ) {
-            currentTextRef.current = currentSegment.text;
-            setCurrentText(currentSegment.text);
+          if (currentSegmentIndex !== -1) {
+            const start = Math.max(0, currentSegmentIndex - 2);
+            const end = Math.min(
+              fakeData.content.segments.length,
+              currentSegmentIndex + 3
+            );
+            const segmentsToShow = fakeData.content.segments
+              .slice(start, end)
+              .map((segment) => segment.text);
+
+            if (segmentsToShow.join() !== currentTextRef.current) {
+              currentTextRef.current = segmentsToShow.join();
+              setCurrentText(segmentsToShow);
+              setCurrentSegmentIndex(currentSegmentIndex - start);
+            }
           }
         }
-        //使用 requestAnimationFrame 來替代 wavesurfer.on("audioprocess") 事件
         animationFrameId = requestAnimationFrame(updateCurrentTime);
       };
 
@@ -79,7 +89,14 @@ function AudioWavePlayer() {
         {isPlayingRef.current ? "Pause" : "Play"}
       </button>
       <div className="subtitle">
-        <p>{currentText}</p> {/* 顯示字幕 */}
+        {currentText.map((text, index) => (
+          <p
+            key={index}
+            className={index === currentSegmentIndex ? "highlight" : ""}
+          >
+            {text}
+          </p>
+        ))}
       </div>
     </div>
   );

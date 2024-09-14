@@ -15,13 +15,38 @@
       },
       {
         "start_time": 4,
-        "end_time": 10,
+        "end_time": 7,
         "text": "A young hero set out on an adventure."
       },
       {
-        "start_time": 11,
-        "end_time": 18,
+        "start_time": 8,
+        "end_time": 12,
         "text": "Without fear, he faced many challenges."
+      },
+      {
+        "start_time": 13,
+        "end_time": 17,
+        "text": "And in the end, he saved the kingdom."
+      },
+      {
+        "start_time": 18,
+        "end_time": 21,
+        "text": "18 ------- 21."
+      },
+      {
+        "start_time": 22,
+        "end_time": 24,
+        "text": "22 ------------24."
+      },
+      {
+        "start_time": 25,
+        "end_time": 29,
+        "text": "25   29."
+      },
+      {
+        "start_time": 29,
+        "end_time": 31,
+        "text": "29       ---31 The end."
       }
     ],
     "word_timestamps": [
