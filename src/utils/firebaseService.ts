@@ -6,6 +6,7 @@ import {
   getDoc,
   updateDoc,
   getDocs,
+  limit,
   onSnapshot,
   serverTimestamp,
   doc,
@@ -157,6 +158,11 @@ const dbApi = {
       ...doc.data(),
     }));
     return scripts;
+  },
+  async getStories(limitNum: number) {
+    const q = query(collection(db, "stories"), limit(limitNum));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 };
 export default dbApi;
