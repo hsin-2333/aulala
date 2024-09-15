@@ -24,23 +24,40 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/story" element={<StoryContent />} />
             <Route path="/script/:scriptID" element={<HomePage />} />
+            <Route path="/user/:userName" element={<Account />} />
+            <Route path="/login" element={<LoginComponent />} />
             <Route
+              path="/:account/notifications"
               element={
                 <PrivateRoute>
-                  <Routes>
-                    <Route path="/account" element={<Account />} />
-                    <Route
-                      path="/:account/notifications"
-                      element={<Account />}
-                    />
-                    <Route path="/:account/scripts" element={<Account />} />
-                    <Route path="/:account/audios" element={<Account />} />
-                    <Route path="/:account/setting" element={<Account />} />
-                  </Routes>
+                  <Account />
                 </PrivateRoute>
               }
             />
-            <Route path="/login" element={<LoginComponent />} />
+            <Route
+              path="/:account/scripts"
+              element={
+                <PrivateRoute>
+                  <Account />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/:account/audios"
+              element={
+                <PrivateRoute>
+                  <Account />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/:account/setting"
+              element={
+                <PrivateRoute>
+                  <Account />
+                </PrivateRoute>
+              }
+            />
           </Routes>
         </AuthContextProvider>
       </Router>

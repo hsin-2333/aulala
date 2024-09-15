@@ -1,6 +1,9 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import dbApi from "../../utils/firebaseService";
 import { getAuth } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import debounce from "lodash.debounce";
 
 enum GenderEnum {
   female = "female",
@@ -18,8 +21,27 @@ const UserSignUpForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<IFormInput>();
+    formState: { errors, isValid },
+    watch,
+  } = useForm<IFormInput>({ mode: "onChange" });
+  const navigate = useNavigate();
+  const [isUSerNameAvailable, setIsUserNameAvailable] = useState(true);
+  const userName = watch("userName");
+
+  const checkUserName = debounce(async (userName: string) => {
+    if (!userName) return;
+    try {
+      const isAvailable = await dbApi.checkUserName(userName);
+      setIsUserNameAvailable(isAvailable);
+    } catch (e) {
+      console.error("Error checking username: ", e);
+    }
+  }, 500);
+
+  useEffect(() => {
+    checkUserName(userName);
+  }, [userName, checkUserName]);
+
   const onSubmit: SubmitHandler<IFormInput> = async (signUpData) => {
     console.log(signUpData);
     try {
@@ -37,6 +59,7 @@ const UserSignUpForm = () => {
       };
 
       await dbApi.createUser(userData);
+      navigate(`/user/${userData.userName}`);
     } catch (error) {
       console.error("Error adding user data: ", error);
     }
@@ -47,21 +70,19 @@ const UserSignUpForm = () => {
       <label>User Name</label>
       <input {...register("userName", { required: true, maxLength: 20 })} />
       {errors?.userName?.type === "required" && <p>This field is required</p>}
-      {errors?.userName?.type === "maxLength" && (
-        <p>First name cannot exceed 20 characters</p>
-      )}
+      {errors?.userName?.type === "maxLength" && <p>First name cannot exceed 20 characters</p>}
+      {!isUSerNameAvailable && <p>Username is already taken</p>}
       <label>Age</label>
-      <input type="number" {...register("age", { min: 12, max: 99 })} />
-      {errors.age && (
-        <p>You Must be older then 12 and younger then 99 years old</p>
-      )}
+      <input type="number" {...register("age", { min: 12, max: 99, required: true })} />
+      {errors.age && <p>You Must be older then 12 and younger then 99 years old</p>}
       <label>Gender</label>
-      <select {...register("gender")}>
-        <option value="female">female</option>
+      <select {...register("gender", { required: true })}>
+        <option value="female">female </option>
         <option value="male">male</option>
         <option value="other">non-binary</option>
       </select>
-      <input type="submit" />
+      {errors.gender && <p>Gender is required</p>}
+      <input type="submit" disabled={!isValid || !isUSerNameAvailable} />
     </form>
   );
 };

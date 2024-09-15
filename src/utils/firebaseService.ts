@@ -56,6 +56,11 @@ const dbApi = {
     }
   },
 
+  async checkUserName(userName: string) {
+    const userRef = collection(db, "users");
+    const querySnapshot = await getDocs(query(userRef, where("userName", "==", userName)));
+    return querySnapshot.empty;
+  },
   async addPlaybackHistory(uid: string, playbackHistory: any) {
     try {
       const userDocRef = doc(db, "users", uid);
@@ -150,9 +155,7 @@ const dbApi = {
 
   async queryScriptByTags(tagId: string[]) {
     const scriptRef = collection(db, "scripts");
-    const querySnapshot = await getDocs(
-      query(scriptRef, where("tags", "array-contains-any", tagId))
-    );
+    const querySnapshot = await getDocs(query(scriptRef, where("tags", "array-contains-any", tagId)));
     const scripts = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),

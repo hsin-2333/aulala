@@ -1,7 +1,13 @@
+import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
+
 function Account() {
+  const { Logout } = useContext(AuthContext);
+
   return (
-    <div className="p-4 bg-green-500 text-white">
-      <h1 className="text-2xl font-bold">Account Page</h1>
+    <div>
+      <h2>Account Page</h2>
+      <button onClick={Logout}>Logout</button>
     </div>
   );
 }
