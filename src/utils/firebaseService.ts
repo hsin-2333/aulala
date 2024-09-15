@@ -164,5 +164,11 @@ const dbApi = {
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
+
+  async getScripts(limitNum: number) {
+    const q = query(collection(db, "scripts"), limit(limitNum));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  },
 };
 export default dbApi;
