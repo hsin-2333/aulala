@@ -173,5 +173,17 @@ const dbApi = {
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
+
+  async getScriptByCategory(category: string) {
+    const q = query(collection(db, "scripts"), where("category", "==", category), limit(10));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  },
+
+  async getStoryByCategory(category: string) {
+    const q = query(collection(db, "stories"), where("category", "==", category), limit(10));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  },
 };
 export default dbApi;

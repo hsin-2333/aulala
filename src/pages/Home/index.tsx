@@ -1,19 +1,33 @@
 import { useQuery } from "@tanstack/react-query";
-
+import { useState } from "react";
 import api from "../../utils/firebaseService";
+
+interface Category {
+  label: string;
+  value: string | null;
+}
+const CategoryOptions: Category[] = [
+  { label: "All", value: null },
+  { label: "Literature & Fiction", value: "0" },
+  { label: "Fan Fiction", value: "1" },
+  { label: "Romance", value: "2" },
+];
 
 interface Story {
   id: string;
   title?: string;
 }
+
 function HomePage() {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
   const {
     data: storyList,
     error: storyError,
     isLoading: isStoryLoading,
   } = useQuery<Story[], Error>({
-    queryKey: ["stories"],
-    queryFn: () => api.getStories(20),
+    queryKey: ["stories", selectedCategory],
+    queryFn: () => (selectedCategory ? api.getStoryByCategory(selectedCategory) : api.getStories(20)),
   });
 
   const {
@@ -21,8 +35,8 @@ function HomePage() {
     error: scriptError,
     isLoading: isScriptLoading,
   } = useQuery<Story[], Error>({
-    queryKey: ["scripts"],
-    queryFn: () => api.getScripts(20),
+    queryKey: ["scripts", selectedCategory],
+    queryFn: () => (selectedCategory ? api.getScriptByCategory(selectedCategory) : api.getScripts(20)),
   });
 
   if (isScriptLoading || isStoryLoading) {
@@ -31,9 +45,19 @@ function HomePage() {
   if (storyError || scriptError) {
     return <div>Error fetching data: {storyError?.message || scriptError?.message}</div>;
   }
+
   return (
     <div>
       <h2>Home Page</h2>
+      {CategoryOptions.map((category) => (
+        <span
+          className="mr-4 cursor-pointer inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+          key={category.value}
+          onClick={() => setSelectedCategory(category.value)}
+        >
+          {category.label}
+        </span>
+      ))}
       <br />
       <br />
       <h2>Stories</h2>
