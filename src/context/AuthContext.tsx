@@ -20,24 +20,31 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthContextProvider = ({ children }) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  // const [userName, setUserName] = useState<string | null>(null);
-  const { data: user, isLoading: loading } = useQuery({
-    queryKey: ["auth"],
-    queryFn: () =>
-      new Promise((resolve) => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-          resolve(user as User | null);
-        });
-        return () => unsubscribe();
-      }),
-    initialData: null,
-  });
+  const [user, setUser] = useState<User | string | null>(null);
+  const [loading, setLoading] = useState(true);
+  console.log("user認證頁面", user);
 
-  // useEffect(() => {
-  //   if (user) {
-  //     dbApi.getUserName(user.uid).then(setUserName);
-  //   }
-  // }, [user]);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+      if (authUser) {
+        console.log("User logged in:", authUser.uid);
+        const dbUser = await dbApi.getUser(authUser.uid);
+        console.log("Database user:", dbUser);
+        if (!dbUser) {
+          setUser("authUser"); //如果使用者不在資料庫中，則先設定為字串，再userInfo中等待使用者填入資料再創建為user
+        } else {
+          setUser(dbUser as User);
+          console.log("User state after setting:", dbUser);
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const { data: userExists } = useQuery({
     queryKey: ["userExists", user?.uid],

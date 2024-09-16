@@ -31,9 +31,23 @@ function App() {
                 </Layout>
               }
             />
-            <Route path="/story" element={<StoryContent />} />
+            <Route
+              path="/story"
+              element={
+                <Layout>
+                  <StoryContent />
+                </Layout>
+              }
+            />
             <Route path="/script/:scriptID" element={<HomePage />} />
-            <Route path="/user/:userName" element={<Account />} />
+            <Route
+              path="/user/:userName"
+              element={
+                <Layout>
+                  <Account />
+                </Layout>
+              }
+            />
             <Route path="/login" element={<LoginComponent />} />
             <Route
               path="/:account/notifications"

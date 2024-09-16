@@ -62,10 +62,11 @@ const dbApi = {
     return querySnapshot.empty;
   },
 
-  async getUserName(uid: string) {
+  async getUser(uid: string) {
     const userDoc = await getDoc(doc(db, "users", uid));
     const userDocData = userDoc.data();
-    return userDocData?.userName || null;
+    // return userDocData?.userName || null;
+    return userDocData || null;
   },
   async addPlaybackHistory(uid: string, playbackHistory: any) {
     try {

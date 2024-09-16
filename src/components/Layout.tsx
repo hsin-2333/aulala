@@ -20,12 +20,12 @@ const Layout = ({ children }: LayoutProps) => {
 
 const Header = () => {
   const { user } = useContext(AuthContext);
-  console.log(user);
+  console.log("user" + user);
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
     if (user) {
-      navigate(`/user/${user}`);
+      navigate(`/user/${user.userName}`);
     }
   };
   return (
@@ -40,7 +40,7 @@ const Header = () => {
           </li> */}
           {user ? (
             <div onClick={handleProfileClick} className="cursor-pointer">
-              <img src={user.photoURL} alt="User Avatar" className="w-8 h-8 rounded-full" />
+              <img src={user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full" />
             </div>
           ) : (
             <li>
