@@ -237,6 +237,9 @@ const dbApi = {
     if (conditions.likes) {
       constraints.push(where("likes", ">=", conditions.likes));
     }
+    if (conditions.author) {
+      constraints.push(where("author", "==", conditions.author));
+    }
 
     constraints.push(limit(limitNum));
 

@@ -27,6 +27,7 @@ export interface AuthContextType {
 }
 
 export type QueryConditions = {
+  author?: string;
   tags?: string[];
   category?: string;
   user?: string;

@@ -22,7 +22,6 @@ export const AuthContextProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | string | null>(null);
   const [loading, setLoading] = useState(true);
-  console.log("user認證頁面", user);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {

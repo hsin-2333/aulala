@@ -149,7 +149,7 @@ const UploadSection = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700">Scheduled Release Date</label>
-              <input type="date" {...register("scheduled_release_date", { required: true })} />
+              <input type="datetime-local" {...register("scheduled_release_date", { required: true })} />
               {errors.scheduled_release_date && <span className="text-red-500 text-sm">This field is required</span>}
             </div>
 

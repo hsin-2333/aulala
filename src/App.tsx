@@ -105,7 +105,7 @@ function App() {
               }
             />
             <Route
-              path="/account/:account/contents"
+              path="/account/:userName/contents"
               element={
                 <PrivateRoute>
                   <Layout>

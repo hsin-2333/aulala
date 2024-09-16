@@ -1,4 +1,4 @@
-import { useContext, ReactNode } from "react";
+import { useContext, ReactNode, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
@@ -12,7 +12,7 @@ const Layout = ({ children }: LayoutProps) => {
       <Sidebar />
       <div className="flex-1">
         <Header />
-        <main className="p-4 flex-1">{children}</main>
+        <main className="p-4 flex-1 ">{children}</main>
       </div>
     </div>
   );
@@ -20,7 +20,6 @@ const Layout = ({ children }: LayoutProps) => {
 
 const Header = () => {
   const { user } = useContext(AuthContext);
-  console.log("user" + user);
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
@@ -57,11 +56,20 @@ const Header = () => {
 };
 
 const Sidebar = () => {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
   return (
     <aside className="bg-gray-200 p-4">
       <ul>
         <li>
-          <Link to="/story">Story</Link>
+          <Link to={`/account/${user?.userName}/contents`}>My Content</Link>
         </li>
         <li>
           <Link to="/script">Script</Link>
