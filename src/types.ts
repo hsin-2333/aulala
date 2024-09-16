@@ -25,3 +25,14 @@ export interface AuthContextType {
   Logout: () => void;
   userExists: boolean | undefined;
 }
+
+export type QueryConditions = {
+  tags?: string[];
+  category?: string;
+  user?: string;
+  timestamp?: {
+    start: Date;
+    end: Date;
+  };
+  likes?: number;
+};

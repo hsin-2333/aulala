@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import api from "../../utils/firebaseService";
+import dbApi from "../../utils/firebaseService";
 import { useNavigate } from "react-router-dom";
 import { CategoryOptions } from "../../constants/categoryOptions";
+import { QueryConditions } from "../../types";
 
 interface Story {
   id: string;
@@ -19,7 +20,13 @@ function HomePage() {
     isLoading: isStoryLoading,
   } = useQuery<Story[], Error>({
     queryKey: ["stories", selectedCategory],
-    queryFn: () => (selectedCategory ? api.getStoryByCategory(selectedCategory) : api.getStories(20)),
+    queryFn: () => {
+      const conditions: QueryConditions = {};
+      if (selectedCategory) {
+        conditions.category = selectedCategory;
+      }
+      return dbApi.queryCollection("stories", conditions, 20);
+    },
   });
 
   const {
@@ -28,7 +35,13 @@ function HomePage() {
     isLoading: isScriptLoading,
   } = useQuery<Story[], Error>({
     queryKey: ["scripts", selectedCategory],
-    queryFn: () => (selectedCategory ? api.getScriptByCategory(selectedCategory) : api.getScripts(20)),
+    queryFn: () => {
+      const conditions: QueryConditions = {};
+      if (selectedCategory) {
+        conditions.category = selectedCategory;
+      }
+      return dbApi.queryCollection("scripts", conditions, 20); // 假設 scripts 和 stories 使用相同的結構
+    },
   });
 
   //之後替換成skeleton

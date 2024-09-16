@@ -12,9 +12,11 @@ import {
   doc,
   query,
   where,
+  QueryConstraint,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
+import { QueryConditions } from "../types";
 
 interface IUserData {
   uid: string;
@@ -189,15 +191,15 @@ const dbApi = {
     }
   },
 
-  async queryScriptByTags(tagId: string[]) {
-    const scriptRef = collection(db, "scripts");
-    const querySnapshot = await getDocs(query(scriptRef, where("tags", "array-contains-any", tagId)));
-    const scripts = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return scripts;
-  },
+  // async queryScriptByTags(tagId: string[]) {
+  //   const scriptRef = collection(db, "scripts");
+  //   const querySnapshot = await getDocs(query(scriptRef, where("tags", "array-contains-any", tagId)));
+  //   const scripts = querySnapshot.docs.map((doc) => ({
+  //     id: doc.id,
+  //     ...doc.data(),
+  //   }));
+  //   return scripts;
+  // },
   async getStories(limitNum: number) {
     const q = query(collection(db, "stories"), limit(limitNum));
     const querySnapshot = await getDocs(q);
@@ -210,17 +212,44 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 
-  async getScriptByCategory(category: string) {
-    const q = query(collection(db, "scripts"), where("category", "==", category), limit(10));
+  // async getScriptByCategory(category: string) {
+  //   const q = query(collection(db, "scripts"), where("category", "==", category), limit(10));
+  //   const querySnapshot = await getDocs(q);
+  //   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  // },
+
+  async queryCollection(collectionName: string, conditions: QueryConditions, limitNum: number = 10) {
+    const constraints: QueryConstraint[] = [];
+
+    if (conditions.tags) {
+      constraints.push(where("tags", "array-contains-any", conditions.tags));
+    }
+    if (conditions.category) {
+      constraints.push(where("category", "==", conditions.category));
+    }
+    if (conditions.user) {
+      constraints.push(where("user", "==", conditions.user));
+    }
+    if (conditions.timestamp) {
+      constraints.push(where("timestamp", ">=", conditions.timestamp.start));
+      constraints.push(where("timestamp", "<=", conditions.timestamp.end));
+    }
+    if (conditions.likes) {
+      constraints.push(where("likes", ">=", conditions.likes));
+    }
+
+    constraints.push(limit(limitNum));
+
+    const q = query(collection(db, collectionName), ...constraints);
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 
-  async getStoryByCategory(category: string) {
-    const q = query(collection(db, "stories"), where("category", "==", category), limit(10));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  },
+  // async getStoryByCategory(category: string) {
+  //   const q = query(collection(db, "stories"), where("category", "==", category), limit(10));
+  //   const querySnapshot = await getDocs(q);
+  //   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  // },
 
   async getStoryById(id: string) {
     const storyDoc = await getDoc(doc(db, "stories", id));
