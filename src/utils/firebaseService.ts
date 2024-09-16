@@ -25,7 +25,7 @@ interface IUserData {
 }
 
 const dbApi = {
-  checkUserExists: async (uid: string) => {
+  async checkUserExists(uid: string) {
     const userDoc = await getDoc(doc(db, "users", uid));
     return userDoc.exists();
   },
@@ -60,6 +60,12 @@ const dbApi = {
     const userRef = collection(db, "users");
     const querySnapshot = await getDocs(query(userRef, where("userName", "==", userName)));
     return querySnapshot.empty;
+  },
+
+  async getUserName(uid: string) {
+    const userDoc = await getDoc(doc(db, "users", uid));
+    const userDocData = userDoc.data();
+    return userDocData?.userName || null;
   },
   async addPlaybackHistory(uid: string, playbackHistory: any) {
     try {

@@ -1,11 +1,6 @@
 // AuthContext.jsx
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut,
-} from "firebase/auth";
-import { createContext, useCallback } from "react";
+import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { auth } from "../../firebaseConfig";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +11,7 @@ export const AuthContext = createContext<AuthContextType>({
   isLogin: false,
   loading: false,
   user: null,
+  // userName: null,
   Login: () => {},
   Logout: () => {},
   userExists: undefined,
@@ -24,7 +20,7 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthContextProvider = ({ children }) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
+  // const [userName, setUserName] = useState<string | null>(null);
   const { data: user, isLoading: loading } = useQuery({
     queryKey: ["auth"],
     queryFn: () =>
@@ -36,6 +32,12 @@ export const AuthContextProvider = ({ children }) => {
       }),
     initialData: null,
   });
+
+  // useEffect(() => {
+  //   if (user) {
+  //     dbApi.getUserName(user.uid).then(setUserName);
+  //   }
+  // }, [user]);
 
   const { data: userExists } = useQuery({
     queryKey: ["userExists", user?.uid],
@@ -79,9 +81,7 @@ export const AuthContextProvider = ({ children }) => {
   }, [navigate, queryClient]);
 
   return (
-    <AuthContext.Provider
-      value={{ isLogin, loading, user, userExists, Login, Logout }}
-    >
+    <AuthContext.Provider value={{ isLogin, loading, user, userExists, Login, Logout }}>
       {children}
     </AuthContext.Provider>
   );

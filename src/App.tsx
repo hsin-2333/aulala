@@ -12,6 +12,8 @@ import HomePage from "./pages/Home";
 import Account from "./pages/Account";
 import LoginComponent from "./pages/Login";
 import StoryContent from "./pages/Content/Story";
+import Layout from "./components/Layout";
+
 const queryClient = new QueryClient();
 
 function App() {
@@ -21,7 +23,14 @@ function App() {
       <Router>
         <AuthContextProvider>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/"
+              element={
+                <Layout>
+                  <HomePage />
+                </Layout>
+              }
+            />
             <Route path="/story" element={<StoryContent />} />
             <Route path="/script/:scriptID" element={<HomePage />} />
             <Route path="/user/:userName" element={<Account />} />
