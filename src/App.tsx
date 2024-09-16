@@ -11,8 +11,10 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import HomePage from "./pages/Home";
 import Account from "./pages/Account";
 import LoginComponent from "./pages/Login";
-import StoryContent from "./pages/Content/Story";
+import StoryContent from "./pages/UserContent/Story";
 import Layout from "./components/Layout";
+import UploadSection from "./pages/Account/Upload";
+import MyContent from "./pages/Account/MyContent";
 
 const queryClient = new QueryClient();
 
@@ -73,10 +75,13 @@ function App() {
               }
             />
             <Route
-              path="/:account/audios"
+              path="/:account/stories"
               element={
                 <PrivateRoute>
-                  <Account />
+                  <Layout>
+                    {" "}
+                    <Account />
+                  </Layout>
                 </PrivateRoute>
               }
             />
@@ -85,6 +90,28 @@ function App() {
               element={
                 <PrivateRoute>
                   <Account />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/upload"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    {" "}
+                    <UploadSection />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/account/:account/contents"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    {" "}
+                    <MyContent />
+                  </Layout>
                 </PrivateRoute>
               }
             />

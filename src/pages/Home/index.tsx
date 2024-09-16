@@ -2,17 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "../../utils/firebaseService";
 import { useNavigate } from "react-router-dom";
-
-interface Category {
-  label: string;
-  value: string | null;
-}
-const CategoryOptions: Category[] = [
-  { label: "All", value: null },
-  { label: "Literature & Fiction", value: "0" },
-  { label: "Fan Fiction", value: "1" },
-  { label: "Romance", value: "2" },
-];
+import { CategoryOptions } from "../../constants/categoryOptions";
 
 interface Story {
   id: string;

@@ -1,4 +1,4 @@
-import { db } from "../../firebaseConfig";
+import { db, storage } from "../../firebaseConfig";
 import {
   collection,
   addDoc,
@@ -13,6 +13,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 
 interface IUserData {
@@ -160,6 +161,34 @@ const dbApi = {
     }
   },
 
+  async getTags() {
+    const tagsRef = collection(db, "tags");
+    const querySnapshot = await getDocs(tagsRef);
+    return querySnapshot.docs.map((doc) => doc.data().name);
+  },
+
+  async addOrUpdateTag(tagName: string, scriptId: string | null, storyId: string | null) {
+    const tagRef = doc(db, "tags", tagName);
+    const tagDoc = await getDoc(tagRef);
+
+    if (tagDoc.exists()) {
+      const existingData = tagDoc.data();
+      const updatedScriptIds = scriptId ? [...new Set([...existingData.scriptIds, scriptId])] : existingData.scriptIds;
+      const updatedStoryIds = storyId ? [...new Set([...existingData.storyIds, storyId])] : existingData.storyIds;
+
+      await updateDoc(tagRef, {
+        scriptIds: updatedScriptIds,
+        storyIds: updatedStoryIds,
+      });
+    } else {
+      await setDoc(tagRef, {
+        name: tagName,
+        scriptIds: scriptId ? [scriptId] : [],
+        storyIds: storyId ? [storyId] : [],
+      });
+    }
+  },
+
   async queryScriptByTags(tagId: string[]) {
     const scriptRef = collection(db, "scripts");
     const querySnapshot = await getDocs(query(scriptRef, where("tags", "array-contains-any", tagId)));
@@ -196,6 +225,27 @@ const dbApi = {
   async getStoryById(id: string) {
     const storyDoc = await getDoc(doc(db, "stories", id));
     return storyDoc.data();
+  },
+
+  async uploadAudioAndSaveStory(file: File, data: any) {
+    try {
+      const storageRef = ref(storage, `stories/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const audioUrl = await getDownloadURL(storageRef);
+      const storyData = {
+        ...data,
+        audio_url: audioUrl,
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+        tags: data.tags.map((tag) => tag.value),
+      };
+
+      const storyRef = await addDoc(collection(db, "stories"), storyData);
+      return storyRef.id;
+    } catch (e) {
+      console.error("Error uploading audio and saving story: ", e);
+      throw e;
+    }
   },
 };
 export default dbApi;
