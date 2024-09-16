@@ -32,14 +32,21 @@ function App() {
               }
             />
             <Route
-              path="/story"
+              path="/story/:id"
               element={
                 <Layout>
                   <StoryContent />
                 </Layout>
               }
             />
-            <Route path="/script/:scriptID" element={<HomePage />} />
+            <Route
+              path="/script/:scriptID"
+              element={
+                <Layout>
+                  <HomePage />
+                </Layout>
+              }
+            />
             <Route
               path="/user/:userName"
               element={

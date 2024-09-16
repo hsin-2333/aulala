@@ -3,7 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import mySound from "../assets/The Phantom of the Opera.mp3";
 import fakeData from "../assets/fakeStory.json";
 
-function AudioWavePlayer() {
+interface AudioWavePlayerProps {
+  audio_url: string;
+}
+
+function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
   const audioRef = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   const isPlayingRef = useRef(false);
@@ -16,7 +20,7 @@ function AudioWavePlayer() {
         container: audioRef.current,
         waveColor: "violet",
         progressColor: "purple",
-        url: mySound,
+        url: audio_url,
         barWidth: 8,
         barGap: 12,
         barRadius: 12,
@@ -34,20 +38,13 @@ function AudioWavePlayer() {
 
           //findIndex 沒找到會回傳 -1
           const currentSegmentIndex = fakeData.content.segments.findIndex(
-            (segment) =>
-              currentTime >= segment.start_time &&
-              currentTime <= segment.end_time
+            (segment) => currentTime >= segment.start_time && currentTime <= segment.end_time
           );
 
           if (currentSegmentIndex !== -1) {
             const start = Math.max(0, currentSegmentIndex - 2);
-            const end = Math.min(
-              fakeData.content.segments.length,
-              currentSegmentIndex + 3
-            );
-            const segmentsToShow = fakeData.content.segments
-              .slice(start, end)
-              .map((segment) => segment.text);
+            const end = Math.min(fakeData.content.segments.length, currentSegmentIndex + 3);
+            const segmentsToShow = fakeData.content.segments.slice(start, end).map((segment) => segment.text);
 
             if (segmentsToShow.join() !== currentTextRef.current) {
               currentTextRef.current = segmentsToShow.join();
@@ -85,14 +82,16 @@ function AudioWavePlayer() {
   return (
     <div>
       <div id="waveform" ref={audioRef}></div>
-      <button onClick={handlePlayPause}>
-        {isPlayingRef.current ? "Pause" : "Play"}
-      </button>
+      <button onClick={handlePlayPause}>{isPlayingRef.current ? "Pause" : "Play"}</button>
       <div className="subtitle">
         {currentText.map((text, index) => (
           <p
             key={index}
-            className={index === currentSegmentIndex ? "highlight" : ""}
+            className={
+              index === currentSegmentIndex
+                ? "highlight mb-4 before:content-none"
+                : "text-gray-700 mb-4 before:content-none"
+            }
           >
             {text}
           </p>

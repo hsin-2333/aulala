@@ -118,21 +118,21 @@ const dbApi = {
     });
   },
 
-  async getUserData(uid: string) {
-    try {
-      const userDocRef = doc(db, "users", uid);
-      const docSnap = await getDoc(userDocRef);
-      if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() };
-      } else {
-        console.log("No such document!");
-        return null;
-      }
-    } catch (e) {
-      console.error("Error getting document: ", e);
-      return null;
-    }
-  },
+  // async getUserData(uid: string) {
+  //   try {
+  //     const userDocRef = doc(db, "users", uid);
+  //     const docSnap = await getDoc(userDocRef);
+  //     if (docSnap.exists()) {
+  //       return { id: docSnap.id, ...docSnap.data() };
+  //     } else {
+  //       console.log("No such document!");
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     console.error("Error getting document: ", e);
+  //     return null;
+  //   }
+  // },
 
   async addStoryData(storyData: any) {
     try {
@@ -191,6 +191,11 @@ const dbApi = {
     const q = query(collection(db, "stories"), where("category", "==", category), limit(10));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  },
+
+  async getStoryById(id: string) {
+    const storyDoc = await getDoc(doc(db, "stories", id));
+    return storyDoc.data();
   },
 };
 export default dbApi;
