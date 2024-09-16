@@ -227,14 +227,22 @@ const dbApi = {
     return storyDoc.data();
   },
 
-  async uploadAudioAndSaveStory(file: File, data: any) {
+  async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: any) {
     try {
       const storageRef = ref(storage, `stories/${file.name}`);
       await uploadBytes(storageRef, file);
       const audioUrl = await getDownloadURL(storageRef);
+
+      let imageUrl = null;
+      if (imageFile) {
+        const imageRef = ref(storage, `images/${imageFile.name}`);
+        await uploadBytes(imageRef, imageFile);
+        imageUrl = await getDownloadURL(imageRef);
+      }
       const storyData = {
         ...data,
         audio_url: audioUrl,
+        img_url: imageUrl ? [imageUrl] : [],
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
         tags: data.tags.map((tag) => tag.value),

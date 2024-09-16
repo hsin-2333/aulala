@@ -24,6 +24,8 @@ interface FormData {
 const UploadSection = () => {
   const [isAudioUploaded, setIsAudioUploaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [audioName, setAudioName] = useState<string | null>(null);
@@ -60,10 +62,23 @@ const UploadSection = () => {
     }
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      setImageFile(selectedFile);
+      const imageUrl = URL.createObjectURL(selectedFile);
+      setImageUrl(imageUrl);
+    }
+  };
+
   const onSubmit = async (data: FormData) => {
     if (file) {
       try {
-        const storyId = await dbApi.uploadAudioAndSaveStory(file, data);
+        const storyData = {
+          ...data,
+          duration: audioDuration,
+        };
+        const storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
         for (const tag of data.tags) {
           await dbApi.addOrUpdateTag(tag.value, storyId, null);
         }
@@ -136,6 +151,12 @@ const UploadSection = () => {
               <label className="block text-sm font-medium text-gray-700">Scheduled Release Date</label>
               <input type="date" {...register("scheduled_release_date", { required: true })} />
               {errors.scheduled_release_date && <span className="text-red-500 text-sm">This field is required</span>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Cover Image</label>
+              <input type="file" accept="image/*" onChange={handleImageUpload} />
+              {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
             </div>
 
             <button type="submit">Submit</button>
