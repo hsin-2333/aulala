@@ -2,6 +2,7 @@ import dbApi from "../../utils/firebaseService";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { Story } from "../../types";
 
 function ScriptContent() {
   const navigate = useNavigate();
@@ -12,7 +13,11 @@ function ScriptContent() {
     isLoading: scriptLoading,
   } = useQuery({
     queryKey: ["script", scriptId],
-    queryFn: () => dbApi.queryCollection("scripts", { id: scriptId }, 1),
+    // queryFn: () => dbApi.queryCollection("scripts", { id: scriptId }, 1),
+    queryFn: async () => {
+      const script = await dbApi.queryCollection("scripts", { id: scriptId }, 1);
+      return script as Story[];
+    },
     enabled: !!scriptId,
   });
 
@@ -22,7 +27,11 @@ function ScriptContent() {
     isLoading: storiesLoading,
   } = useQuery({
     queryKey: ["stories", scriptId],
-    queryFn: () => dbApi.queryCollection("stories", { script_id: scriptId }, 10),
+    queryFn: async () => {
+      const stories = await dbApi.queryCollection("stories", { script_id: scriptId }, 10);
+      return stories as Story[];
+    },
+    // queryFn: () => dbApi.queryCollection("stories", { script_id: scriptId }, 10),
     enabled: !!scriptId,
   });
 

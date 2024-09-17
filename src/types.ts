@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface User {
   uid: string;
   userName: string;
@@ -39,3 +41,17 @@ export type QueryConditions = {
   id?: string;
   script_id?: string;
 };
+
+export interface Story {
+  id: string;
+  title: string;
+  author: string;
+  img_url?: string[];
+  image?: string;
+  summary?: string;
+  tags?: string[];
+  created_at?: Timestamp | string;
+  language?: string;
+  voice_actor?: string;
+  audio_url?: string;
+}

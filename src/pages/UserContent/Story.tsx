@@ -2,6 +2,7 @@ import AudioWavePlayer from "../../components/AudioWavePlayer";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import dbApi from "../../utils/firebaseService";
+import { Story } from "../../types";
 
 function StoryContent() {
   const { storyId } = useParams();
@@ -11,7 +12,11 @@ function StoryContent() {
     isLoading,
   } = useQuery({
     queryKey: ["story", storyId],
-    queryFn: () => dbApi.queryCollection("stories", { id: storyId }, 1),
+    // queryFn: () => dbApi.queryCollection("stories", { id: storyId }, 1),
+    queryFn: async () => {
+      const story = await dbApi.queryCollection("stories", { id: storyId }, 1);
+      return story as Story[];
+    },
     enabled: !!storyId,
   });
 
@@ -32,7 +37,10 @@ function StoryContent() {
         <div>
           <h2 className="text-2xl font-semibold mb-2">{story.title}</h2>
           <p className="text-gray-700 mb-4 before:content-none">{story.summary}</p>
-          <img className="w-32 h-auto rounded-lg mb-4" src={story.img_url[0]} alt={story.title} />
+          {/* <img className="w-32 h-auto rounded-lg mb-4" src={story.img_url[0]} alt={story.title} /> */}
+          {story.img_url && story.img_url.length > 0 && (
+            <img className="w-32 h-auto rounded-lg mb-4" src={story.img_url[0]} alt={story.title} />
+          )}
         </div>
       )}
       {story && story.audio_url && <AudioWavePlayer audio_url={story.audio_url} />}

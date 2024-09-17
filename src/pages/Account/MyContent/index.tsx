@@ -4,17 +4,17 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
-
-interface Story {
-  id: string;
-  title: string;
-  author: string;
-  img_url?: string[];
-  image?: string;
-  summary?: string;
-  tags?: string[];
-  created_at?: Timestamp;
-}
+import { Story } from "../../../types";
+// interface Story {
+//   id: string;
+//   title: string;
+//   author: string;
+//   img_url?: string[];
+//   image?: string;
+//   summary?: string;
+//   tags?: string[];
+//   created_at?: Timestamp;
+// }
 
 const MyContent = () => {
   const [selectedTab, setSelectedTab] = useState<string>("story");
@@ -43,18 +43,25 @@ const MyContent = () => {
   const renderContent = () => {
     if (selectedTab === "story") {
       return storyList?.map((story) => (
-        <PlaylistCard key={story.id} image={story.img_url?.[0]} title={story.title} author={story.author} />
+        <PlaylistCard
+          key={story.id}
+          image={story.img_url?.[0] || "default_image_url"}
+          title={story.title}
+          author={story.author}
+          tags={story.tags || []}
+        />
       ));
     } else if (selectedTab === "script") {
       return scriptList?.map((script) => (
         <ScriptCard
           key={script.id}
-          image={script.img_url?.[0]}
+          // image={script.img_url?.[0]}
+          language={script.language || ""}
           title={script.title}
           author={script.author}
-          summary={script.summary}
-          tags={script.tags}
-          created_at={script.created_at}
+          summary={script.summary || ""}
+          tags={script.tags || []}
+          created_at={script.created_at as Timestamp}
         />
       ));
     }

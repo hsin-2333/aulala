@@ -5,7 +5,7 @@ interface PlaylistCardProps {
   title: string;
   tags: string[];
   author: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 interface ScriptCardProps {
@@ -50,7 +50,7 @@ export const PlaylistCard: React.FC<PlaylistCardProps> = ({ image, title, tags =
   );
 };
 
-export const ScriptCard: React.FC<ScriptCardProps> = ({ title, author, tags = [], summary, created_at }) => {
+export const ScriptCard: React.FC<ScriptCardProps> = ({ title, author, tags = [], summary, created_at, language }) => {
   const formattedDate = formatTimestamp(created_at);
 
   return (
@@ -77,7 +77,7 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({ title, author, tags = []
           <p className="text-gray-600 hover:text-gray-800">愛心 35</p>
           <p className="text-gray-600 hover:text-gray-800">留言 35</p>
         </div>
-        <p className="text-gray-600 hover:text-gray-800">English</p>
+        <p className="text-gray-600 hover:text-gray-800">{language}</p>
       </div>
     </div>
   );
