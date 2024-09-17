@@ -3,7 +3,9 @@ import { Timestamp } from "firebase/firestore";
 interface PlaylistCardProps {
   image: string;
   title: string;
+  tags: string[];
   author: string;
+  onClick: () => void;
 }
 
 interface ScriptCardProps {
@@ -25,20 +27,30 @@ const formatTimestamp = (timestamp?: Timestamp): string => {
   return `${year}${month}`;
 };
 
-export const PlaylistCard: React.FC<PlaylistCardProps> = ({ image, title, author }) => {
+export const PlaylistCard: React.FC<PlaylistCardProps> = ({ image, title, tags = [], author, onClick }) => {
   return (
-    <div className="flex items-center w-full h-24 bg-slate-200 rounded-lg overflow-hidden ">
+    <div
+      className="flex items-center w-full h-24 bg-slate-200 rounded-lg overflow-hidden cursor-pointer"
+      onClick={onClick}
+    >
       <img className="h-full w-24 object-cover" src={image} alt={title} />
-      <div className="flex-grow p-4  text-left">
-        <div className="font-bold text-xl">{title}</div>
-        <div className="text-gray-600 justify-items-start	">{author}</div>
+      <div className="flex-grow pl-4 text-left">
+        <div className="font-bold text-l">{title}</div>
+        <div className="justify-items-start	">{author}</div>
+        <div className="flex space-x-2 mt-2">
+          {tags.map((tag, index) => (
+            <span key={index} className="rounded-sm bg-slate-300">
+              {tag}
+            </span>
+          ))}
+        </div>
       </div>
-      <button className="items-center justify-center mr-3">Play</button>
+      <button className="mr-3">Play</button>
     </div>
   );
 };
 
-export const ScriptCard: React.FC<ScriptCardProps> = ({ title, author, tags, summary, created_at }) => {
+export const ScriptCard: React.FC<ScriptCardProps> = ({ title, author, tags = [], summary, created_at }) => {
   const formattedDate = formatTimestamp(created_at);
 
   return (
@@ -49,15 +61,14 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({ title, author, tags, sum
           <div className="text-gray-600">
             {author} • {formattedDate}
           </div>
-          <div className="flex space-x-2 mt-2">
+          <div className="flex space-x-2 mt-2 ">
             {tags.map((tag, index) => (
-              <span key={index} className="text-gray-500 text-sm bg-gray-200 p-1 rounded-sm">
+              <span key={index} className="text-gray-00 text-sm p-1 rounded-sm bg-slate-300">
                 {tag}
               </span>
             ))}
           </div>
         </div>
-        {/* <button className="ml-4 text-gray-600 hover:text-gray-800">Play</button> */}
       </div>
       <div className="p-4 text-gray-700  text-left">{summary}</div>
       <div className="flex items-center justify-between p-4 ">

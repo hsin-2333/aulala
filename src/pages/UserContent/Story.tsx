@@ -4,18 +4,17 @@ import { useParams } from "react-router-dom";
 import dbApi from "../../utils/firebaseService";
 
 function StoryContent() {
-  const { id } = useParams();
-
+  const { storyId } = useParams();
+  console.log("路由" + storyId);
   const {
     data: storyData,
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["story", id],
-    queryFn: () => dbApi.getStoryById(id as string),
-    enabled: !!id,
+    queryKey: ["story", storyId],
+    queryFn: () => dbApi.getStoryById(storyId as string),
+    enabled: !!storyId,
   });
-  console.log("storyData" + storyData);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -25,9 +24,12 @@ function StoryContent() {
     return <div>Error: {error.message}</div>;
   }
 
-  console.log("storyData", storyData.img_url[0]);
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
-    <div>
+    <div className="text-left">
       <h1 className="text-3xl font-bold mb-4 text-black">Story Page</h1>
       {storyData && (
         <div>
@@ -36,7 +38,7 @@ function StoryContent() {
           <img className="w-32 h-auto rounded-lg mb-4" src={storyData.img_url[0]} alt={storyData.title} />
         </div>
       )}
-      <AudioWavePlayer audio_url={storyData.audio_url} />
+      {storyData && storyData.audio_url && <AudioWavePlayer audio_url={storyData.audio_url} />}
     </div>
   );
 }

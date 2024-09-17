@@ -36,7 +36,7 @@ function App() {
               }
             />
             <Route
-              path="/story/:id"
+              path="/story/:storyId"
               element={
                 <Layout>
                   <StoryContent />

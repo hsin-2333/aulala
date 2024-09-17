@@ -1,6 +1,5 @@
 import WaveSurfer from "wavesurfer.js";
 import { useEffect, useRef, useState } from "react";
-import mySound from "../assets/The Phantom of the Opera.mp3";
 import fakeData from "../assets/fakeStory.json";
 
 interface AudioWavePlayerProps {
@@ -58,12 +57,17 @@ function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
 
       animationFrameId = requestAnimationFrame(updateCurrentTime);
 
+      // Initialize the first segment of text
+      const initialSegments = fakeData.content.segments.slice(0, 3).map((segment) => segment.text);
+      setCurrentText(initialSegments);
+      setCurrentSegmentIndex(0);
+
       return () => {
         cancelAnimationFrame(animationFrameId);
         wavesurfer.destroy();
       };
     }
-  }, [audioRef]);
+  }, [audioRef, audio_url]);
 
   const handlePlayPause = () => {
     const wavesurfer = wavesurferRef.current;
@@ -81,8 +85,6 @@ function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
 
   return (
     <div>
-      <div id="waveform" ref={audioRef}></div>
-      <button onClick={handlePlayPause}>{isPlayingRef.current ? "Pause" : "Play"}</button>
       <div className="subtitle">
         {currentText.map((text, index) => (
           <p
@@ -97,6 +99,8 @@ function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
           </p>
         ))}
       </div>
+      <div id="waveform" ref={audioRef}></div>
+      <button onClick={handlePlayPause}>{isPlayingRef.current ? "Pause" : "Play"}</button>
     </div>
   );
 }

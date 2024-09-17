@@ -4,6 +4,7 @@ import dbApi from "../../utils/firebaseService";
 import { useNavigate } from "react-router-dom";
 import { CategoryOptions } from "../../constants/categoryOptions";
 import { QueryConditions } from "../../types";
+import { PlaylistCard } from "../../components/Card";
 
 interface Story {
   id: string;
@@ -73,9 +74,17 @@ function HomePage() {
       <h2>Stories</h2>
       <ul>
         {storyList?.map((story: Story) => (
-          <li key={story.id} onClick={() => handleContentClick(story.id, "story")}>
-            {story.title}
-          </li>
+          // <li key={story.id} onClick={() => handleContentClick(story.id, "story")}>
+          //   {story.title}
+          // </li>
+          <PlaylistCard
+            onClick={() => handleContentClick(story.id, "story")}
+            key={story.id}
+            image={story.img_url?.[0]}
+            title={story.title}
+            tags={story.tags}
+            author={story.author}
+          />
         ))}
       </ul>
       <br />

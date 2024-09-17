@@ -254,8 +254,8 @@ const dbApi = {
   //   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   // },
 
-  async getStoryById(id: string) {
-    const storyDoc = await getDoc(doc(db, "stories", id));
+  async getStoryById(storyId: string) {
+    const storyDoc = await getDoc(doc(db, "stories", storyId));
     return storyDoc.data();
   },
 
