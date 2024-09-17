@@ -1,31 +1,42 @@
-import { PlaylistCard } from "../../../components/Card";
+import { PlaylistCard, ScriptCard } from "../../../components/Card";
 import dbApi from "../../../utils/firebaseService";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
+import { Timestamp } from "firebase/firestore";
 
 interface Story {
   id: string;
-  title?: string;
-  author?: string;
-  image?: string[];
+  title: string;
+  author: string;
+  img_url?: string[];
+  image?: string;
+  summary?: string;
+  tags?: string[];
+  created_at?: Timestamp;
 }
 
 const MyContent = () => {
   const [selectedTab, setSelectedTab] = useState<string>("story");
   const { userName } = useParams();
-  // const location = useLocation();
+  const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const initialTab = queryParams.get("tab") || "story";
   const { data: storyList, isLoading: isStoryLoading } = useQuery<Story[]>({
     queryKey: ["stories", userName],
-    queryFn: () => dbApi.queryCollection("stories", { author: userName || "" }, 20),
+    queryFn: async () => {
+      const stories = await dbApi.queryCollection("stories", { author: userName || "" }, 20);
+      return stories as Story[];
+    },
     enabled: selectedTab === "story",
   });
 
   const { data: scriptList, isLoading: isScriptLoading } = useQuery<Story[]>({
     queryKey: ["scripts", userName],
-    queryFn: () => dbApi.queryCollection("scripts", { author: userName || "" }, 20),
+    queryFn: async () => {
+      const scripts = await dbApi.queryCollection("scripts", { author: userName || "" }, 20);
+      return scripts as Story[];
+    },
     enabled: selectedTab === "script",
   });
 
@@ -36,7 +47,15 @@ const MyContent = () => {
       ));
     } else if (selectedTab === "script") {
       return scriptList?.map((script) => (
-        <PlaylistCard key={script.id} image={script.img_url?.[0]} title={script.title} author={script.author} />
+        <ScriptCard
+          key={script.id}
+          image={script.img_url?.[0]}
+          title={script.title}
+          author={script.author}
+          summary={script.summary}
+          tags={script.tags}
+          created_at={script.created_at}
+        />
       ));
     }
   };
