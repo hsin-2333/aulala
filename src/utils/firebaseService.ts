@@ -191,15 +191,6 @@ const dbApi = {
     }
   },
 
-  // async queryScriptByTags(tagId: string[]) {
-  //   const scriptRef = collection(db, "scripts");
-  //   const querySnapshot = await getDocs(query(scriptRef, where("tags", "array-contains-any", tagId)));
-  //   const scripts = querySnapshot.docs.map((doc) => ({
-  //     id: doc.id,
-  //     ...doc.data(),
-  //   }));
-  //   return scripts;
-  // },
   async getStories(limitNum: number) {
     const q = query(collection(db, "stories"), limit(limitNum));
     const querySnapshot = await getDocs(q);
@@ -212,14 +203,16 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 
-  // async getScriptByCategory(category: string) {
-  //   const q = query(collection(db, "scripts"), where("category", "==", category), limit(10));
-  //   const querySnapshot = await getDocs(q);
-  //   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  // },
-
   async queryCollection(collectionName: string, conditions: QueryConditions, limitNum: number = 10) {
     const constraints: QueryConstraint[] = [];
+
+    if (conditions.id) {
+      constraints.push(where("__name__", "==", conditions.id));
+    }
+
+    if (conditions.script_id) {
+      constraints.push(where("script_id", "==", conditions.script_id));
+    }
 
     if (conditions.tags) {
       constraints.push(where("tags", "array-contains-any", conditions.tags));
@@ -254,10 +247,10 @@ const dbApi = {
   //   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   // },
 
-  async getStoryById(storyId: string) {
-    const storyDoc = await getDoc(doc(db, "stories", storyId));
-    return storyDoc.data();
-  },
+  // async getStoryById(storyId: string) {
+  //   const storyDoc = await getDoc(doc(db, "stories", storyId));
+  //   return storyDoc.data();
+  // },
 
   async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: any) {
     try {

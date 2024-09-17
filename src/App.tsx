@@ -12,6 +12,7 @@ import HomePage from "./pages/Home";
 import Account from "./pages/Account";
 import LoginComponent from "./pages/Login";
 import StoryContent from "./pages/UserContent/Story";
+import ScriptContent from "./pages/UserContent/Script";
 import Layout from "./components/Layout";
 import UploadScript from "./pages/Account/Upload/UploadScript";
 import UploadStory from "./pages/Account/Upload/UploadStory";
@@ -38,17 +39,21 @@ function App() {
             <Route
               path="/story/:storyId"
               element={
-                <Layout>
-                  <StoryContent />
-                </Layout>
+                <PrivateRoute>
+                  <Layout>
+                    <StoryContent />
+                  </Layout>
+                </PrivateRoute>
               }
             />
             <Route
-              path="/script/:scriptID"
+              path="/script/:scriptId"
               element={
-                <Layout>
-                  <HomePage />
-                </Layout>
+                <PrivateRoute>
+                  <Layout>
+                    <ScriptContent />
+                  </Layout>
+                </PrivateRoute>
               }
             />
             <Route

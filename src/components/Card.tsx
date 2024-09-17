@@ -45,7 +45,7 @@ export const PlaylistCard: React.FC<PlaylistCardProps> = ({ image, title, tags =
           ))}
         </div>
       </div>
-      <button className="mr-3">Play</button>
+      <button className="mr-3">+</button>
     </div>
   );
 };

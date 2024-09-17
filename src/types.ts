@@ -36,4 +36,6 @@ export type QueryConditions = {
     end: Date;
   };
   likes?: number;
+  id?: string;
+  script_id?: string;
 };

@@ -91,9 +91,16 @@ function HomePage() {
       <h2>Scripts</h2>
       <ul>
         {scriptList?.map((script: Story) => (
-          <li key={script.id} onClick={() => handleContentClick(script.id, "script")}>
-            {script.title}
-          </li>
+          // <li key={script.id} onClick={() => handleContentClick(script.id, "script")}>
+          //   {script.title}
+          // </li>
+          <PlaylistCard
+            onClick={() => handleContentClick(script.id, "script")}
+            key={script.id}
+            title={script.title}
+            tags={script.tags}
+            author={script.author}
+          />
         ))}
       </ul>
     </div>
