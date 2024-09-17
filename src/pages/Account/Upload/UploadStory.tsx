@@ -19,9 +19,10 @@ interface FormData {
   scheduled_release_date: string;
   audio_url: string;
   img_url: string[];
+  author: string;
 }
 
-const UploadSection = () => {
+const UploadStory = () => {
   const [isAudioUploaded, setIsAudioUploaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -31,6 +32,9 @@ const UploadSection = () => {
   const [audioName, setAudioName] = useState<string | null>(null);
   const [audioDuration, setAudioDuration] = useState<number | null>(null);
   const [tagsOptions, setTagsOptions] = useState<{ value: string; label: string }[]>([]);
+
+  const filteredCategoryOptions = CategoryOptions.filter((option) => option.label !== "All");
+
   const {
     register,
     handleSubmit,
@@ -77,12 +81,13 @@ const UploadSection = () => {
         const storyData = {
           ...data,
           duration: audioDuration,
+          author: user?.userName,
         };
         const storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
         for (const tag of data.tags) {
           await dbApi.addOrUpdateTag(tag.value, storyId, null);
         }
-        console.log("成功上傳");
+        window.alert("成功上傳");
       } catch (error) {
         console.error("Error uploading story and audio:", error);
       } finally {
@@ -132,7 +137,7 @@ const UploadSection = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700">Category</label>
               <Select
-                options={CategoryOptions}
+                options={filteredCategoryOptions}
                 onChange={(selectedOption) => setValue("category", selectedOption?.value || "")}
               />
               {errors.category && <span className="text-red-500 text-sm">This field is required</span>}
@@ -167,4 +172,4 @@ const UploadSection = () => {
   );
 };
 
-export default UploadSection;
+export default UploadStory;

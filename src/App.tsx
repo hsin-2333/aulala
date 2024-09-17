@@ -13,7 +13,9 @@ import Account from "./pages/Account";
 import LoginComponent from "./pages/Login";
 import StoryContent from "./pages/UserContent/Story";
 import Layout from "./components/Layout";
-import UploadSection from "./pages/Account/Upload";
+import UploadScript from "./pages/Account/Upload/UploadScript";
+import UploadStory from "./pages/Account/Upload/UploadStory";
+
 import MyContent from "./pages/Account/MyContent";
 
 const queryClient = new QueryClient();
@@ -94,12 +96,23 @@ function App() {
               }
             />
             <Route
-              path="/upload"
+              path="/upload/script"
               element={
                 <PrivateRoute>
                   <Layout>
                     {" "}
-                    <UploadSection />
+                    <UploadScript />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/upload/story"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    {" "}
+                    <UploadStory />
                   </Layout>
                 </PrivateRoute>
               }

@@ -47,7 +47,10 @@ const Header = () => {
             </li>
           )}
           <li>
-            <Link to="/upload">Upload</Link>
+            <Link to="/upload/story">Upload Story</Link>
+          </li>
+          <li>
+            <Link to="/upload/script">Upload Script</Link>
           </li>
         </ul>
       </nav>

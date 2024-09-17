@@ -1,8 +1,8 @@
 import { PlaylistCard } from "../../../components/Card";
 import dbApi from "../../../utils/firebaseService";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useLocation } from "react-router-dom";
 
 interface Story {
   id: string;
@@ -14,6 +14,9 @@ interface Story {
 const MyContent = () => {
   const [selectedTab, setSelectedTab] = useState<string>("story");
   const { userName } = useParams();
+  // const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialTab = queryParams.get("tab") || "story";
   const { data: storyList, isLoading: isStoryLoading } = useQuery<Story[]>({
     queryKey: ["stories", userName],
     queryFn: () => dbApi.queryCollection("stories", { author: userName || "" }, 20),
@@ -37,6 +40,10 @@ const MyContent = () => {
       ));
     }
   };
+
+  useEffect(() => {
+    setSelectedTab(initialTab);
+  }, [initialTab]);
 
   return (
     <div>

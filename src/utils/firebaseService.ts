@@ -287,5 +287,34 @@ const dbApi = {
       throw e;
     }
   },
+
+  async uploadScript(file: File, imageFile: File | null, data: any) {
+    try {
+      const storageRef = ref(storage, `script/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const audioUrl = await getDownloadURL(storageRef);
+
+      let imageUrl = null;
+      if (imageFile) {
+        const imageRef = ref(storage, `images/${imageFile.name}`);
+        await uploadBytes(imageRef, imageFile);
+        imageUrl = await getDownloadURL(imageRef);
+      }
+      const scriptData = {
+        ...data,
+        audio_url: audioUrl,
+        img_url: imageUrl ? [imageUrl] : [],
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+        tags: data.tags.map((tag) => tag.value),
+      };
+
+      const scriptRef = await addDoc(collection(db, "scripts"), scriptData);
+      return scriptRef.id;
+    } catch (e) {
+      console.error("Error uploading audio and saving story: ", e);
+      throw e;
+    }
+  },
 };
 export default dbApi;
