@@ -147,7 +147,9 @@ const UploadStory = () => {
               <CreatableSelect
                 isMulti
                 options={tagsOptions}
-                onChange={(selectedOptions) => setValue("tags", selectedOptions || [])}
+                onChange={(selectedOptions) =>
+                  setValue("tags", [...selectedOptions] as { value: string; label: string }[])
+                }
               />
               {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
             </div>

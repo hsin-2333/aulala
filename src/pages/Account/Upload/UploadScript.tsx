@@ -26,6 +26,7 @@ const UploadScript = () => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [tagsOptions, setTagsOptions] = useState<{ value: string; label: string }[]>([]);
   const navigate = useNavigate();
+  const filteredCategoryOptions = CategoryOptions.filter((option) => option.label !== "All");
 
   const {
     register,
@@ -112,7 +113,7 @@ const UploadScript = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700">Category</label>
           <Select
-            options={CategoryOptions}
+            options={filteredCategoryOptions}
             onChange={(selectedOption) => setValue("category", selectedOption?.value || "")}
           />
           {errors.category && <span className="text-red-500 text-sm">This field is required</span>}
@@ -122,7 +123,7 @@ const UploadScript = () => {
           <CreatableSelect
             isMulti
             options={tagsOptions}
-            onChange={(selectedOptions) => setValue("tags", selectedOptions || [])}
+            onChange={(selectedOptions) => setValue("tags", [...selectedOptions] as { value: string; label: string }[])}
           />
           {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
         </div>
