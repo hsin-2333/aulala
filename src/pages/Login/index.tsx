@@ -4,7 +4,7 @@ import UserSignUpForm from "../Login/UserInfo";
 import { useNavigate } from "react-router-dom";
 
 const LoginComponent = () => {
-  const { user, Login, userExists, Logout } = useContext(AuthContext);
+  const { user, authUser, Login, userExists, Logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,9 +16,12 @@ const LoginComponent = () => {
   return (
     <div>
       <>
-        {user ? (
+        {user || authUser ? (
           <>
-            <h2 key={user.uid}>{user.displayName}</h2>
+            {/* <h2 key={user.uid}>{user.displayName}</h2>
+            {!userExists && <UserSignUpForm />}
+            <button onClick={Logout}>Logout</button> */}
+            <h2 key={user?.uid || authUser?.uid}>{user?.userName || authUser?.displayName}</h2>
             {!userExists && <UserSignUpForm />}
             <button onClick={Logout}>Logout</button>
           </>

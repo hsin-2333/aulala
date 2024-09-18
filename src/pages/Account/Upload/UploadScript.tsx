@@ -11,7 +11,7 @@ interface ScriptFormData {
   title: string;
   summary: string;
   content: string;
-  language: string[];
+  language: string;
   category: string;
   tags: { label: string; value: string }[];
   url: string;
@@ -34,6 +34,12 @@ const UploadScript = () => {
     formState: { errors },
     setValue,
   } = useForm<ScriptFormData>();
+
+  const languageOptions = [
+    { value: "English", label: "English" },
+    { value: "Mandarin", label: "Mandarin" },
+    { value: "Spanish", label: "Spanish" },
+  ];
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -66,7 +72,8 @@ const UploadScript = () => {
       try {
         const scriptData = {
           ...data,
-          author: user?.userName,
+          author: user?.userName || "Unknown",
+          tags: data.tags.map((tag) => tag.value),
         };
         const scriptId = await dbApi.uploadScript(file, imageFile, scriptData);
         for (const tag of data.tags) {
@@ -105,6 +112,7 @@ const UploadScript = () => {
           <textarea {...register("summary", { required: true })} />
           {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">Content</label>
           <textarea {...register("content", { required: true })} />
@@ -126,6 +134,14 @@ const UploadScript = () => {
             onChange={(selectedOptions) => setValue("tags", [...selectedOptions] as { value: string; label: string }[])}
           />
           {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Language</label>
+          <Select
+            options={languageOptions}
+            onChange={(selectedOption) => setValue("language", selectedOption?.value || "")}
+          />
+          {errors.language && <span className="text-red-500 text-sm">This field is required</span>}
         </div>
         <button type="submit">Submit</button>
       </form>

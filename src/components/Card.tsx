@@ -30,7 +30,7 @@ const formatTimestamp = (timestamp?: Timestamp): string => {
 export const PlaylistCard: React.FC<PlaylistCardProps> = ({ image, title, tags = [], author, onClick }) => {
   return (
     <div
-      className="flex items-center w-full h-24 bg-slate-200 rounded-lg overflow-hidden cursor-pointer"
+      className="flex items-center w-full h-24 bg-slate-200 rounded-lg overflow-hidden cursor-pointer mb-2"
       onClick={onClick}
     >
       <img className="h-full w-24 object-cover" src={image} alt={title} />
@@ -54,7 +54,7 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({ title, author, tags = []
   const formattedDate = formatTimestamp(created_at);
 
   return (
-    <div className="flex flex-col w-full bg-gray-100 rounded-lg overflow-hidden shadow-md">
+    <div className="flex flex-col w-full bg-gray-100 rounded-lg overflow-hidden mb-2">
       <div className="flex items-center p-4 ">
         <div className="flex-grow text-left">
           <div className="font-bold text-xl text-black">{title}</div>

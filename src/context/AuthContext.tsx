@@ -1,26 +1,32 @@
 // AuthContext.jsx
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState, ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { auth } from "../../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import dbApi from "../utils/firebaseService";
-import { AuthContextType, User } from "../types";
+import { AuthContextType, User, AuthUser } from "../types";
+
+interface AuthContextProviderProps {
+  children: ReactNode;
+}
 
 export const AuthContext = createContext<AuthContextType>({
   isLogin: false,
   loading: false,
   user: null,
-  // userName: null,
+  authUser: null,
   Login: () => {},
   Logout: () => {},
   userExists: undefined,
 });
 
-export const AuthContextProvider = ({ children }) => {
+export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | string | null>(null);
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,13 +36,18 @@ export const AuthContextProvider = ({ children }) => {
         const dbUser = await dbApi.getUser(authUser.uid);
         console.log("Database user:", dbUser);
         if (!dbUser) {
-          setUser("authUser"); //如果使用者不在資料庫中，則先設定為字串，再userInfo中等待使用者填入資料再創建為user
+          // setAuthUser(authUser as AuthUser); // Set authUser if user is not in the database
+          setAuthUser(authUser as AuthUser);
+          setUser(null);
+          // setUser("authUser"); //如果使用者不在資料庫中，則先設定為字串，再userInfo中等待使用者填入資料再創建為user
         } else {
           setUser(dbUser as User);
+          setAuthUser(authUser);
           console.log("User state after setting:", dbUser);
         }
       } else {
         setUser(null);
+        setAuthUser(null);
       }
       setLoading(false);
     });
@@ -46,12 +57,12 @@ export const AuthContextProvider = ({ children }) => {
   }, []);
 
   const { data: userExists } = useQuery({
-    queryKey: ["userExists", user?.uid],
+    queryKey: ["userExists", (user as User)?.uid],
     queryFn: () => {
       if (!user) {
         return Promise.resolve(false);
       }
-      return dbApi.checkUserExists(user.uid);
+      return dbApi.checkUserExists((user as User)?.uid);
     },
     enabled: !!user,
   });
@@ -75,7 +86,7 @@ export const AuthContextProvider = ({ children }) => {
     const provider = new GoogleAuthProvider();
 
     signInWithPopup(auth, provider)
-      .then((result) => {
+      .then(() => {
         queryClient.invalidateQueries({ queryKey: ["auth"] });
       })
       .catch((error) => {
@@ -87,7 +98,8 @@ export const AuthContextProvider = ({ children }) => {
   }, [navigate, queryClient]);
 
   return (
-    <AuthContext.Provider value={{ isLogin, loading, user, userExists, Login, Logout }}>
+    //@ts-expect-error(123)
+    <AuthContext.Provider value={{ isLogin, loading, user, authUser, userExists, Login, Logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -56,6 +56,7 @@ const UserSignUpForm = () => {
         avatar: user.photoURL,
         email: user.email,
         ...signUpData,
+        id: user.uid,
       };
 
       await dbApi.createUser(userData);

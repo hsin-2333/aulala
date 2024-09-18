@@ -19,10 +19,21 @@ export interface User {
   UserCollections: string[];
 }
 
+export interface AuthUser {
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+  providerId: string;
+
+  // Add other properties as needed
+}
+
 export interface AuthContextType {
   isLogin: boolean;
   loading: boolean;
   user: User | null;
+  authUser: AuthUser | null;
   Login: () => void;
   Logout: () => void;
   userExists: boolean | undefined;
@@ -43,7 +54,7 @@ export type QueryConditions = {
 };
 
 export interface Story {
-  id: string;
+  id?: string;
   title: string;
   author: string;
   img_url?: string[];
@@ -52,6 +63,6 @@ export interface Story {
   tags?: string[];
   created_at?: Timestamp | string;
   language?: string;
-  voice_actor?: string;
+  voice_actor?: string[];
   audio_url?: string;
 }

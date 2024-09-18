@@ -9,6 +9,7 @@ import { PlaylistCard } from "../../components/Card";
 interface Story {
   id: string;
   title?: string;
+  author?: string;
 }
 
 function HomePage() {
@@ -80,10 +81,12 @@ function HomePage() {
           <PlaylistCard
             onClick={() => handleContentClick(story.id, "story")}
             key={story.id}
+            //@ts-expect-error(123)
             image={story.img_url?.[0]}
-            title={story.title}
+            title={story.title || "Untitled"}
+            //@ts-expect-error(123)
             tags={story.tags}
-            author={story.author}
+            author={story.author || "Unknown"}
           />
         ))}
       </ul>
@@ -96,10 +99,13 @@ function HomePage() {
           // </li>
           <PlaylistCard
             onClick={() => handleContentClick(script.id, "script")}
+            //@ts-expect-error(123)
+            image={script.img_url?.[0]}
             key={script.id}
-            title={script.title}
+            title={script.title || "Untitled"}
+            //@ts-expect-error(123)
             tags={script.tags}
-            author={script.author}
+            author={script.author || "Unknown"}
           />
         ))}
       </ul>

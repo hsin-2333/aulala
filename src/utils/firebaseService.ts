@@ -16,9 +16,10 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
-import { QueryConditions } from "../types";
+import { QueryConditions, Story } from "../types";
 
 interface IUserData {
+  id: string;
   uid: string;
   avatar: string | null;
   email: string | null;
@@ -71,33 +72,36 @@ const dbApi = {
     // return userDocData?.userName || null;
     return userDocData || null;
   },
-  async addPlaybackHistory(uid: string, playbackHistory: any) {
-    try {
-      const userDocRef = doc(db, "users", uid);
-      await updateDoc(userDocRef, {
-        playback_history: playbackHistory.map((item: any) => ({
-          ...item,
-          last_playback_timestamp: new Date(),
-        })),
-      });
-      console.log("Playback history added for user ID: ", uid);
-    } catch (e) {
-      console.error("Error adding playback history: ", e);
-    }
-  },
 
-  async handleUserData(userData: IUserData, playbackHistory: any) {
-    const userExists = await this.checkUserExists(userData.uid);
-    if (userExists) {
-      await this.updateUser(userData);
-    } else {
-      await this.createUser(userData);
-    }
-    if (playbackHistory) {
-      await this.addPlaybackHistory(userData.uid, playbackHistory);
-    }
-  },
-  subscribeToUserData(callback: (data: any) => void) {
+  //目前還沒有使用到
+  // async addPlaybackHistory(uid: string, playbackHistory: any) {
+  //   try {
+  //     const userDocRef = doc(db, "users", uid);
+  //     await updateDoc(userDocRef, {
+  //       playback_history: playbackHistory.map((item: any) => ({
+  //         ...item,
+  //         last_playback_timestamp: new Date(),
+  //       })),
+  //     });
+  //     console.log("Playback history added for user ID: ", uid);
+  //   } catch (e) {
+  //     console.error("Error adding playback history: ", e);
+  //   }
+  // },
+
+  //目前還沒有使用到
+  // async handleUserData(userData: IUserData, playbackHistory: any) {
+  //   const userExists = await this.checkUserExists(userData.uid);
+  //   if (userExists) {
+  //     await this.updateUser(userData);
+  //   } else {
+  //     await this.createUser(userData);
+  //   }
+  //   if (playbackHistory) {
+  //     await this.addPlaybackHistory(userData.uid, playbackHistory);
+  //   }
+  // },
+  subscribeToUserData(callback: (data: IUserData) => void) {
     const auth = getAuth();
     auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -106,6 +110,7 @@ const dbApi = {
         if (docSnap.exists()) {
           const unsubscribe = onSnapshot(userDocRef, (doc) => {
             if (doc.exists()) {
+              //@ts-expect-error(123)
               callback({ id: doc.id, ...doc.data() });
             } else {
               console.log("No such document!");
@@ -120,7 +125,6 @@ const dbApi = {
       }
     });
   },
-
   // async getUserData(uid: string) {
   //   try {
   //     const userDocRef = doc(db, "users", uid);
@@ -137,7 +141,7 @@ const dbApi = {
   //   }
   // },
 
-  async addStoryData(storyData: any) {
+  async addStoryData(storyData: Story) {
     try {
       const docRef = await addDoc(collection(db, "stories"), {
         ...storyData,
@@ -150,7 +154,7 @@ const dbApi = {
     }
   },
 
-  async addScriptData(scriptData: any) {
+  async addScriptData(scriptData: Story) {
     try {
       const docRef = await addDoc(collection(db, "scripts"), {
         ...scriptData,
@@ -252,7 +256,7 @@ const dbApi = {
   //   return storyDoc.data();
   // },
 
-  async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: any) {
+  async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
     try {
       const storageRef = ref(storage, `stories/${file.name}`);
       await uploadBytes(storageRef, file);
@@ -270,9 +274,10 @@ const dbApi = {
         img_url: imageUrl ? [imageUrl] : [],
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
-        tags: data.tags.map((tag) => tag.value),
+        tags: data.tags,
       };
 
+      console.log("storyData: ", storyData);
       const storyRef = await addDoc(collection(db, "stories"), storyData);
       return storyRef.id;
     } catch (e) {
@@ -281,7 +286,7 @@ const dbApi = {
     }
   },
 
-  async uploadScript(file: File, imageFile: File | null, data: any) {
+  async uploadScript(file: File, imageFile: File | null, data: Story) {
     try {
       const storageRef = ref(storage, `script/${file.name}`);
       await uploadBytes(storageRef, file);
@@ -299,9 +304,10 @@ const dbApi = {
         img_url: imageUrl ? [imageUrl] : [],
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
-        tags: data.tags.map((tag) => tag.value),
+        tags: data.tags,
       };
-
+      console.log("scriptData: ", scriptData);
+      console.log("data.tags: ", data.tags);
       const scriptRef = await addDoc(collection(db, "scripts"), scriptData);
       return scriptRef.id;
     } catch (e) {

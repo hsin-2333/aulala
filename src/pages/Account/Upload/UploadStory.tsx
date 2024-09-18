@@ -81,7 +81,9 @@ const UploadStory = () => {
         const storyData = {
           ...data,
           duration: audioDuration,
-          author: user?.userName,
+          author: user?.userName || "Unknown",
+          tags: data.tags.map((tag) => tag.value),
+          voice_actor: [user?.userName || ""], //之後要增加多位聲優
         };
         const storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
         for (const tag of data.tags) {
