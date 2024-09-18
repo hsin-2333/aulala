@@ -14,6 +14,8 @@ interface Story {
 
 function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
   const navigate = useNavigate();
 
   const {
@@ -61,6 +63,15 @@ function HomePage() {
   return (
     <div>
       <h2>Home Page</h2>
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
       {CategoryOptions.map((category) => (
         <span
           className="mr-4 cursor-pointer inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
@@ -74,40 +85,44 @@ function HomePage() {
       <br />
       <h2>Stories</h2>
       <ul>
-        {storyList?.map((story: Story) => (
-          // <li key={story.id} onClick={() => handleContentClick(story.id, "story")}>
-          //   {story.title}
-          // </li>
-          <PlaylistCard
-            onClick={() => handleContentClick(story.id, "story")}
-            key={story.id}
-            //@ts-expect-error(123)
-            image={story.img_url?.[0]}
-            title={story.title || "Untitled"}
-            //@ts-expect-error(123)
-            tags={story.tags}
-            author={story.author || "Unknown"}
-          />
-        ))}
+        {storyList
+          ?.filter((story) => story.title?.toLowerCase().includes(searchTerm.toLocaleLowerCase()))
+          .map((story: Story) => (
+            // <li key={story.id} onClick={() => handleContentClick(story.id, "story")}>
+            //   {story.title}
+            // </li>
+            <PlaylistCard
+              onClick={() => handleContentClick(story.id, "story")}
+              key={story.id}
+              //@ts-expect-error(123)
+              image={story.img_url?.[0]}
+              title={story.title || "Untitled"}
+              //@ts-expect-error(123)
+              tags={story.tags}
+              author={story.author || "Unknown"}
+            />
+          ))}
       </ul>
       <br />
       <h2>Scripts</h2>
       <ul>
-        {scriptList?.map((script: Story) => (
-          // <li key={script.id} onClick={() => handleContentClick(script.id, "script")}>
-          //   {script.title}
-          // </li>
-          <PlaylistCard
-            onClick={() => handleContentClick(script.id, "script")}
-            //@ts-expect-error(123)
-            image={script.img_url?.[0]}
-            key={script.id}
-            title={script.title || "Untitled"}
-            //@ts-expect-error(123)
-            tags={script.tags}
-            author={script.author || "Unknown"}
-          />
-        ))}
+        {scriptList
+          ?.filter((script) => script.title?.toLowerCase().includes(searchTerm.toLowerCase()))
+          .map((script: Story) => (
+            // <li key={script.id} onClick={() => handleContentClick(script.id, "script")}>
+            //   {script.title}
+            // </li>
+            <PlaylistCard
+              onClick={() => handleContentClick(script.id, "script")}
+              //@ts-expect-error(123)
+              image={script.img_url?.[0]}
+              key={script.id}
+              title={script.title || "Untitled"}
+              //@ts-expect-error(123)
+              tags={script.tags}
+              author={script.author || "Unknown"}
+            />
+          ))}
       </ul>
     </div>
   );
