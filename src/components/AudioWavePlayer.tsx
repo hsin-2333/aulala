@@ -1,6 +1,8 @@
 import WaveSurfer from "wavesurfer.js";
 import { useEffect, useRef, useState } from "react";
-import fakeData from "../assets/fakeStory.json";
+// import fakeData from "../assets/fakeStory.json";
+import fakeData from "../assets/poetry.json";
+import { debounce } from "lodash";
 
 interface AudioWavePlayerProps {
   audio_url: string;
@@ -30,27 +32,43 @@ function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
       let lastUpdateTime = 0;
       let animationFrameId: number;
 
+      const updateSubtitles = (currentTime: number) => {
+        // findIndex 沒找到會回傳 -1
+        console.log("進入更新字幕", currentTime);
+        let currentSegmentIndex = fakeData.content.segments.findIndex(
+          (segment) => currentTime >= segment.start_time && currentTime <= segment.end_time
+        );
+
+        // 如果找不到當前時間的字幕段，則找到最近的字幕段
+        if (currentSegmentIndex === -1) {
+          currentSegmentIndex = fakeData.content.segments.findIndex((segment, index) => {
+            const nextSegment = fakeData.content.segments[index + 1];
+            console.log("nextSegment", nextSegment);
+            return nextSegment && currentTime < nextSegment.start_time;
+          });
+        }
+
+        if (currentSegmentIndex !== -1) {
+          console.log("currentSegmentIndex找到", currentSegmentIndex);
+          const start = Math.max(0, currentSegmentIndex - 2);
+          const end = Math.min(fakeData.content.segments.length, currentSegmentIndex + 3);
+          const segmentsToShow = fakeData.content.segments.slice(start, end).map((segment) => segment.text);
+
+          if (segmentsToShow.join() !== currentTextRef.current) {
+            console.log("segmentsToShow.join()", segmentsToShow.join());
+            currentTextRef.current = segmentsToShow.join();
+            setCurrentText(segmentsToShow);
+            setCurrentSegmentIndex(currentSegmentIndex - start);
+          }
+        }
+      };
+
       const updateCurrentTime = () => {
         const currentTime = wavesurfer.getCurrentTime();
         if (currentTime - lastUpdateTime > 0.8) {
           lastUpdateTime = currentTime;
-
-          //findIndex 沒找到會回傳 -1
-          const currentSegmentIndex = fakeData.content.segments.findIndex(
-            (segment) => currentTime >= segment.start_time && currentTime <= segment.end_time
-          );
-
-          if (currentSegmentIndex !== -1) {
-            const start = Math.max(0, currentSegmentIndex - 2);
-            const end = Math.min(fakeData.content.segments.length, currentSegmentIndex + 3);
-            const segmentsToShow = fakeData.content.segments.slice(start, end).map((segment) => segment.text);
-
-            if (segmentsToShow.join() !== currentTextRef.current) {
-              currentTextRef.current = segmentsToShow.join();
-              setCurrentText(segmentsToShow);
-              setCurrentSegmentIndex(currentSegmentIndex - start);
-            }
-          }
+          console.log("更新currentTime", currentTime);
+          updateSubtitles(currentTime);
         }
         animationFrameId = requestAnimationFrame(updateCurrentTime);
       };
@@ -61,6 +79,14 @@ function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
       const initialSegments = fakeData.content.segments.slice(0, 3).map((segment) => segment.text);
       setCurrentText(initialSegments);
       setCurrentSegmentIndex(0);
+
+      const handleSeek = debounce((currentTime: number) => {
+        lastUpdateTime = 0; // 重置 lastUpdateTime
+        updateSubtitles(currentTime);
+        console.log("handleSeek", currentTime);
+      }, 100); // 100ms 的防抖時間
+
+      wavesurfer.on("seeking", handleSeek);
 
       return () => {
         cancelAnimationFrame(animationFrameId);
