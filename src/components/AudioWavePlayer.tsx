@@ -41,7 +41,7 @@ function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
 
         // 如果找不到當前時間的字幕段，則找到最近的字幕段
         if (currentSegmentIndex === -1) {
-          currentSegmentIndex = fakeData.content.segments.findIndex((segment, index) => {
+          currentSegmentIndex = fakeData.content.segments.findIndex((_, index) => {
             const nextSegment = fakeData.content.segments[index + 1];
             console.log("nextSegment", nextSegment);
             return nextSegment && currentTime < nextSegment.start_time;
