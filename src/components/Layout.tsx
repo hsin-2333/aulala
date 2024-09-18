@@ -60,13 +60,13 @@ const Header = () => {
 
 const Sidebar = () => {
   const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     navigate("/");
+  //   }
+  // }, [user, navigate]);
 
   return (
     <aside className="bg-gray-200 p-4">

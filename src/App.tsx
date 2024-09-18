@@ -39,21 +39,17 @@ function App() {
             <Route
               path="/story/:storyId"
               element={
-                <PrivateRoute>
-                  <Layout>
-                    <StoryContent />
-                  </Layout>
-                </PrivateRoute>
+                <Layout>
+                  <StoryContent />
+                </Layout>
               }
             />
             <Route
               path="/script/:scriptId"
               element={
-                <PrivateRoute>
-                  <Layout>
-                    <ScriptContent />
-                  </Layout>
-                </PrivateRoute>
+                <Layout>
+                  <ScriptContent />
+                </Layout>
               }
             />
             <Route
