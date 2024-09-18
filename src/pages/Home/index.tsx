@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import lunr from "lunr";
 import dbApi from "../../utils/firebaseService";
 import { useNavigate } from "react-router-dom";
 import { CategoryOptions } from "../../constants/categoryOptions";
@@ -15,7 +16,11 @@ interface Story {
 function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<lunr.Index.Result[]>([]);
+  const [searchClicked, setSearchClicked] = useState<boolean>(false);
 
+  console.log("searchResults", searchResults);
+  console.log("searchTerm", searchTerm);
   const navigate = useNavigate();
 
   const {
@@ -24,12 +29,14 @@ function HomePage() {
     isLoading: isStoryLoading,
   } = useQuery<Story[], Error>({
     queryKey: ["stories", selectedCategory],
-    queryFn: () => {
+    queryFn: async () => {
       const conditions: QueryConditions = {};
       if (selectedCategory) {
         conditions.category = selectedCategory;
       }
-      return dbApi.queryCollection("stories", conditions, 20);
+      // return dbApi.queryCollection("stories", conditions, 20);
+      const stories = await dbApi.queryCollection("stories", conditions, 20);
+      return stories.map((story) => ({ ...story, id: story.id }));
     },
   });
 
@@ -39,14 +46,52 @@ function HomePage() {
     isLoading: isScriptLoading,
   } = useQuery<Story[], Error>({
     queryKey: ["scripts", selectedCategory],
-    queryFn: () => {
+    queryFn: async () => {
       const conditions: QueryConditions = {};
       if (selectedCategory) {
         conditions.category = selectedCategory;
       }
-      return dbApi.queryCollection("scripts", conditions, 20); // 假設 scripts 和 stories 使用相同的結構
+      // return dbApi.queryCollection("scripts", conditions, 20);
+      const stories = await dbApi.queryCollection("scripts", conditions, 20);
+      return stories.map((script) => ({ ...script, id: script.id }));
     },
   });
+
+  const idx = useMemo(() => {
+    if (!storyList || !scriptList) return null;
+
+    return lunr(function () {
+      this.ref("id");
+      this.field("id");
+      this.field("title");
+      this.field("author");
+      this.field("summary");
+      this.field("tags");
+
+      storyList.forEach((story) => {
+        this.add(story);
+      });
+
+      scriptList.forEach((script) => {
+        this.add(script);
+      });
+    });
+  }, [storyList, scriptList]);
+
+  const handleSearch = () => {
+    setSearchClicked(true);
+    if (idx && searchTerm) {
+      const results = idx.search(searchTerm);
+      setSearchResults(results);
+    } else {
+      setSearchResults([]);
+    }
+  };
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   //之後替換成skeleton
   if (isScriptLoading || isStoryLoading) {
@@ -60,17 +105,33 @@ function HomePage() {
     if (type === "script") navigate(`/script/${id}`);
     if (type === "story") navigate(`/story/${id}`);
   };
+  const clearSearch = () => {
+    setSearchTerm("");
+    setSearchResults([]);
+    setSearchClicked(false);
+  };
+
   return (
     <div>
       <h2>Home Page</h2>
-      <div className="mb-4">
+      <div className="mb-4 relative">
         <input
           type="text"
           placeholder="Search..."
           value={searchTerm}
+          onKeyDown={handleKeyDown}
           onChange={(e) => setSearchTerm(e.target.value)}
+          // onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
+        {searchTerm && (
+          <button
+            onClick={clearSearch}
+            className=" w-1 h-1 border-none absolute right-2 -top-0.5 bg-transparent text-gray-500 hover:text-gray-700"
+          >
+            ✖
+          </button>
+        )}
       </div>
       {CategoryOptions.map((category) => (
         <span
@@ -85,12 +146,30 @@ function HomePage() {
       <br />
       <h2>Stories</h2>
       <ul>
-        {storyList
-          ?.filter((story) => story.title?.toLowerCase().includes(searchTerm.toLocaleLowerCase()))
-          .map((story: Story) => (
-            // <li key={story.id} onClick={() => handleContentClick(story.id, "story")}>
-            //   {story.title}
-            // </li>
+        {searchClicked ? (
+          searchResults.length > 0 ? (
+            searchResults.map((result) => {
+              const story = storyList?.find((s) => s.id === result.ref);
+              return (
+                story && (
+                  <PlaylistCard
+                    onClick={() => handleContentClick(story.id, "story")}
+                    key={story.id}
+                    //@ts-expect-error(123)
+                    image={story.img_url?.[0]}
+                    title={story.title || "Untitled"}
+                    //@ts-expect-error(123)
+                    tags={story.tags}
+                    author={story.author || "Unknown"}
+                  />
+                )
+              );
+            })
+          ) : (
+            <div>沒有結果喔 試試其他關鍵字</div>
+          )
+        ) : (
+          storyList?.map((story: Story) => (
             <PlaylistCard
               onClick={() => handleContentClick(story.id, "story")}
               key={story.id}
@@ -101,28 +180,48 @@ function HomePage() {
               tags={story.tags}
               author={story.author || "Unknown"}
             />
-          ))}
+          ))
+        )}
       </ul>
       <br />
       <h2>Scripts</h2>
       <ul>
-        {scriptList
-          ?.filter((script) => script.title?.toLowerCase().includes(searchTerm.toLowerCase()))
-          .map((script: Story) => (
-            // <li key={script.id} onClick={() => handleContentClick(script.id, "script")}>
-            //   {script.title}
-            // </li>
+        {searchClicked ? (
+          searchResults.length > 0 ? (
+            searchResults.map((result) => {
+              const script = scriptList?.find((s) => s.id === result.ref);
+              return (
+                script && (
+                  <PlaylistCard
+                    onClick={() => handleContentClick(script.id, "script")}
+                    key={script.id}
+                    //@ts-expect-error(123)
+                    image={script.img_url?.[0]}
+                    title={script.title || "Untitled"}
+                    //@ts-expect-error(123)
+                    tags={script.tags}
+                    author={script.author || "Unknown"}
+                  />
+                )
+              );
+            })
+          ) : (
+            <div>沒有結果喔 試試其他關鍵字</div>
+          )
+        ) : (
+          scriptList?.map((script: Story) => (
             <PlaylistCard
               onClick={() => handleContentClick(script.id, "script")}
+              key={script.id}
               //@ts-expect-error(123)
               image={script.img_url?.[0]}
-              key={script.id}
               title={script.title || "Untitled"}
               //@ts-expect-error(123)
               tags={script.tags}
               author={script.author || "Unknown"}
             />
-          ))}
+          ))
+        )}
       </ul>
     </div>
   );
