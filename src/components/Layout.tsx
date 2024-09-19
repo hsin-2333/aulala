@@ -1,25 +1,28 @@
-import { useContext, ReactNode } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState, ReactNode } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import RecentPlayBar from "./RecentPlayBar";
-const trackInfo = {
-  cover: "path/to/cover.jpg",
-  title: "Track Title",
-  voice_actor: "Artist Name",
-  audioSrc: "path/to/audio.mp3",
-};
+
 interface LayoutProps {
   children: ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
+  const location = useLocation();
+  const [key, setKey] = useState(0);
+
+  useEffect(() => {
+    // 每次路由變化時更新 key，強制重新渲染 RecentPlayBar
+    setKey((prevKey) => prevKey + 1);
+  }, [location]);
+
   return (
     <div className="flex min-h-screen	">
       <Sidebar />
       <div className="flex-1">
         <Header />
         <main className="p-4 flex-1 ">{children}</main>
-        <RecentPlayBar track={trackInfo} />
+        <RecentPlayBar key={key} />
       </div>
     </div>
   );

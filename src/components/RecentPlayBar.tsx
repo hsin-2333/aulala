@@ -4,16 +4,6 @@ import { AuthContext } from "../context/AuthContext";
 import { Timestamp } from "firebase/firestore";
 import { Story } from "../types";
 
-interface AudioPlayerProps {
-  track: {
-    cover: string;
-    title: string;
-    voice_actor: string;
-    audioSrc: string;
-    played_at?: number;
-  };
-}
-
 type RecentPlay = {
   id: string;
   user_id: string;
@@ -22,9 +12,10 @@ type RecentPlay = {
   updated_at: Timestamp;
 };
 
-const RecentPlayBar = ({ track }: AudioPlayerProps) => {
+const RecentPlayBar = () => {
   const { user } = useContext(AuthContext);
   const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [volume, setVolume] = useState(100);
@@ -37,8 +28,6 @@ const RecentPlayBar = ({ track }: AudioPlayerProps) => {
     author: "",
     voice_actor: [""],
   });
-
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const fetchRecentPlay = async () => {
@@ -67,6 +56,12 @@ const RecentPlayBar = ({ track }: AudioPlayerProps) => {
     };
     fetchRecentPlay();
   }, [user]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = currentTime;
+    }
+  }, [currentTime]);
 
   const togglePlayPause = () => {
     if (audioRef.current) {
@@ -126,12 +121,14 @@ const RecentPlayBar = ({ track }: AudioPlayerProps) => {
         </div>
       </div>
       <div>
-        <button onClick={togglePlayPause}>{isPlaying ? "Pause" : "Play"}</button>
+        <button className="w-20" onClick={togglePlayPause}>
+          {isPlaying ? "Pause" : "Play"}
+        </button>
       </div>
       <input type="range" min="0" max="100" value={volume} onChange={handleVolumeChange} className="w-24" />
       <audio
         ref={audioRef}
-        src={track.audioSrc}
+        src={storyInfo.audio_url}
         onLoadedMetadata={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
       />
