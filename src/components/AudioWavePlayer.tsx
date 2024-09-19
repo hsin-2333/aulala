@@ -1,14 +1,18 @@
 import WaveSurfer from "wavesurfer.js";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 // import fakeData from "../assets/fakeStory.json";
 import fakeData from "../assets/poetry.json";
 import { debounce } from "lodash";
+import dbApi from "../utils/firebaseService";
+import { AuthContext } from "../context/AuthContext";
 
 interface AudioWavePlayerProps {
   audio_url: string;
+  storyId: string;
 }
 
-function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
+function AudioWavePlayer({ audio_url, storyId }: AudioWavePlayerProps) {
+  const { user } = useContext(AuthContext);
   const audioRef = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   const isPlayingRef = useRef(false);
@@ -63,12 +67,20 @@ function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
         }
       };
 
+      const debouncedUpdateRecentPlay = debounce((currentTime: number) => {
+        if (user) {
+          dbApi.updateRecentPlay(user.uid, storyId, currentTime);
+        }
+        console.log("更新最近播放", currentTime);
+      }, 1000);
+
       const updateCurrentTime = () => {
         const currentTime = wavesurfer.getCurrentTime();
         if (currentTime - lastUpdateTime > 0.8) {
           lastUpdateTime = currentTime;
           console.log("更新currentTime", currentTime);
           updateSubtitles(currentTime);
+          debouncedUpdateRecentPlay(currentTime); //wavesurfer.pause() 暫停時， updateCurrentTime 仍會執行，所以會更新最近播放
         }
         animationFrameId = requestAnimationFrame(updateCurrentTime);
       };
@@ -93,7 +105,7 @@ function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
         wavesurfer.destroy();
       };
     }
-  }, [audioRef, audio_url]);
+  }, [audioRef, audio_url, storyId, user]);
 
   const handlePlayPause = () => {
     const wavesurfer = wavesurferRef.current;

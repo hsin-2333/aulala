@@ -1,7 +1,13 @@
 import { useContext, ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-
+import RecentPlayBar from "./RecentPlayBar";
+const trackInfo = {
+  cover: "path/to/cover.jpg",
+  title: "Track Title",
+  voice_actor: "Artist Name",
+  audioSrc: "path/to/audio.mp3",
+};
 interface LayoutProps {
   children: ReactNode;
 }
@@ -13,6 +19,7 @@ const Layout = ({ children }: LayoutProps) => {
       <div className="flex-1">
         <Header />
         <main className="p-4 flex-1 ">{children}</main>
+        <RecentPlayBar track={trackInfo} />
       </div>
     </div>
   );

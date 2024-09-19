@@ -15,6 +15,7 @@ import {
   where,
   QueryConstraint,
   deleteDoc,
+  orderBy,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
@@ -209,7 +210,13 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 
-  async queryCollection(collectionName: string, conditions: QueryConditions, limitNum: number = 10) {
+  async queryCollection(
+    collectionName: string,
+    conditions: QueryConditions,
+    limitNum: number = 10,
+    orderByField: string | null = null,
+    orderDirection: "asc" | "desc" = "asc"
+  ) {
     const constraints: QueryConstraint[] = [];
 
     if (conditions.id) {
@@ -227,7 +234,7 @@ const dbApi = {
       constraints.push(where("category", "==", conditions.category));
     }
     if (conditions.user) {
-      constraints.push(where("user", "==", conditions.user));
+      constraints.push(where("user_id", "==", conditions.user));
     }
     if (conditions.timestamp) {
       constraints.push(where("timestamp", ">=", conditions.timestamp.start));
@@ -238,6 +245,10 @@ const dbApi = {
     }
     if (conditions.author) {
       constraints.push(where("author", "==", conditions.author));
+    }
+
+    if (orderByField) {
+      constraints.push(orderBy(orderByField, orderDirection));
     }
 
     constraints.push(limit(limitNum));
@@ -373,6 +384,24 @@ const dbApi = {
       }
     } catch (e) {
       console.error("Error updating interaction: ", e);
+      throw e;
+    }
+  },
+
+  async updateRecentPlay(userId: string, storyId: string, currentTime: number) {
+    try {
+      const recentPlayId = `${userId}_${storyId}`;
+      const recentPlayRef = doc(db, "recentPlays", recentPlayId);
+      const data = {
+        user_id: userId,
+        story_id: storyId,
+        played_at: currentTime,
+        updated_at: serverTimestamp(),
+      };
+      await setDoc(recentPlayRef, data);
+      console.log("Recent play updated successfully");
+    } catch (e) {
+      console.error("Error updating recent play: ", e);
       throw e;
     }
   },

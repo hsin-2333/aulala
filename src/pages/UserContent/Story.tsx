@@ -48,7 +48,7 @@ function StoryContent() {
           )}
         </div>
       )}
-      {story && story.audio_url && <AudioWavePlayer audio_url={story.audio_url} />}
+      {story && story.audio_url && story.id && <AudioWavePlayer audio_url={story.audio_url} storyId={story.id} />}
       {user && <InteractionToolbar userId={user.uid} storyId={story?.id} />}
       {user && <CommentToolbar userId={user.uid} storyId={story?.id} />}
     </div>
