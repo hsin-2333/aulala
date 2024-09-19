@@ -1,10 +1,15 @@
 import dbApi from "../../utils/firebaseService";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Story } from "../../types";
+import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
 
 function ScriptContent() {
+  const { user } = useContext(AuthContext);
+
   const navigate = useNavigate();
   const { scriptId } = useParams();
   const {
@@ -13,7 +18,6 @@ function ScriptContent() {
     isLoading: scriptLoading,
   } = useQuery({
     queryKey: ["script", scriptId],
-    // queryFn: () => dbApi.queryCollection("scripts", { id: scriptId }, 1),
     queryFn: async () => {
       const script = await dbApi.queryCollection("scripts", { id: scriptId }, 1);
       return script as Story[];
@@ -31,7 +35,6 @@ function ScriptContent() {
       const stories = await dbApi.queryCollection("stories", { script_id: scriptId }, 10);
       return stories as Story[];
     },
-    // queryFn: () => dbApi.queryCollection("stories", { script_id: scriptId }, 10),
     enabled: !!scriptId,
   });
 
@@ -88,6 +91,9 @@ function ScriptContent() {
             </div>
           ))}
       </section>
+      <hr className="border-t border-gray-400 my-6" />
+      {user && <InteractionToolbar userId={user.uid} storyId={script?.id} />}
+      {user && <CommentToolbar userId={user.uid} storyId={script?.id} />}
     </div>
   );
 }

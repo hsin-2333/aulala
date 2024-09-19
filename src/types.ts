@@ -51,6 +51,8 @@ export type QueryConditions = {
   likes?: number;
   id?: string;
   script_id?: string;
+  story_id?: string;
+  interaction_type?: string;
 };
 
 export interface Story {
@@ -75,4 +77,12 @@ export interface InteractionType {
   comment?: string | null;
   created_at: FieldValue | Date;
   updated_at: FieldValue | Date;
+}
+
+export interface Comment {
+  id?: string;
+  title: string;
+  author: string;
+  comment?: string;
+  created_at?: Timestamp | string;
 }

@@ -72,25 +72,8 @@ const dbApi = {
   async getUser(uid: string) {
     const userDoc = await getDoc(doc(db, "users", uid));
     const userDocData = userDoc.data();
-    // return userDocData?.userName || null;
     return userDocData || null;
   },
-
-  //目前還沒有使用到
-  // async addPlaybackHistory(uid: string, playbackHistory: any) {
-  //   try {
-  //     const userDocRef = doc(db, "users", uid);
-  //     await updateDoc(userDocRef, {
-  //       playback_history: playbackHistory.map((item: any) => ({
-  //         ...item,
-  //         last_playback_timestamp: new Date(),
-  //       })),
-  //     });
-  //     console.log("Playback history added for user ID: ", uid);
-  //   } catch (e) {
-  //     console.error("Error adding playback history: ", e);
-  //   }
-  // },
 
   //目前還沒有使用到
   // async handleUserData(userData: IUserData, playbackHistory: any) {
@@ -227,6 +210,10 @@ const dbApi = {
       constraints.push(where("script_id", "==", conditions.script_id));
     }
 
+    if (conditions.story_id) {
+      constraints.push(where("story_id", "==", conditions.story_id));
+    }
+
     if (conditions.tags) {
       constraints.push(where("tags", "array-contains-any", conditions.tags));
     }
@@ -236,13 +223,13 @@ const dbApi = {
     if (conditions.user) {
       constraints.push(where("user_id", "==", conditions.user));
     }
-    if (conditions.timestamp) {
-      constraints.push(where("timestamp", ">=", conditions.timestamp.start));
-      constraints.push(where("timestamp", "<=", conditions.timestamp.end));
-    }
-    if (conditions.likes) {
-      constraints.push(where("likes", ">=", conditions.likes));
-    }
+    // if (conditions.timestamp) {
+    //   constraints.push(where("timestamp", ">=", conditions.timestamp.start));
+    //   constraints.push(where("timestamp", "<=", conditions.timestamp.end));
+    // }
+    // if (conditions.likes) {
+    //   constraints.push(where("likes", ">=", conditions.likes));
+    // }
     if (conditions.author) {
       constraints.push(where("author", "==", conditions.author));
     }
@@ -257,17 +244,6 @@ const dbApi = {
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
-
-  // async getStoryByCategory(category: string) {
-  //   const q = query(collection(db, "stories"), where("category", "==", category), limit(10));
-  //   const querySnapshot = await getDocs(q);
-  //   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  // },
-
-  // async getStoryById(storyId: string) {
-  //   const storyDoc = await getDoc(doc(db, "stories", storyId));
-  //   return storyDoc.data();
-  // },
 
   async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
     try {
