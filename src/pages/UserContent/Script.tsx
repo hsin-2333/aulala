@@ -92,8 +92,8 @@ function ScriptContent() {
           ))}
       </section>
       <hr className="border-t border-gray-400 my-6" />
-      {user && <InteractionToolbar userId={user.uid} storyId={script?.id} />}
-      {user && <CommentToolbar userId={user.uid} storyId={script?.id} />}
+      {user && <InteractionToolbar userName={user.userName} storyId={script?.id} />}
+      {user && <CommentToolbar userName={user.userName} storyId={script?.id} />}
     </div>
   );
 }

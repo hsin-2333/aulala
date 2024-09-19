@@ -4,29 +4,34 @@ import dbApi from "../utils/firebaseService";
 import { Comment } from "../types";
 
 interface InteractionToolbarProps {
-  userId: string;
+  userName: string;
   storyId?: string;
   scriptId?: string;
 }
 
-export const InteractionToolbar = ({ userId, storyId, scriptId }: InteractionToolbarProps) => {
+export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionToolbarProps) => {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     const fetchInteraction = async () => {
-      const likeStatus = await dbApi.getInteractionStatus(userId, storyId || null, scriptId || null, "like");
-      const bookmarkStatus = await dbApi.getInteractionStatus(userId, storyId || null, scriptId || null, "bookmarked");
+      const likeStatus = await dbApi.getInteractionStatus(userName, storyId || null, scriptId || null, "like");
+      const bookmarkStatus = await dbApi.getInteractionStatus(
+        userName,
+        storyId || null,
+        scriptId || null,
+        "bookmarked"
+      );
       setLiked(likeStatus);
       setBookmarked(bookmarkStatus);
     };
 
     fetchInteraction();
-  }, [userId, storyId, scriptId]);
+  }, [userName, storyId, scriptId]);
 
   const likeMutation = useMutation({
-    mutationFn: () => dbApi.updateInteraction(userId, storyId || null, scriptId || null, "like"),
+    mutationFn: () => dbApi.updateInteraction(userName, storyId || null, scriptId || null, "like"),
     onMutate: async () => {
       const previousLiked = liked;
       setLiked((prev) => !prev);
@@ -34,19 +39,19 @@ export const InteractionToolbar = ({ userId, storyId, scriptId }: InteractionToo
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["interactions", userId, storyId || scriptId],
+        queryKey: ["interactions", userName, storyId || scriptId],
       });
     },
   });
 
   const saveMutation = useMutation({
-    mutationFn: () => dbApi.updateInteraction(userId, storyId || null, scriptId || null, "bookmarked"),
+    mutationFn: () => dbApi.updateInteraction(userName, storyId || null, scriptId || null, "bookmarked"),
     onMutate: async () => {
       setBookmarked((prev) => !prev);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["interactions", userId, storyId || scriptId],
+        queryKey: ["interactions", userName, storyId || scriptId],
       });
     },
   });
@@ -59,13 +64,13 @@ export const InteractionToolbar = ({ userId, storyId, scriptId }: InteractionToo
   );
 };
 
-export const CommentToolbar = ({ userId, storyId, scriptId }: InteractionToolbarProps) => {
+export const CommentToolbar = ({ userName, storyId, scriptId }: InteractionToolbarProps) => {
   const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
 
   const addCommentMutation = useMutation({
     mutationFn: (newComment: string) =>
-      dbApi.updateInteraction(userId, storyId || null, scriptId || null, "comment", newComment),
+      dbApi.updateInteraction(userName, storyId || null, scriptId || null, "comment", newComment),
     onSuccess: () => {
       // 在成功新增留言後，無效化相關的查詢以便重新獲取最新的資料
       queryClient.invalidateQueries({
@@ -111,6 +116,7 @@ export const CommentToolbar = ({ userId, storyId, scriptId }: InteractionToolbar
   }
 
   const comments = commentsData ? commentsData : [];
+  console.log(comments);
 
   return (
     <>
@@ -125,16 +131,23 @@ export const CommentToolbar = ({ userId, storyId, scriptId }: InteractionToolbar
       </form>
 
       <section className="flex items-start justify-center flex-col ">
-        <h4> Comments</h4>
+        <hr className="border-t border-gray-400 m-1" />
+
+        <h2 className="text-lg"> Comments</h2>
+        <hr className="border-t border-gray-400 m-1" />
+
         {comments.length > 0 ? (
           comments.map((comment) => (
-            <div key={comment.id} className="mb-4">
+            <div key={comment.id} className="mb-4 border border-gray-600">
+              <div className="flex justify-center gap-3">
+                <h6 className="text-gray-700">{comment.userName}</h6>
+                <h6 className="text-gray-500">
+                  {comment.created_at && typeof comment.created_at !== "string"
+                    ? new Date(comment.created_at.seconds * 1000).toLocaleString()
+                    : comment.created_at}
+                </h6>
+              </div>
               <p className="text-gray-700">{comment.comment}</p>
-              <p className="text-gray-500 text-sm">
-                {comment.created_at && typeof comment.created_at !== "string"
-                  ? new Date(comment.created_at.seconds * 1000).toLocaleString()
-                  : comment.created_at}
-              </p>{" "}
             </div>
           ))
         ) : (

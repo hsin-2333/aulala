@@ -43,7 +43,7 @@ export type QueryConditions = {
   author?: string;
   tags?: string[];
   category?: string;
-  user?: string;
+  user?: string; // user id
   timestamp?: {
     start: Date;
     end: Date;
@@ -53,6 +53,7 @@ export type QueryConditions = {
   script_id?: string;
   story_id?: string;
   interaction_type?: string;
+  userName?: string;
 };
 
 export interface Story {
@@ -70,7 +71,7 @@ export interface Story {
 }
 
 export interface InteractionType {
-  user_id: string;
+  userName: string;
   story_id: string | null;
   script_id: string | null;
   interaction_type: string;
@@ -82,7 +83,7 @@ export interface InteractionType {
 export interface Comment {
   id?: string;
   title: string;
-  author: string;
+  userName: string;
   comment?: string;
   created_at?: Timestamp | string;
 }
