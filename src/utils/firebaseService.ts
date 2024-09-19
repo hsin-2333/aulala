@@ -17,7 +17,7 @@ import {
   deleteDoc,
   orderBy,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { QueryConditions, Story, InteractionType } from "../types";
 
@@ -254,9 +254,9 @@ const dbApi = {
 
   async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
     try {
-      const storageRef = ref(storage, `stories/${file.name}`);
-      await uploadBytes(storageRef, file);
-      const audioUrl = await getDownloadURL(storageRef);
+      const tempAudioRef = ref(storage, `stories/temp_${file.name}`);
+      await uploadBytes(tempAudioRef, file);
+      const tempAudioUrl = await getDownloadURL(tempAudioRef);
 
       let imageUrl = null;
       if (imageFile) {
@@ -266,16 +266,28 @@ const dbApi = {
       }
       const storyData = {
         ...data,
-        audio_url: audioUrl,
+        audio_url: tempAudioUrl,
         img_url: imageUrl ? [imageUrl] : [],
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
         tags: data.tags,
       };
 
-      console.log("storyData: ", storyData);
       const storyRef = await addDoc(collection(db, "stories"), storyData);
-      return storyRef.id;
+      const storyId = storyRef.id;
+
+      // Step 3: Rename the audio file in Firebase Storage using the storyId
+      const newAudioRef = ref(storage, `stories/audio_${storyId}`);
+      await uploadBytes(newAudioRef, file);
+      const newAudioUrl = await getDownloadURL(newAudioRef);
+
+      // Delete the temporary audio file
+      await deleteObject(tempAudioRef);
+
+      // Step 4: Update the Firestore document with the new audio URL
+      await updateDoc(storyRef, { audio_url: newAudioUrl });
+
+      return storyId;
     } catch (e) {
       console.error("Error uploading audio and saving story: ", e);
       throw e;
