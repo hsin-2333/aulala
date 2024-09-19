@@ -5,7 +5,7 @@ import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import dbApi from "../../utils/firebaseService";
 import { Story } from "../../types";
-import InteractionToolbar from "../../components/InteractionToolbar";
+import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
 
 function StoryContent() {
   const { user } = useContext(AuthContext);
@@ -50,6 +50,7 @@ function StoryContent() {
       )}
       {story && story.audio_url && <AudioWavePlayer audio_url={story.audio_url} />}
       {user && <InteractionToolbar userId={user.uid} storyId={story?.id} />}
+      {user && <CommentToolbar userId={user.uid} storyId={story?.id} />}
     </div>
   );
 }

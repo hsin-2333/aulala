@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { Timestamp, FieldValue } from "firebase/firestore";
 
 export interface User {
   uid: string;
@@ -65,4 +65,14 @@ export interface Story {
   language?: string;
   voice_actor?: string[];
   audio_url?: string;
+}
+
+export interface InteractionType {
+  user_id: string;
+  story_id: string | null;
+  script_id: string | null;
+  interaction_type: string;
+  comment?: string | null;
+  created_at: FieldValue | Date;
+  updated_at: FieldValue | Date;
 }

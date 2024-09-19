@@ -1,4 +1,5 @@
 import { db, storage } from "../../firebaseConfig";
+import { v4 as uuidv4 } from "uuid";
 import {
   collection,
   addDoc,
@@ -13,13 +14,11 @@ import {
   query,
   where,
   QueryConstraint,
-  arrayUnion,
-  arrayRemove,
   deleteDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
-import { QueryConditions, Story } from "../types";
+import { QueryConditions, Story, InteractionType } from "../types";
 
 interface IUserData {
   id: string;
@@ -319,24 +318,48 @@ const dbApi = {
     }
   },
 
-  async updateInteraction(userId: string, storyId: string | null, scriptId: string | null, interactionType: string) {
+  async updateInteraction(
+    userId: string,
+    storyId: string | null,
+    scriptId: string | null,
+    interactionType: string,
+    comment?: string
+  ) {
     try {
-      const interactionId = `${userId}_${storyId || scriptId}_${interactionType}`;
+      let interactionId: string;
+      if (interactionType === "comment" && comment) {
+        // 對於留言，使用 UUID 生成唯一的 interactionId
+        interactionId = `${userId}_${storyId || scriptId}_${interactionType}_${uuidv4()}`;
+      } else {
+        // 對於點讚和收藏，保持原有的 interactionId 生成方式
+        interactionId = `${userId}_${storyId || scriptId}_${interactionType}`;
+      }
       const interactionRef = doc(db, "interactions", interactionId);
       const interactionDoc = await getDoc(interactionRef);
 
       if (interactionDoc.exists()) {
-        await deleteDoc(interactionRef);
-        console.log("Interaction removed successfully");
+        if (interactionType === "like" || interactionType === "bookmarked") {
+          // 如果是第二次點讚or收藏，則刪除互動(取消收藏or取消讚)
+          await deleteDoc(interactionRef);
+          console.log("Interaction removed successfully");
+        }
       } else {
-        await setDoc(interactionRef, {
+        const data: InteractionType = {
           user_id: userId,
           story_id: storyId,
           script_id: scriptId,
           interaction_type: interactionType,
           created_at: serverTimestamp(),
           updated_at: serverTimestamp(),
-        });
+        };
+
+        console.log("comment: ", comment);
+        if (interactionType === "comment" && comment) {
+          console.log("comment留言: ", comment);
+          data.comment = comment;
+        }
+
+        await setDoc(interactionRef, data);
         console.log("Interaction added successfully");
       }
     } catch (e) {
