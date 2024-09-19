@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import dbApi from "../utils/firebaseService";
 
@@ -12,6 +12,17 @@ export const InteractionToolbar = ({ userId, storyId, scriptId }: InteractionToo
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const fetchInteraction = async () => {
+      const likeStatus = await dbApi.getInteractionStatus(userId, storyId || null, scriptId || null, "like");
+      const bookmarkStatus = await dbApi.getInteractionStatus(userId, storyId || null, scriptId || null, "bookmarked");
+      setLiked(likeStatus);
+      setBookmarked(bookmarkStatus);
+    };
+
+    fetchInteraction();
+  }, [userId, storyId, scriptId]);
 
   const likeMutation = useMutation({
     mutationFn: () => dbApi.updateInteraction(userId, storyId || null, scriptId || null, "like"),

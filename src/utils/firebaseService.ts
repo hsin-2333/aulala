@@ -318,6 +318,15 @@ const dbApi = {
     }
   },
 
+  //獲取點讚、收藏的狀態
+  async getInteractionStatus(userId: string, storyId: string | null, scriptId: string | null, interactionType: string) {
+    const interactionId = `${userId}_${storyId || scriptId}_${interactionType}`;
+    const interactionRef = doc(db, "interactions", interactionId);
+    const interactionDoc = await getDoc(interactionRef);
+
+    return interactionDoc.exists();
+  },
+
   async updateInteraction(
     userId: string,
     storyId: string | null,
