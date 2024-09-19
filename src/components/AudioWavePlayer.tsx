@@ -13,16 +13,16 @@ interface AudioWavePlayerProps {
 
 function AudioWavePlayer({ audio_url, storyId }: AudioWavePlayerProps) {
   const { user } = useContext(AuthContext);
-  const audioRef = useRef<HTMLDivElement>(null);
+  const audioRefMain = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   const isPlayingRef = useRef(false);
   const currentTextRef = useRef<string>("");
   const [currentText, setCurrentText] = useState<string[]>([]);
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState<number>(-1);
   useEffect(() => {
-    if (audioRef.current) {
+    if (audioRefMain.current) {
       const wavesurfer = WaveSurfer.create({
-        container: audioRef.current,
+        container: audioRefMain.current,
         waveColor: "violet",
         progressColor: "purple",
         url: audio_url,
@@ -105,7 +105,7 @@ function AudioWavePlayer({ audio_url, storyId }: AudioWavePlayerProps) {
         wavesurfer.destroy();
       };
     }
-  }, [audioRef, audio_url, storyId, user]);
+  }, [audioRefMain, audio_url, storyId, user]);
 
   const handlePlayPause = () => {
     const wavesurfer = wavesurferRef.current;
@@ -137,7 +137,7 @@ function AudioWavePlayer({ audio_url, storyId }: AudioWavePlayerProps) {
           </p>
         ))}
       </div>
-      <div id="waveform" ref={audioRef}></div>
+      <div id="waveform" ref={audioRefMain}></div>
       <button onClick={handlePlayPause}>{isPlayingRef.current ? "Pause" : "Play"}</button>
     </div>
   );
