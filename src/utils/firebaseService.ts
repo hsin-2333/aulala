@@ -13,6 +13,9 @@ import {
   query,
   where,
   QueryConstraint,
+  arrayUnion,
+  arrayRemove,
+  deleteDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
@@ -312,6 +315,32 @@ const dbApi = {
       return scriptRef.id;
     } catch (e) {
       console.error("Error uploading audio and saving story: ", e);
+      throw e;
+    }
+  },
+
+  async updateInteraction(userId: string, storyId: string | null, scriptId: string | null, interactionType: string) {
+    try {
+      const interactionId = `${userId}_${storyId || scriptId}_${interactionType}`;
+      const interactionRef = doc(db, "interactions", interactionId);
+      const interactionDoc = await getDoc(interactionRef);
+
+      if (interactionDoc.exists()) {
+        await deleteDoc(interactionRef);
+        console.log("Interaction removed successfully");
+      } else {
+        await setDoc(interactionRef, {
+          user_id: userId,
+          story_id: storyId,
+          script_id: scriptId,
+          interaction_type: interactionType,
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp(),
+        });
+        console.log("Interaction added successfully");
+      }
+    } catch (e) {
+      console.error("Error updating interaction: ", e);
       throw e;
     }
   },

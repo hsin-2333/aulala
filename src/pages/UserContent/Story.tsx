@@ -1,10 +1,14 @@
 import AudioWavePlayer from "../../components/AudioWavePlayer";
 import { useQuery } from "@tanstack/react-query";
+import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import dbApi from "../../utils/firebaseService";
 import { Story } from "../../types";
+import InteractionToolbar from "../../components/InteractionToolbar";
 
 function StoryContent() {
+  const { user } = useContext(AuthContext);
   const { storyId } = useParams();
   const {
     data: storyData,
@@ -29,6 +33,7 @@ function StoryContent() {
   }
 
   const story = storyData ? storyData[0] : null;
+  console.log(story);
 
   return (
     <div className="text-left">
@@ -44,6 +49,7 @@ function StoryContent() {
         </div>
       )}
       {story && story.audio_url && <AudioWavePlayer audio_url={story.audio_url} />}
+      {user && <InteractionToolbar userId={user.uid} storyId={story?.id} />}
     </div>
   );
 }
