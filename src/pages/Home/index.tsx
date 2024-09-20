@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import lunr from "lunr";
 import dbApi from "../../utils/firebaseService";
 import { useNavigate } from "react-router-dom";

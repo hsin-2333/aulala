@@ -252,6 +252,47 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 
+  // async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
+  //   try {
+  //     const tempAudioRef = ref(storage, `stories/temp_${file.name}`);
+  //     await uploadBytes(tempAudioRef, file);
+  //     const tempAudioUrl = await getDownloadURL(tempAudioRef);
+
+  //     let imageUrl = null;
+  //     if (imageFile) {
+  //       const imageRef = ref(storage, `images/${imageFile.name}`);
+  //       await uploadBytes(imageRef, imageFile);
+  //       imageUrl = await getDownloadURL(imageRef);
+  //     }
+  //     const storyData = {
+  //       ...data,
+  //       audio_url: tempAudioUrl,
+  //       img_url: imageUrl ? [imageUrl] : [],
+  //       created_at: serverTimestamp(),
+  //       updated_at: serverTimestamp(),
+  //       tags: data.tags,
+  //     };
+
+  //     const storyRef = await addDoc(collection(db, "stories"), storyData);
+  //     const storyId = storyRef.id;
+
+  //     // Step 3: Rename the audio file in Firebase Storage using the storyId
+  //     const newAudioRef = ref(storage, `stories/audio_${storyId}`);
+  //     await uploadBytes(newAudioRef, file);
+  //     const newAudioUrl = await getDownloadURL(newAudioRef);
+
+  //     // Delete the temporary audio file
+  //     await deleteObject(tempAudioRef);
+
+  //     // Step 4: Update the Firestore document with the new audio URL
+  //     await updateDoc(storyRef, { audio_url: newAudioUrl });
+
+  //     return storyId;
+  //   } catch (e) {
+  //     console.error("Error uploading audio and saving story: ", e);
+  //     throw e;
+  //   }
+  // },
   async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
     try {
       const tempAudioRef = ref(storage, `stories/temp_${file.name}`);
@@ -264,6 +305,7 @@ const dbApi = {
         await uploadBytes(imageRef, imageFile);
         imageUrl = await getDownloadURL(imageRef);
       }
+
       const storyData = {
         ...data,
         audio_url: tempAudioUrl,
@@ -276,16 +318,23 @@ const dbApi = {
       const storyRef = await addDoc(collection(db, "stories"), storyData);
       const storyId = storyRef.id;
 
-      // Step 3: Rename the audio file in Firebase Storage using the storyId
+      // Rename and store audio with story ID
       const newAudioRef = ref(storage, `stories/audio_${storyId}`);
       await uploadBytes(newAudioRef, file);
       const newAudioUrl = await getDownloadURL(newAudioRef);
-
-      // Delete the temporary audio file
+      console.log("newAudioUrl: ", newAudioUrl, "storyId: ", storyId);
       await deleteObject(tempAudioRef);
-
-      // Step 4: Update the Firestore document with the new audio URL
       await updateDoc(storyRef, { audio_url: newAudioUrl });
+
+      // Trigger transcription
+      const transcriptionResponse = await fetch("https://us-central1-aulala-a8757.cloudfunctions.net/transcribeAudio", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ audioUrl: newAudioUrl, storyId: storyId }),
+      });
+      if (!transcriptionResponse.ok) throw new Error("Transcription failed");
 
       return storyId;
     } catch (e) {
@@ -293,7 +342,6 @@ const dbApi = {
       throw e;
     }
   },
-
   async uploadScript(file: File, imageFile: File | null, data: Story) {
     try {
       const storageRef = ref(storage, `script/${file.name}`);
