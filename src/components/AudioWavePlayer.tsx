@@ -40,7 +40,6 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
 
       const updateSubtitles = (currentTime: number) => {
         // findIndex 沒找到會回傳 -1
-        console.log("進入更新字幕", currentTime);
         let currentSegmentIndex = AudioSegments.findIndex(
           (segment) => currentTime >= segment.start && currentTime <= segment.end
         );

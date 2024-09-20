@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
 import dbApi from "../../../utils/firebaseService";
@@ -34,6 +34,7 @@ const UploadStory = () => {
   const [tagsOptions, setTagsOptions] = useState<{ value: string; label: string }[]>([]);
 
   const filteredCategoryOptions = CategoryOptions.filter((option) => option.label !== "All");
+  const AudioInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -53,6 +54,15 @@ const UploadStory = () => {
   const handleAudioUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
+      const fileSizeInMB = selectedFile.size / (1024 * 1024); // 將文件大小轉換為MB
+      if (fileSizeInMB > 8) {
+        window.alert("文件大小超過8MB，請選擇較小的文件。");
+        if (AudioInputRef.current) {
+          AudioInputRef.current.value = ""; // 清空文件輸入框
+        }
+        return;
+      }
+
       setFile(selectedFile);
       setAudioName(selectedFile.name);
 
@@ -85,6 +95,9 @@ const UploadStory = () => {
           tags: data.tags.map((tag) => tag.value),
           voice_actor: [user?.userName || ""], //之後要增加多位聲優
         };
+
+        navigate(`/account/${user?.userName}/contents`);
+
         const storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
         for (const tag of data.tags) {
           await dbApi.addOrUpdateTag(tag.value, storyId, null);
@@ -92,8 +105,6 @@ const UploadStory = () => {
         window.alert("成功上傳");
       } catch (error) {
         console.error("Error uploading story and audio:", error);
-      } finally {
-        navigate(`/account/${user?.userName}/contents`);
       }
     }
   };
@@ -104,7 +115,7 @@ const UploadStory = () => {
         <>
           <div>
             <label className="block text-sm font-medium text-gray-700">Upload Audio</label>
-            <input type="file" accept="audio/*" onChange={handleAudioUpload} />
+            <input type="file" accept="audio/*" onChange={handleAudioUpload} ref={AudioInputRef} />
           </div>
         </>
       ) : (
