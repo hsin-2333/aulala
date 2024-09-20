@@ -113,7 +113,6 @@ function HomePage() {
 
   return (
     <div>
-      <h2>Home Page</h2>
       <div className="mb-4 relative">
         <input
           type="text"
@@ -127,7 +126,7 @@ function HomePage() {
         {searchTerm && (
           <button
             onClick={clearSearch}
-            className=" w-1 h-1 border-none absolute right-2 -top-0.5 bg-transparent text-gray-500 hover:text-gray-700"
+            className=" w-1 h-1 border-none absolute right-6 top-2 bg-transparent text-gray-500 hover:text-gray-700"
           >
             ✖
           </button>
@@ -142,9 +141,19 @@ function HomePage() {
           {category.label}
         </span>
       ))}
-      <br />
-      <br />
-      <h2>Stories</h2>
+      <div className="relative">
+        <div className="my-4" />
+      </div>
+
+      <div className="flex items-center justify-between text-left">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-semibold tracking-tight ">Stories</h2>
+          <p className="text-sm text-muted-foreground">Top picks for you. Updated daily.</p>
+        </div>
+      </div>
+      <div className="relative">
+        <div className="my-4" />
+      </div>
       <ul>
         {searchClicked ? (
           searchResults.length > 0 ? (
@@ -184,45 +193,53 @@ function HomePage() {
         )}
       </ul>
       <br />
-      <h2>Scripts</h2>
-      <ul>
-        {searchClicked ? (
-          searchResults.length > 0 ? (
-            searchResults.map((result) => {
-              const script = scriptList?.find((s) => s.id === result.ref);
-              return (
-                script && (
-                  <PlaylistCard
-                    onClick={() => handleContentClick(script.id, "script")}
-                    key={script.id}
-                    //@ts-expect-error(123)
-                    image={script.img_url?.[0]}
-                    title={script.title || "Untitled"}
-                    //@ts-expect-error(123)
-                    tags={script.tags}
-                    author={script.author || "Unknown"}
-                  />
-                )
-              );
-            })
+      <div className="flex items-center justify-between text-left">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-semibold tracking-tight ">Script</h2>
+          <p className="text-sm text-muted-foreground">Top picks for you. Updated daily.</p>
+        </div>
+      </div>
+      <div className="relative">
+        <div className="my-4" />
+        <ul>
+          {searchClicked ? (
+            searchResults.length > 0 ? (
+              searchResults.map((result) => {
+                const script = scriptList?.find((s) => s.id === result.ref);
+                return (
+                  script && (
+                    <PlaylistCard
+                      onClick={() => handleContentClick(script.id, "script")}
+                      key={script.id}
+                      //@ts-expect-error(123)
+                      image={script.img_url?.[0]}
+                      title={script.title || "Untitled"}
+                      //@ts-expect-error(123)
+                      tags={script.tags}
+                      author={script.author || "Unknown"}
+                    />
+                  )
+                );
+              })
+            ) : (
+              <div>沒有結果喔 試試其他關鍵字</div>
+            )
           ) : (
-            <div>沒有結果喔 試試其他關鍵字</div>
-          )
-        ) : (
-          scriptList?.map((script: Story) => (
-            <PlaylistCard
-              onClick={() => handleContentClick(script.id, "script")}
-              key={script.id}
-              //@ts-expect-error(123)
-              image={script.img_url?.[0]}
-              title={script.title || "Untitled"}
-              //@ts-expect-error(123)
-              tags={script.tags}
-              author={script.author || "Unknown"}
-            />
-          ))
-        )}
-      </ul>
+            scriptList?.map((script: Story) => (
+              <PlaylistCard
+                onClick={() => handleContentClick(script.id, "script")}
+                key={script.id}
+                //@ts-expect-error(123)
+                image={script.img_url?.[0]}
+                title={script.title || "Untitled"}
+                //@ts-expect-error(123)
+                tags={script.tags}
+                author={script.author || "Unknown"}
+              />
+            ))
+          )}
+        </ul>
+      </div>
     </div>
   );
 }

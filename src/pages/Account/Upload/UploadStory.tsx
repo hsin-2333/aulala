@@ -126,27 +126,22 @@ const UploadStory = () => {
               Audio Duration: {audioDuration ? `${audioDuration.toFixed(2)} seconds` : "Loading..."}
             </h6>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left">
             <div>
               <label className="block text-sm font-medium text-gray-700">Title</label>
-              <input {...register("title", { required: true })} />
+              <input className="border border-input w-full" {...register("title", { required: true })} />
               {errors.title && <span className="text-red-500 text-sm">This field is required</span>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Intro</label>
-              <input {...register("intro", { required: true })} />
+              <input className="border border-input w-full" {...register("intro", { required: true })} />
               {errors.intro && <span className="text-red-500 text-sm">This field is required</span>}
             </div>
-
             <div>
               <label>Summary</label>
-              <textarea
-                {...register("summary", { required: true })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
+              <textarea {...register("summary", { required: true })} className="border border-input w-full" />
               {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700">Category</label>
               <Select
@@ -166,20 +161,23 @@ const UploadStory = () => {
               />
               {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700">Scheduled Release Date</label>
-              <input type="datetime-local" {...register("scheduled_release_date", { required: true })} />
+              <input
+                className="border border-input w-full"
+                type="datetime-local"
+                {...register("scheduled_release_date", { required: true })}
+              />
               {errors.scheduled_release_date && <span className="text-red-500 text-sm">This field is required</span>}
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700">Cover Image</label>
-              <input type="file" accept="image/*" onChange={handleImageUpload} />
+              <input className="border border-input w-full" type="file" accept="image/*" onChange={handleImageUpload} />
               {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
             </div>
-
-            <button type="submit">Submit</button>
+            <button className="flex items-center size-default bg-primary text-white " type="submit">
+              Submit
+            </button>
           </form>
         </>
       )}

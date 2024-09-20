@@ -73,8 +73,11 @@ const MyContent = () => {
 
   return (
     <div>
-      <h2>My Stories</h2>
-      <div className="border-b border-gray-200 mb-4">
+      <h2 className="text-2xl font-semibold tracking-tight ">My Content</h2>
+      <div className="relative">
+        <div className="my-4" />
+      </div>
+      <div className="border-b border-gray-200 mb-4 ">
         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           <button
             onClick={() => setSelectedTab("story")}
@@ -98,7 +101,7 @@ const MyContent = () => {
           </button>
         </nav>
       </div>
-      <div className="flex flex-wrap justify-center">
+      <div className="flex flex-wrap justify-center overflow-y-auto">
         {isStoryLoading || isScriptLoading ? <p>Loading...</p> : renderContent()}
       </div>
     </div>

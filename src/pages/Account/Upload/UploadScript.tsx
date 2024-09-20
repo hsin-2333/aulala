@@ -91,31 +91,36 @@ const UploadScript = () => {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Upload Script</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left">
         <div>
           <label className="block text-sm font-medium text-gray-700">Title</label>
-          <input {...register("title", { required: true })} />
+          <input className="border border-input w-full" {...register("title", { required: true })} />
           {errors.title && <span className="text-red-500 text-sm">This field is required</span>}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700">Upload Script</label>
-          <input type="file" accept=".doc,.docx,.pdf" onChange={handleScriptUpload} />
+          <input
+            className="border border-input w-full"
+            type="file"
+            accept=".doc,.docx,.pdf"
+            onChange={handleScriptUpload}
+          />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Cover Image</label>
-          <input type="file" accept="image/*" onChange={handleImageUpload} />
+          <input className="border border-input w-full" type="file" accept="image/*" onChange={handleImageUpload} />
           {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700">Summary</label>
-          <textarea {...register("summary", { required: true })} />
+          <textarea className="border border-input w-full" {...register("summary", { required: true })} />
           {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Content</label>
-          <textarea {...register("content", { required: true })} />
+          <textarea className="border border-input w-full" {...register("content", { required: true })} />
           {errors.content && <span className="text-red-500 text-sm">This field is required</span>}
         </div>
         <div>
@@ -143,7 +148,9 @@ const UploadScript = () => {
           />
           {errors.language && <span className="text-red-500 text-sm">This field is required</span>}
         </div>
-        <button type="submit">Submit</button>
+        <button className="flex items-center size-default bg-primary text-white " type="submit">
+          Submit
+        </button>
       </form>
     </div>
   );
