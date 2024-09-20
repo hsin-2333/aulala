@@ -41,6 +41,7 @@ function StoryContent() {
       {story && (
         <div>
           <h2 className="text-2xl font-semibold mb-2">{story.title}</h2>
+          {user && <InteractionToolbar userName={user.userName} storyId={story?.id} />}
           <p className="text-gray-700 mb-4 before:content-none">{story.summary}</p>
           {/* <img className="w-32 h-auto rounded-lg mb-4" src={story.img_url[0]} alt={story.title} /> */}
           {story.img_url && story.img_url.length > 0 && (
@@ -51,7 +52,6 @@ function StoryContent() {
       {story && story.audio_url && story.id && story.segments && (
         <AudioWavePlayer audio_url={story.audio_url} storyId={story.id} segments={story.segments} />
       )}
-      {user && <InteractionToolbar userName={user.userName} storyId={story?.id} />}
       {user && <CommentToolbar userName={user.userName} storyId={story?.id} />}
     </div>
   );

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { debounce } from "lodash";
 import dbApi from "../utils/firebaseService";
 import { AuthContext } from "../context/AuthContext";
-
+import Icon from "./Icon";
 interface AudioWavePlayerProps {
   audio_url: string;
   storyId: string;
@@ -16,7 +16,7 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
   const { user } = useContext(AuthContext);
   const audioRefMain = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
-  const isPlayingRef = useRef(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const currentTextRef = useRef<string>("");
   const [currentText, setCurrentText] = useState<string[]>([]);
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState<number>(-1);
@@ -25,12 +25,15 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
     if (audioRefMain.current) {
       const wavesurfer = WaveSurfer.create({
         container: audioRefMain.current,
-        waveColor: "violet",
-        progressColor: "purple",
+        // barHeight: 0.5,
+        cursorWidth: 0,
+        height: 80,
+        waveColor: "rgba(130, 202, 158, 0.531)",
+        progressColor: "rgb(76, 117, 92)",
         url: audio_url,
-        barWidth: 8,
-        barGap: 12,
-        barRadius: 12,
+        barWidth: 4,
+        barGap: 3,
+        barRadius: 16,
       });
 
       wavesurferRef.current = wavesurfer;
@@ -108,17 +111,17 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
   const handlePlayPause = () => {
     const wavesurfer = wavesurferRef.current;
     if (wavesurfer) {
-      if (isPlayingRef.current) {
+      if (isPlaying) {
         wavesurfer.pause();
       } else {
         wavesurfer.play();
       }
-      isPlayingRef.current = !isPlayingRef.current;
+      setIsPlaying(!isPlaying);
     }
   };
 
   return (
-    <div>
+    <div className="mb-6">
       <div className="subtitle">
         {currentText.map((text, index) => (
           <p
@@ -133,8 +136,12 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
           </p>
         ))}
       </div>
-      <div id="waveform" ref={audioRefMain}></div>
-      <button onClick={handlePlayPause}>{isPlayingRef.current ? "Pause" : "Play"}</button>
+      <div id="waveform" ref={audioRefMain} />
+      <div className="flex items-center justify-center gap-4">
+        <button onClick={handlePlayPause} className="flex items-center">
+          <Icon name="play" filled={isPlaying} className="mr-2 h-8 w-8" color="#82ca9eaf" />
+        </button>
+      </div>
     </div>
   );
 }

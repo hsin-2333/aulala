@@ -63,10 +63,9 @@ function ScriptContent() {
         </div>
       )}
       <div className="flex items-center justify-between">
-        <div className="flex space-x-4">
-          <p className="text-gray-600 hover:text-gray-800">收藏 35</p>
-          <p className="text-gray-600 hover:text-gray-800">愛心 35</p>
-          <p className="text-gray-600 hover:text-gray-800">留言 35</p>
+        <div className="flex space-x-4 justify-between">
+          {user && <InteractionToolbar userName={user.userName} storyId={script?.id} />}
+          {/* <p className="text-gray-600 hover:text-gray-800">留言 35</p> */}
         </div>
         <p className="text-gray-600 hover:text-gray-800">English</p>
       </div>
@@ -92,7 +91,6 @@ function ScriptContent() {
           ))}
       </section>
       <hr className="border-t border-gray-400 my-6" />
-      {user && <InteractionToolbar userName={user.userName} storyId={script?.id} />}
       {user && <CommentToolbar userName={user.userName} storyId={script?.id} />}
     </div>
   );

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import dbApi from "../utils/firebaseService";
 import { Comment } from "../types";
+import Icon from "./Icon";
 
 interface InteractionToolbarProps {
   userName: string;
@@ -57,9 +58,18 @@ export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionT
   });
 
   return (
-    <div className="interaction-toolbar">
-      <button onClick={() => likeMutation.mutate()}>{liked ? "Unlike" : "Like"}</button>
-      <button onClick={() => saveMutation.mutate()}>{bookmarked ? "UnBookmarked" : "Bookmark"}</button>
+    <div className="interaction-toolbar flex">
+      <button onClick={() => likeMutation.mutate()} className="flex items-center">
+        <Icon name="like" filled={liked} className="mr-2 h-6 w-6" color={liked ? "#fca5a5cc" : "currentColor"} />
+      </button>
+      <button onClick={() => saveMutation.mutate()} className="flex items-center">
+        <Icon
+          name="bookmarked"
+          filled={bookmarked}
+          className="mr-2 h-6 w-6"
+          color={bookmarked ? "#82ca9e90" : "currentColor"}
+        />
+      </button>
     </div>
   );
 };
@@ -127,7 +137,9 @@ export const CommentToolbar = ({ userName, storyId, scriptId }: InteractionToolb
           onChange={(e) => setComment(e.target.value)}
           placeholder="Leave a comment"
         ></textarea>
-        <button type="submit">Submit</button>
+        <button className="flex items-center size-default bg-primary text-white " type="submit">
+          Submit
+        </button>
       </form>
 
       <section className="flex items-start justify-center flex-col ">
