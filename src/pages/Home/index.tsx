@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { CategoryOptions } from "../../constants/categoryOptions";
 import { QueryConditions } from "../../types";
 import { PlaylistCard } from "../../components/Card";
+import SortedMenu from "./SortedMenu";
 
 interface Story {
   id: string;
@@ -114,33 +115,40 @@ function HomePage() {
   return (
     <div>
       <div className="mb-4 relative">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onKeyDown={handleKeyDown}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          // onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        {searchTerm && (
-          <button
-            onClick={clearSearch}
-            className=" w-1 h-1 border-none absolute right-6 top-2 bg-transparent text-gray-500 hover:text-gray-700"
-          >
-            ✖
-          </button>
-        )}
+        <div className="flex gap-4 align-middle">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onKeyDown={handleKeyDown}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            // onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          {searchTerm && (
+            <button
+              onClick={clearSearch}
+              className=" w-1 h-1 border-none absolute right-6 top-2 bg-transparent text-gray-500 hover:text-gray-700"
+            >
+              ✖
+            </button>
+          )}
+          <SortedMenu />
+        </div>
       </div>
-      {CategoryOptions.map((category) => (
-        <span
-          className="mr-4 cursor-pointer inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
-          key={category.value}
-          onClick={() => setSelectedCategory(category.value)}
-        >
-          {category.label}
-        </span>
-      ))}
+
+      <div className="text-left">
+        {CategoryOptions.map((category) => (
+          <span
+            className="mr-4 cursor-pointer inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+            key={category.value}
+            onClick={() => setSelectedCategory(category.value)}
+          >
+            {category.label}
+          </span>
+        ))}
+      </div>
+
       <div className="relative">
         <div className="my-4" />
       </div>

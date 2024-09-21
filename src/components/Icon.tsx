@@ -98,23 +98,6 @@ const Icon: React.FC<IconProps> = ({ name, className, filled = false, color = "c
         </svg>
       );
 
-      return (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={color}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={className}
-        >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="10" y1="8" x2="10" y2="16" />
-          <line x1="14" y1="8" x2="14" y2="16" />
-        </svg>
-      );
-
     case "play":
       return (
         <svg
@@ -152,6 +135,27 @@ const Icon: React.FC<IconProps> = ({ name, className, filled = false, color = "c
         >
           <rect x="7" y="4" width="1" height="16" />
           <rect x="16" y="4" width="1" height="16" />
+        </svg>
+      );
+
+    case "sorted":
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={color}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          <line x1="3" y1="7" x2="15" y2="7" />
+          <line x1="3" y1="10" x2="12" y2="10" />
+          <line x1="3" y1="13" x2="10" y2="13" />
+          <line x1="3" y1="16" x2="7" y2="16" />
+          <line x1="20" y1="6" x2="20" y2="16" />
+          <polyline points="17 15 20 18 23 15" />
         </svg>
       );
     default:
