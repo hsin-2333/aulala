@@ -54,6 +54,7 @@ export type QueryConditions = {
   story_id?: string;
   interaction_type?: string;
   userName?: string;
+  recipient?: string;
 };
 
 export interface Story {

@@ -16,6 +16,7 @@ import ScriptContent from "./pages/UserContent/Script";
 import Layout from "./components/Layout";
 import UploadScript from "./pages/Account/Upload/UploadScript";
 import UploadStory from "./pages/Account/Upload/UploadStory";
+import Notifications from "./pages/Account/Notification";
 
 import MyContent from "./pages/Account/MyContent";
 
@@ -62,10 +63,12 @@ function App() {
             />
             <Route path="/login" element={<LoginComponent />} />
             <Route
-              path="/:account/notifications"
+              path="/account/:userName/notification"
               element={
                 <PrivateRoute>
-                  <Account />
+                  <Layout>
+                    <Notifications />
+                  </Layout>
                 </PrivateRoute>
               }
             />

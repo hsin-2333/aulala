@@ -263,7 +263,14 @@ const Sidebar = () => {
               </svg>
               My Content
             </NavLink>
-            <button className="w-full justify-start flex items-center hover:bg-primary/90 size-default">
+            <NavLink
+              to={`/account/${user?.userName}/notification`}
+              className={({ isActive }) =>
+                `w-full justify-start flex items-center size-default hover:bg-primary/90 ${
+                  isActive ? "active-bg" : "bg-primary/90"
+                }`
+              }
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -278,7 +285,8 @@ const Sidebar = () => {
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
               </svg>
               Notification
-            </button>
+            </NavLink>
+
             {/* <button className="w-full justify-start align-middle ">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -91,18 +91,19 @@ const dbApi = {
     });
   },
 
-  //目前還沒有使用到
-  // async handleUserData(userData: IUserData, playbackHistory: any) {
-  //   const userExists = await this.checkUserExists(userData.uid);
-  //   if (userExists) {
-  //     await this.updateUser(userData);
-  //   } else {
-  //     await this.createUser(userData);
-  //   }
-  //   if (playbackHistory) {
-  //     await this.addPlaybackHistory(userData.uid, playbackHistory);
-  //   }
-  // },
+  async sendNotification(notificationData: { recipient: string; message: string; link: string }) {
+    try {
+      const notificationRef = collection(db, "notifications");
+      await addDoc(notificationRef, {
+        ...notificationData,
+        created_at: serverTimestamp(),
+      });
+      console.log("Notification sent successfully");
+    } catch (e) {
+      console.error("Error sending notification: ", e);
+    }
+  },
+
   subscribeToUserData(callback: (data: IUserData) => void) {
     const auth = getAuth();
     auth.onAuthStateChanged(async (user) => {
@@ -241,6 +242,10 @@ const dbApi = {
     }
     if (conditions.userName) {
       constraints.push(where("userName", "==", conditions.userName));
+    }
+
+    if (conditions.recipient) {
+      constraints.push(where("recipient", "==", conditions.recipient));
     }
 
     if (conditions.interaction_type) {

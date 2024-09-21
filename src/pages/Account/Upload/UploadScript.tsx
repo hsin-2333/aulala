@@ -87,6 +87,16 @@ const UploadScript = () => {
         for (const tag of data.tags) {
           await dbApi.addOrUpdateTag(tag.value, scriptId, null);
         }
+
+        // 向 VA users 發送通知
+        for (const vaUser of data.vaUsers) {
+          await dbApi.sendNotification({
+            recipient: vaUser.value,
+            message: `A new script titled "${data.title}" has been uploaded.`,
+            link: `/script/${scriptId}`,
+          });
+        }
+
         window.alert("成功上傳");
       } catch (error) {
         console.error("Error uploading script:", error);

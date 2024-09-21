@@ -39,7 +39,6 @@ const RecentPlayBar = () => {
         console.log("最近播放" + JSON.stringify(recentPlays));
         if (recentPlays.length > 0) {
           const recentPlay = recentPlays[0] as RecentPlay;
-          console.log("最近播放", recentPlay);
           setCurrentTime(recentPlay.played_at);
 
           // 根據 story_id 查詢故事資料
@@ -49,7 +48,6 @@ const RecentPlayBar = () => {
           const storyDocs = await dbApi.queryCollection("stories", StoryCondition, 1);
           if (storyDocs) {
             setStoryInfo(storyDocs[0] as Story);
-            console.log("故事資料", storyDocs[0]);
           }
         }
       }
