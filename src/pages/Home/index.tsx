@@ -6,11 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { CategoryOptions } from "../../constants/categoryOptions";
 import { QueryConditions } from "../../types";
 import { PlaylistCard } from "../../components/Card";
+import SortedMenu from "./SortedMenu";
 
 interface Story {
   id: string;
   title?: string;
   author?: string;
+  created_at?: { seconds: number; nanoseconds: number };
 }
 
 function HomePage() {
@@ -18,6 +20,7 @@ function HomePage() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [searchResults, setSearchResults] = useState<lunr.Index.Result[]>([]);
   const [searchClicked, setSearchClicked] = useState<boolean>(false);
+  const [sortOrder, setSortOrder] = useState<string>("由遠到近");
 
   console.log("searchResults", searchResults);
   console.log("searchTerm", searchTerm);
@@ -93,6 +96,40 @@ function HomePage() {
     }
   };
 
+  const handleSortOrderChange = (order: string) => {
+    setSortOrder(order);
+  };
+
+  const convertTimestampToDate = (timestamp: { seconds: number; nanoseconds: number }) => {
+    return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+  };
+
+  const sortedStoryList = useMemo(() => {
+    if (!storyList) return [];
+    return [...storyList].sort((a, b) => {
+      const dateA = convertTimestampToDate(a.created_at!).getTime();
+      const dateB = convertTimestampToDate(b.created_at!).getTime();
+      if (sortOrder === "Ascending") {
+        return dateA - dateB;
+      } else {
+        return dateB - dateA;
+      }
+    });
+  }, [storyList, sortOrder]);
+
+  const sortedScriptList = useMemo(() => {
+    if (!scriptList) return [];
+    return [...scriptList].sort((a, b) => {
+      const dateA = convertTimestampToDate(a.created_at!).getTime();
+      const dateB = convertTimestampToDate(b.created_at!).getTime();
+      if (sortOrder === "Ascending") {
+        return dateA - dateB;
+      } else {
+        return dateB - dateA;
+      }
+    });
+  }, [scriptList, sortOrder]);
+
   //之後替換成skeleton
   if (isScriptLoading || isStoryLoading) {
     return <div>Loading...</div>;
@@ -114,33 +151,40 @@ function HomePage() {
   return (
     <div>
       <div className="mb-4 relative">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onKeyDown={handleKeyDown}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          // onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        {searchTerm && (
-          <button
-            onClick={clearSearch}
-            className=" w-1 h-1 border-none absolute right-6 top-2 bg-transparent text-gray-500 hover:text-gray-700"
-          >
-            ✖
-          </button>
-        )}
+        <div className="flex gap-4 align-middle">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onKeyDown={handleKeyDown}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            // onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          {searchTerm && (
+            <button
+              onClick={clearSearch}
+              className=" w-1 h-1 border-none absolute right-6 top-2 bg-transparent text-gray-500 hover:text-gray-700"
+            >
+              ✖
+            </button>
+          )}
+          <SortedMenu onSortOrderChange={handleSortOrderChange} />
+        </div>
       </div>
-      {CategoryOptions.map((category) => (
-        <span
-          className="mr-4 cursor-pointer inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
-          key={category.value}
-          onClick={() => setSelectedCategory(category.value)}
-        >
-          {category.label}
-        </span>
-      ))}
+
+      <div className="text-left">
+        {CategoryOptions.map((category) => (
+          <span
+            className="mr-4 cursor-pointer inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+            key={category.value}
+            onClick={() => setSelectedCategory(category.value)}
+          >
+            {category.label}
+          </span>
+        ))}
+      </div>
+
       <div className="relative">
         <div className="my-4" />
       </div>
@@ -158,7 +202,7 @@ function HomePage() {
         {searchClicked ? (
           searchResults.length > 0 ? (
             searchResults.map((result) => {
-              const story = storyList?.find((s) => s.id === result.ref);
+              const story = sortedStoryList?.find((s) => s.id === result.ref);
               return (
                 story && (
                   <PlaylistCard
@@ -178,7 +222,7 @@ function HomePage() {
             <div>沒有結果喔 試試其他關鍵字</div>
           )
         ) : (
-          storyList?.map((story: Story) => (
+          sortedStoryList?.map((story: Story) => (
             <PlaylistCard
               onClick={() => handleContentClick(story.id, "story")}
               key={story.id}
@@ -205,7 +249,7 @@ function HomePage() {
           {searchClicked ? (
             searchResults.length > 0 ? (
               searchResults.map((result) => {
-                const script = scriptList?.find((s) => s.id === result.ref);
+                const script = sortedScriptList?.find((s) => s.id === result.ref);
                 return (
                   script && (
                     <PlaylistCard
@@ -225,7 +269,7 @@ function HomePage() {
               <div>沒有結果喔 試試其他關鍵字</div>
             )
           ) : (
-            scriptList?.map((script: Story) => (
+            sortedScriptList?.map((script: Story) => (
               <PlaylistCard
                 onClick={() => handleContentClick(script.id, "script")}
                 key={script.id}

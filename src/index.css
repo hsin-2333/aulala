@@ -22,6 +22,8 @@
   --color-primary: #334155;
   --color-primary-foreground: #ffffff;
   --color-primary-hover: #103c7515;
+  --color-primary-green: #82ca9e;
+  --color-primary-green-foreground: #065f46;
 }
 
 .bg-primary {
