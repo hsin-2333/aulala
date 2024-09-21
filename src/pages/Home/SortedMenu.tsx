@@ -1,7 +1,11 @@
 import { useState } from "react";
 import Icon from "../../components/Icon"; // 確保路徑正確
 
-const SortedMenu = () => {
+interface SortedMenuProps {
+  onSortOrderChange: (order: string) => void;
+}
+
+const SortedMenu = ({ onSortOrderChange }: SortedMenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("Descending");
   const [iconColor, setIconColor] = useState("currentColor");
@@ -14,6 +18,7 @@ const SortedMenu = () => {
     setSortOrder(order);
     setIconColor(order === "Descending" ? "currentColor" : "var(--color-primary-green-foreground)");
     setIsMenuOpen(false);
+    onSortOrderChange(order);
   };
 
   return (

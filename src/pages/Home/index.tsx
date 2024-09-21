@@ -12,6 +12,7 @@ interface Story {
   id: string;
   title?: string;
   author?: string;
+  created_at?: { seconds: number; nanoseconds: number };
 }
 
 function HomePage() {
@@ -19,6 +20,7 @@ function HomePage() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [searchResults, setSearchResults] = useState<lunr.Index.Result[]>([]);
   const [searchClicked, setSearchClicked] = useState<boolean>(false);
+  const [sortOrder, setSortOrder] = useState<string>("由遠到近");
 
   console.log("searchResults", searchResults);
   console.log("searchTerm", searchTerm);
@@ -94,6 +96,40 @@ function HomePage() {
     }
   };
 
+  const handleSortOrderChange = (order: string) => {
+    setSortOrder(order);
+  };
+
+  const convertTimestampToDate = (timestamp: { seconds: number; nanoseconds: number }) => {
+    return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+  };
+
+  const sortedStoryList = useMemo(() => {
+    if (!storyList) return [];
+    return [...storyList].sort((a, b) => {
+      const dateA = convertTimestampToDate(a.created_at!).getTime();
+      const dateB = convertTimestampToDate(b.created_at!).getTime();
+      if (sortOrder === "Ascending") {
+        return dateA - dateB;
+      } else {
+        return dateB - dateA;
+      }
+    });
+  }, [storyList, sortOrder]);
+
+  const sortedScriptList = useMemo(() => {
+    if (!scriptList) return [];
+    return [...scriptList].sort((a, b) => {
+      const dateA = convertTimestampToDate(a.created_at!).getTime();
+      const dateB = convertTimestampToDate(b.created_at!).getTime();
+      if (sortOrder === "Ascending") {
+        return dateA - dateB;
+      } else {
+        return dateB - dateA;
+      }
+    });
+  }, [scriptList, sortOrder]);
+
   //之後替換成skeleton
   if (isScriptLoading || isStoryLoading) {
     return <div>Loading...</div>;
@@ -133,7 +169,7 @@ function HomePage() {
               ✖
             </button>
           )}
-          <SortedMenu />
+          <SortedMenu onSortOrderChange={handleSortOrderChange} />
         </div>
       </div>
 
@@ -166,7 +202,7 @@ function HomePage() {
         {searchClicked ? (
           searchResults.length > 0 ? (
             searchResults.map((result) => {
-              const story = storyList?.find((s) => s.id === result.ref);
+              const story = sortedStoryList?.find((s) => s.id === result.ref);
               return (
                 story && (
                   <PlaylistCard
@@ -186,7 +222,7 @@ function HomePage() {
             <div>沒有結果喔 試試其他關鍵字</div>
           )
         ) : (
-          storyList?.map((story: Story) => (
+          sortedStoryList?.map((story: Story) => (
             <PlaylistCard
               onClick={() => handleContentClick(story.id, "story")}
               key={story.id}
@@ -213,7 +249,7 @@ function HomePage() {
           {searchClicked ? (
             searchResults.length > 0 ? (
               searchResults.map((result) => {
-                const script = scriptList?.find((s) => s.id === result.ref);
+                const script = sortedScriptList?.find((s) => s.id === result.ref);
                 return (
                   script && (
                     <PlaylistCard
@@ -233,7 +269,7 @@ function HomePage() {
               <div>沒有結果喔 試試其他關鍵字</div>
             )
           ) : (
-            scriptList?.map((script: Story) => (
+            sortedScriptList?.map((script: Story) => (
               <PlaylistCard
                 onClick={() => handleContentClick(script.id, "script")}
                 key={script.id}
