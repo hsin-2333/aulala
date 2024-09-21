@@ -64,7 +64,7 @@ function ScriptContent() {
       )}
       <div className="flex items-center justify-between">
         <div className="flex space-x-4 justify-between">
-          {user && <InteractionToolbar userName={user.userName} storyId={script?.id} />}
+          {user && <InteractionToolbar userName={user.userName} scriptId={script?.id} />}
           {/* <p className="text-gray-600 hover:text-gray-800">留言 35</p> */}
         </div>
         <p className="text-gray-600 hover:text-gray-800">English</p>

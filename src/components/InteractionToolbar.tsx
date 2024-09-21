@@ -10,25 +10,28 @@ interface InteractionToolbarProps {
   scriptId?: string;
 }
 
+interface BookmarkButtonProps {
+  userName: string;
+  // storyId?: string;
+  scriptId?: string;
+}
+
+interface PlaylistButtonProps {
+  userName: string;
+  storyId?: string;
+}
+
 export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionToolbarProps) => {
   const [liked, setLiked] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
   const queryClient = useQueryClient();
-
+  console.log("storyId", storyId, "scriptId", scriptId);
   useEffect(() => {
-    const fetchInteraction = async () => {
+    const fetchLikeStatus = async () => {
       const likeStatus = await dbApi.getInteractionStatus(userName, storyId || null, scriptId || null, "like");
-      const bookmarkStatus = await dbApi.getInteractionStatus(
-        userName,
-        storyId || null,
-        scriptId || null,
-        "bookmarked"
-      );
       setLiked(likeStatus);
-      setBookmarked(bookmarkStatus);
     };
 
-    fetchInteraction();
+    fetchLikeStatus();
   }, [userName, storyId, scriptId]);
 
   const likeMutation = useMutation({
@@ -45,32 +48,91 @@ export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionT
     },
   });
 
-  const saveMutation = useMutation({
-    mutationFn: () => dbApi.updateInteraction(userName, storyId || null, scriptId || null, "bookmarked"),
-    onMutate: async () => {
-      setBookmarked((prev) => !prev);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["interactions", userName, storyId || scriptId],
-      });
-    },
-  });
-
   return (
     <div className="interaction-toolbar flex">
       <button onClick={() => likeMutation.mutate()} className="flex items-center">
         <Icon name="like" filled={liked} className="mr-2 h-6 w-6" color={liked ? "#fca5a5cc" : "currentColor"} />
       </button>
-      <button onClick={() => saveMutation.mutate()} className="flex items-center">
-        <Icon
-          name="bookmarked"
-          filled={bookmarked}
-          className="mr-2 h-6 w-6"
-          color={bookmarked ? "#82ca9e90" : "currentColor"}
-        />
-      </button>
+      {storyId ? (
+        <PlaylistButton userName={userName} storyId={storyId} />
+      ) : (
+        <BookmarkButton userName={userName} scriptId={scriptId} />
+      )}
     </div>
+  );
+};
+
+export const BookmarkButton = ({ userName, scriptId }: BookmarkButtonProps) => {
+  const [bookmarked, setBookmarked] = useState(false);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const fetchBookmarkStatus = async () => {
+      const bookmarkStatus = await dbApi.getInteractionStatus(userName, null, scriptId || null, "bookmarked");
+      setBookmarked(bookmarkStatus);
+    };
+
+    fetchBookmarkStatus();
+  }, [userName, scriptId]);
+
+  const saveMutation = useMutation({
+    mutationFn: () => dbApi.updateInteraction(userName, null, scriptId || null, "bookmarked"),
+    onMutate: async () => {
+      setBookmarked((prev) => !prev);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["interactions", userName, scriptId],
+      });
+    },
+  });
+
+  return (
+    <button onClick={() => saveMutation.mutate()} className="flex items-center">
+      <Icon
+        name="bookmarked"
+        filled={bookmarked}
+        className="mr-2 h-6 w-6"
+        color={bookmarked ? "#82ca9e90" : "currentColor"}
+      />
+    </button>
+  );
+};
+
+export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
+  const [inPlaylist, setInPlaylist] = useState(false);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const fetchPlaylistStatus = async () => {
+      const playlistStatus = await dbApi.getInteractionStatus(userName, storyId || null, null, "playlist");
+      setInPlaylist(playlistStatus);
+    };
+
+    fetchPlaylistStatus();
+  }, [userName, storyId]);
+
+  const playlistMutation = useMutation({
+    mutationFn: () => dbApi.updateInteraction(userName, storyId || null, null, "playlist"),
+    onMutate: async () => {
+      setInPlaylist((prev) => !prev);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["interactions", userName, storyId],
+      });
+    },
+  });
+
+  return (
+    <button onClick={() => playlistMutation.mutate()} className="flex items-center">
+      <Icon
+        name={inPlaylist ? "added-to-playlist" : "add-to-playlist"}
+        filled={inPlaylist}
+        className="mr-2 h-6 w-6"
+        color={inPlaylist ? "#82ca9e90" : "currentColor"}
+      />
+    </button>
   );
 };
 
