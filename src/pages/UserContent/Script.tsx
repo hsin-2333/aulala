@@ -67,7 +67,7 @@ function ScriptContent() {
           {user && <InteractionToolbar userName={user.userName} scriptId={script?.id} />}
           {/* <p className="text-gray-600 hover:text-gray-800">留言 35</p> */}
         </div>
-        <p className="text-gray-600 hover:text-gray-800">English</p>
+        <p className="text-gray-600 hover:text-gray-800">{script?.language}</p>
       </div>
       <hr className="border-t border-gray-400 my-6" />
       <section className="flex items-start justify-center flex-col ">
@@ -91,7 +91,7 @@ function ScriptContent() {
           ))}
       </section>
       <hr className="border-t border-gray-400 my-6" />
-      {user && <CommentToolbar userName={user.userName} storyId={script?.id} />}
+      {user && <CommentToolbar userName={user.userName} scriptId={script?.id} />}
     </div>
   );
 }

@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Timestamp } from "firebase/firestore";
+import dbApi from "../utils/firebaseService";
+import { InteractionType } from "../types";
+
 interface PlaylistCardProps {
   image: string;
   title: string;
@@ -9,6 +12,7 @@ interface PlaylistCardProps {
 }
 
 interface ScriptCardProps {
+  scriptId: string | undefined;
   title: string;
   author: string;
   tags: string[];
@@ -45,13 +49,41 @@ export const PlaylistCard: React.FC<PlaylistCardProps> = ({ image, title, tags =
           ))}
         </div>
       </div>
-      <button className="mr-3">+</button>
     </div>
   );
 };
 
-export const ScriptCard: React.FC<ScriptCardProps> = ({ title, author, tags = [], summary, created_at, language }) => {
+export const ScriptCard: React.FC<ScriptCardProps> = ({
+  scriptId,
+  title,
+  author,
+  tags = [],
+  summary,
+  created_at,
+  language,
+}) => {
   const formattedDate = formatTimestamp(created_at);
+
+  const [interactions, setInteractions] = useState<InteractionType[]>([]);
+  console.log(interactions);
+  useEffect(() => {
+    if (!scriptId) return;
+
+    const fetchData = async () => {
+      const unsubscribe = await dbApi.subscribeToInteractions(scriptId, setInteractions);
+      return unsubscribe;
+    };
+
+    const unsubscribePromise = fetchData();
+
+    return () => {
+      unsubscribePromise.then((unsubscribe) => unsubscribe());
+    };
+  }, [scriptId]);
+
+  const getCount = (type: string) => {
+    return interactions.filter((interaction) => interaction.interaction_type === type).length;
+  };
 
   return (
     <div className="flex flex-col w-full bg-gray-100 rounded-lg overflow-hidden mb-2">
@@ -73,9 +105,9 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({ title, author, tags = []
       <div className="p-4 text-gray-700  text-left">{summary}</div>
       <div className="flex items-center justify-between p-4 ">
         <div className="flex space-x-4">
-          <p className="text-gray-600 hover:text-gray-800">收藏 35</p>
-          <p className="text-gray-600 hover:text-gray-800">愛心 35</p>
-          <p className="text-gray-600 hover:text-gray-800">留言 35</p>
+          <p className="text-gray-600 hover:text-gray-800">收藏 {getCount("bookmarked")}</p>
+          <p className="text-gray-600 hover:text-gray-800">愛心 {getCount("like")}</p>
+          <p className="text-gray-600 hover:text-gray-800">留言 {getCount("comment")}</p>
         </div>
         <p className="text-gray-600 hover:text-gray-800">{language}</p>
       </div>

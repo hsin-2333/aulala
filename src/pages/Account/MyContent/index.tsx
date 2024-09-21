@@ -55,6 +55,7 @@ const MyContent = () => {
       return scriptList?.map((script) => (
         <ScriptCard
           key={script.id}
+          scriptId={script.id}
           // image={script.img_url?.[0]}
           language={script.language || ""}
           title={script.title}

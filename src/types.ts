@@ -72,7 +72,8 @@ export interface Story {
 }
 
 export interface InteractionType {
-  userName: string;
+  id?: string;
+  userName?: string;
   story_id: string | null;
   script_id: string | null;
   interaction_type: string;

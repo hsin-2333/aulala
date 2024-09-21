@@ -31,6 +31,8 @@ interface IUserData {
   age: number;
 }
 
+type Interactions = InteractionType[];
+
 const dbApi = {
   async checkUserExists(uid: string) {
     const userDoc = await getDoc(doc(db, "users", uid));
@@ -452,6 +454,19 @@ const dbApi = {
       console.error("Error updating recent play: ", e);
       throw e;
     }
+  },
+
+  async subscribeToInteractions(scriptId: string, callback: (data: Interactions) => void) {
+    const q = query(collection(db, "interactions"), where("script_id", "==", scriptId));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const interactionsData: InteractionType[] = [];
+      querySnapshot.forEach((doc) => {
+        interactionsData.push({ id: doc.id, ...doc.data() } as InteractionType);
+      });
+      callback(interactionsData);
+    });
+
+    return unsubscribe;
   },
 };
 export default dbApi;
