@@ -77,6 +77,20 @@ const dbApi = {
     return userDocData || null;
   },
 
+  async getVAs() {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("role", "==", "VA"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        userName: data.userName,
+        avatar: data.avatar,
+        email: data.email,
+      };
+    });
+  },
+
   //目前還沒有使用到
   // async handleUserData(userData: IUserData, playbackHistory: any) {
   //   const userExists = await this.checkUserExists(userData.uid);

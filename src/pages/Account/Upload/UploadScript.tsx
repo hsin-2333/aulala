@@ -17,6 +17,7 @@ interface ScriptFormData {
   url: string;
   img_url: string[];
   author: string;
+  vaUsers: { label: string; value: string }[]; // 新增的字段
 }
 
 const UploadScript = () => {
@@ -25,6 +26,7 @@ const UploadScript = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [tagsOptions, setTagsOptions] = useState<{ value: string; label: string }[]>([]);
+  const [vaUsersOptions, setVaUsersOptions] = useState<{ value: string; label: string }[]>([]); // 新增的 state
   const navigate = useNavigate();
   const filteredCategoryOptions = CategoryOptions.filter((option) => option.label !== "All");
 
@@ -47,6 +49,12 @@ const UploadScript = () => {
       setTagsOptions(tags.map((tag: string) => ({ label: tag, value: tag })));
     };
     fetchTags();
+
+    const fetchVaUsers = async () => {
+      const vaUsers = await dbApi.getVAs();
+      setVaUsersOptions(vaUsers.map((user: { userName: string }) => ({ label: user.userName, value: user.userName })));
+    };
+    fetchVaUsers();
   }, []);
 
   const handleScriptUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,6 +155,17 @@ const UploadScript = () => {
             onChange={(selectedOption) => setValue("language", selectedOption?.value || "")}
           />
           {errors.language && <span className="text-red-500 text-sm">This field is required</span>}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Invite Voice Actors to join</label>
+          <Select
+            isMulti
+            options={vaUsersOptions}
+            onChange={(selectedOptions) =>
+              setValue("vaUsers", [...selectedOptions] as { value: string; label: string }[])
+            }
+          />
+          {errors.vaUsers && <span className="text-red-500 text-sm">This field is required</span>}
         </div>
         <button className="flex items-center size-default bg-primary text-white " type="submit">
           Submit
