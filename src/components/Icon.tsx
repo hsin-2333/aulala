@@ -104,17 +104,17 @@ const Icon: React.FC<IconProps> = ({ name, className, filled = false, color = "c
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill={color}
-          stroke="white"
+          stroke="transparent"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
           className={className}
         >
-          <circle cx="12" cy="12" r="13" />
+          <circle cx="12" cy="12" r="12" />
           {filled ? (
             <g>
-              <rect x="8" y="8" width="1" height="8" />
-              <rect x="14" y="8" width="1" height="8" />
+              <rect x="9" y="8" width="1" height="8" stroke="white" />
+              <rect x="14" y="8" width="1" height="8" stroke="white" />
             </g>
           ) : (
             <polygon points="10 8 16 12 10 16 10 8" fill="white" />
@@ -126,8 +126,8 @@ const Icon: React.FC<IconProps> = ({ name, className, filled = false, color = "c
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          fill="none"
-          stroke={color}
+          fill={color}
+          stroke="white"
           strokeWidth="1"
           strokeLinecap="round"
           strokeLinejoin="round"
