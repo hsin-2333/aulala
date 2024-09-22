@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthContextProvider } from "./context/AuthContext";
+import { RecentPlayProvider } from "./context/RecentPlayContext";
 import PrivateRoute from "./utils/PrivateRoute";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -28,111 +29,113 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         <AuthContextProvider>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Layout>
-                  <HomePage />
-                </Layout>
-              }
-            />
-            <Route
-              path="/story/:storyId"
-              element={
-                <Layout>
-                  <StoryContent />
-                </Layout>
-              }
-            />
-            <Route
-              path="/script/:scriptId"
-              element={
-                <Layout>
-                  <ScriptContent />
-                </Layout>
-              }
-            />
-            <Route
-              path="/user/:userName"
-              element={
-                <Layout>
-                  <Account />
-                </Layout>
-              }
-            />
-            <Route path="/login" element={<LoginComponent />} />
-            <Route
-              path="/account/:userName/notification"
-              element={
-                <PrivateRoute>
+          <RecentPlayProvider>
+            <Routes>
+              <Route
+                path="/"
+                element={
                   <Layout>
-                    <Notifications />
+                    <HomePage />
                   </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/:account/scripts"
-              element={
-                <PrivateRoute>
-                  <Account />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/:account/stories"
-              element={
-                <PrivateRoute>
+                }
+              />
+              <Route
+                path="/story/:storyId"
+                element={
                   <Layout>
-                    {" "}
+                    <StoryContent />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/script/:scriptId"
+                element={
+                  <Layout>
+                    <ScriptContent />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/user/:userName"
+                element={
+                  <Layout>
                     <Account />
                   </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/:account/setting"
-              element={
-                <PrivateRoute>
-                  <Account />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/upload/script"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    {" "}
-                    <UploadScript />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/upload/story"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    {" "}
-                    <UploadStory />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/account/:userName/contents"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    {" "}
-                    <MyContent />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-          </Routes>
+                }
+              />
+              <Route path="/login" element={<LoginComponent />} />
+              <Route
+                path="/account/:userName/notification"
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      <Notifications />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/:account/scripts"
+                element={
+                  <PrivateRoute>
+                    <Account />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/:account/stories"
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      {" "}
+                      <Account />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/:account/setting"
+                element={
+                  <PrivateRoute>
+                    <Account />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/upload/script"
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      {" "}
+                      <UploadScript />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/upload/story"
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      {" "}
+                      <UploadStory />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/account/:userName/contents"
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      {" "}
+                      <MyContent />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
+            </Routes>
+          </RecentPlayProvider>
         </AuthContextProvider>
       </Router>
       <ReactQueryDevtools initialIsOpen={false} />
