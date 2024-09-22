@@ -1,11 +1,11 @@
 import WaveSurfer from "wavesurfer.js";
 import { useEffect, useRef, useState, useContext } from "react";
-// import fakeData from "../assets/fakeStory.json";
-// import AudioData from "../assets/poetry.json";
 import { debounce } from "lodash";
 import dbApi from "../utils/firebaseService";
 import { AuthContext } from "../context/AuthContext";
+import { RecentPlayContext } from "../context/RecentPlayContext";
 import Icon from "./Icon";
+
 interface AudioWavePlayerProps {
   audio_url: string;
   storyId: string;
@@ -20,6 +20,12 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
   const currentTextRef = useRef<string>("");
   const [currentText, setCurrentText] = useState<string[]>([]);
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState<number>(-1);
+  const context = useContext(RecentPlayContext);
+  if (context === undefined) {
+    throw new Error("SomeComponent must be used within a RecentPlayProvider");
+  }
+  const { fetchRecentPlay } = context;
+
   const AudioSegments = segments;
   useEffect(() => {
     if (audioRefMain.current) {
@@ -42,16 +48,13 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
       let animationFrameId: number;
 
       const updateSubtitles = (currentTime: number) => {
-        // findIndex 沒找到會回傳 -1
         let currentSegmentIndex = AudioSegments.findIndex(
           (segment) => currentTime >= segment.start && currentTime <= segment.end
         );
 
-        // 如果找不到當前時間的字幕段，則找到最近的字幕段
         if (currentSegmentIndex === -1) {
           currentSegmentIndex = AudioSegments.findIndex((_, index) => {
             const nextSegment = AudioSegments[index + 1];
-            console.log("nextSegment", nextSegment);
             return nextSegment && currentTime < nextSegment.start;
           });
         }
@@ -62,7 +65,6 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
           const segmentsToShow = AudioSegments.slice(start, end).map((segment) => segment.text);
 
           if (segmentsToShow.join() !== currentTextRef.current) {
-            console.log("segmentsToShow.join()", segmentsToShow.join());
             currentTextRef.current = segmentsToShow.join();
             setCurrentText(segmentsToShow);
             setCurrentSegmentIndex(currentSegmentIndex - start);
@@ -73,8 +75,8 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
       const debouncedUpdateRecentPlay = debounce((currentTime: number) => {
         if (user) {
           dbApi.updateRecentPlay(user.uid, storyId, currentTime);
+          fetchRecentPlay();
         }
-        console.log("更新最近播放", currentTime);
       }, 1000);
 
       const updateCurrentTime = () => {
@@ -82,22 +84,21 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
         if (currentTime - lastUpdateTime > 0.8) {
           lastUpdateTime = currentTime;
           updateSubtitles(currentTime);
-          debouncedUpdateRecentPlay(currentTime); //wavesurfer.pause() 暫停時， updateCurrentTime 仍會執行，所以會更新最近播放
+          debouncedUpdateRecentPlay(currentTime);
         }
         animationFrameId = requestAnimationFrame(updateCurrentTime);
       };
 
       animationFrameId = requestAnimationFrame(updateCurrentTime);
 
-      // Initialize the first segment of text
       const initialSegments = AudioSegments.slice(0, 3).map((segment) => segment.text);
       setCurrentText(initialSegments);
       setCurrentSegmentIndex(0);
 
       const handleSeek = debounce((currentTime: number) => {
-        lastUpdateTime = 0; // 重置 lastUpdateTime
+        lastUpdateTime = 0;
         updateSubtitles(currentTime);
-      }, 100); // 100ms 的防抖時間
+      }, 100);
 
       wavesurfer.on("seeking", handleSeek);
 
@@ -106,15 +107,20 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
         wavesurfer.destroy();
       };
     }
-  }, [audioRefMain, audio_url, storyId, user, AudioSegments]);
+  }, [audioRefMain, audio_url, storyId, user, AudioSegments, fetchRecentPlay]);
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
     const wavesurfer = wavesurferRef.current;
     if (wavesurfer) {
       if (isPlaying) {
         wavesurfer.pause();
       } else {
         wavesurfer.play();
+        if (user) {
+          const currentTime = wavesurfer.getCurrentTime();
+          await dbApi.updateRecentPlay(user.uid, storyId, currentTime);
+          fetchRecentPlay();
+        }
       }
       setIsPlaying(!isPlaying);
     }
