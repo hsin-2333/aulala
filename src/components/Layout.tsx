@@ -2,7 +2,7 @@ import { useContext, useEffect, useState, ReactNode } from "react";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import RecentPlayBar from "./RecentPlayBar";
-
+import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
 interface LayoutProps {
   children: ReactNode;
 }
@@ -78,7 +78,7 @@ const MainContent = ({ children }: LayoutProps) => {
         <Sidebar />
 
         {/* <Sidebar playlists={playlists} className="hidden lg:block" /> */}
-        <div className="col-span-3 lg:col-span-4 lg:border-l overflow-y-auto">
+        <div className="col-span-3 lg:col-span-3 lg:border-l overflow-y-auto">
           <div className="h-full px-4 py-6 lg:px-8">
             <div className="h-full space-y-6">
               <div className="border-none p-0 outline-none ">{children}</div>
@@ -94,6 +94,7 @@ const MainContent = ({ children }: LayoutProps) => {
             </div>
           </div>
         </div>
+        <ContentInfoSideBar />
       </div>
     </div>
   );
