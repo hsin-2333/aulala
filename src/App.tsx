@@ -19,8 +19,6 @@ import UploadScript from "./pages/Account/Upload/UploadScript";
 import UploadStory from "./pages/Account/Upload/UploadStory";
 import Notifications from "./pages/Account/Notification";
 
-import MyContent from "./pages/Account/MyContent";
-
 const queryClient = new QueryClient();
 
 function App() {
@@ -119,17 +117,6 @@ function App() {
                     <Layout>
                       {" "}
                       <UploadStory />
-                    </Layout>
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/account/:userName/contents"
-                element={
-                  <PrivateRoute>
-                    <Layout>
-                      {" "}
-                      <MyContent />
                     </Layout>
                   </PrivateRoute>
                 }

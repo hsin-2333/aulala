@@ -3,6 +3,7 @@ import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import RecentPlayBar from "./RecentPlayBar";
 import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
+
 interface LayoutProps {
   children: ReactNode;
 }
@@ -31,13 +32,18 @@ const Layout = ({ children }: LayoutProps) => {
 
 const Header = () => {
   const { user } = useContext(AuthContext);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { Logout } = useContext(AuthContext);
 
-  const handleProfileClick = () => {
-    if (user) {
-      navigate(`/user/${user.userName}`);
-    }
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
+  const handleLogout = () => {
+    Logout();
+    navigate("/");
+  };
+
   return (
     <header className="bg-gray-800 text-white p-4">
       <nav className="container mx-auto flex justify-between items-center">
@@ -45,24 +51,53 @@ const Header = () => {
           Storybook
         </Link>
         <ul className="flex space-x-4">
-          {/* <li>
-            <Link to="/account">Account</Link>
-          </li> */}
-          {user ? (
-            <div onClick={handleProfileClick} className="cursor-pointer">
-              <img src={user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full" />
-            </div>
-          ) : (
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-          )}
+          {" "}
           <li>
             <Link to="/upload/story">Upload Story</Link>
           </li>
           <li>
             <Link to="/upload/script">Upload Script</Link>
           </li>
+          {/* <li>
+            <Link to="/account">Account</Link>
+          </li> */}
+          {user ? (
+            <div onClick={toggleMenu} className="cursor-pointer relative">
+              <img src={user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full" />
+              {isMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                  <button
+                    onClick={() => {
+                      navigate(`/user/${user.userName}`);
+                      toggleMenu();
+                    }}
+                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    My Content
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate(`/user/${user.userName}/settings`);
+                      toggleMenu();
+                    }}
+                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Settings
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <li>
+              <Link to="/login">Login</Link>
+            </li>
+          )}
         </ul>
       </nav>
     </header>
@@ -240,7 +275,7 @@ const Sidebar = () => {
           {/* <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">Discover</h2> */}
           <div className="space-y-1 ">
             <NavLink
-              to={`/account/${user?.userName}/contents`}
+              to={`/user/${user?.userName}`}
               className={({ isActive }) =>
                 `w-full justify-start flex items-center size-default hover:bg-primary/90 ${
                   isActive ? "active-bg" : "bg-primary/90"

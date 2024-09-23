@@ -74,7 +74,6 @@ const MyContent = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold tracking-tight ">My Content</h2>
       <div className="relative">
         <div className="my-4" />
       </div>
