@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import React, { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
 import dbApi from "../../../utils/firebaseService";
@@ -96,7 +96,7 @@ const UploadStory = () => {
           voice_actor: [user?.userName || ""], //之後要增加多位聲優
         };
 
-        navigate(`/account/${user?.userName}/contents`);
+        navigate(`/user/${user?.userName}`);
 
         const storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
         for (const tag of data.tags) {

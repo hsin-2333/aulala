@@ -1,21 +1,19 @@
-import lunr from "lunr";
+import * as lunr from "lunr";
 
-// 假設我們有一些文件
 const documents = [
   { id: 1, title: "Foo", content: "Foo content" },
   { id: 2, title: "Bar", content: "Bar content" },
   { id: 3, title: "Baz", content: "Baz content" },
 ];
 
-// 建立索引
-const idx = lunr(function () {
+const idx = lunr(function (this: lunr.Builder) {
   this.field("title");
   this.field("content");
   this.ref("id");
 
-  documents.forEach(function (doc) {
+  documents.forEach((doc) => {
     this.add(doc);
-  }, this);
+  });
 });
 
 // 執行搜尋

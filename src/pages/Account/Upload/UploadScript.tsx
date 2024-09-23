@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import dbApi from "../../../utils/firebaseService";
@@ -101,7 +101,7 @@ const UploadScript = () => {
       } catch (error) {
         console.error("Error uploading script:", error);
       } finally {
-        navigate(`/account/${user?.userName}/contents?tab=script`);
+        navigate(`/user/${user?.userName}`);
       }
     }
   };

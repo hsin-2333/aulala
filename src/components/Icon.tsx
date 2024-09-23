@@ -1,5 +1,3 @@
-import React from "react";
-
 interface IconProps {
   name: string;
   className?: string;
@@ -7,7 +5,7 @@ interface IconProps {
   color?: string;
 }
 
-const Icon: React.FC<IconProps> = ({ name, className, filled = false, color = "currentColor" }) => {
+const Icon = ({ name, className, filled = false, color = "currentColor" }: IconProps) => {
   switch (name) {
     case "radio":
       return filled ? (

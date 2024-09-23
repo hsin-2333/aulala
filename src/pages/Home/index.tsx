@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
+//@ts-expect-error(123)
 import lunr from "lunr";
 import dbApi from "../../utils/firebaseService";
 import { useNavigate } from "react-router-dom";
@@ -63,7 +64,7 @@ function HomePage() {
   const idx = useMemo(() => {
     if (!storyList || !scriptList) return null;
 
-    return lunr(function () {
+    return lunr(function (this: lunr.Builder) {
       this.ref("id");
       this.field("id");
       this.field("title");
@@ -154,7 +155,7 @@ function HomePage() {
         <div className="flex gap-4 align-middle">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder="search title, tag, author, summary"
             value={searchTerm}
             onKeyDown={handleKeyDown}
             onChange={(e) => setSearchTerm(e.target.value)}

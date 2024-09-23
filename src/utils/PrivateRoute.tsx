@@ -12,7 +12,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   if (loading) {
     return <div> Loading</div>;
   }
-  return isLogin ? children : <Navigate to="/login" />;
+  return isLogin ? <>{children}</> : <Navigate to="/login" />;
 };
 
 export default PrivateRoute;

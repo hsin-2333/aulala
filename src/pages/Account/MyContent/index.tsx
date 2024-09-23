@@ -2,7 +2,7 @@ import { PlaylistCard, ScriptCard } from "../../../components/Card";
 import dbApi from "../../../utils/firebaseService";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
 import { Story } from "../../../types";
 // interface Story {
@@ -17,6 +17,7 @@ import { Story } from "../../../types";
 // }
 
 const MyContent = () => {
+  const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState<string>("story");
   const { userName } = useParams();
   const location = useLocation();
@@ -49,6 +50,9 @@ const MyContent = () => {
           title={story.title}
           author={story.author}
           tags={story.tags || []}
+          onClick={() => {
+            navigate(`/story/${story.id}`);
+          }}
         />
       ));
     } else if (selectedTab === "script") {

@@ -12,6 +12,7 @@ interface LayoutProps {
 export const OuterLayout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const [key, setKey] = useState(0);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     // 每次路由變化時更新 key，強制重新渲染 RecentPlayBar
@@ -25,7 +26,7 @@ export const OuterLayout = ({ children }: LayoutProps) => {
         <main className="p-4 flex-1 ">
           <MainContent isOuterPage={true}>{children}</MainContent>
         </main>
-        <RecentPlayBar key={key} />
+        {user && <RecentPlayBar key={key} />}
       </div>
     </div>
   );
@@ -65,48 +66,46 @@ const Header = () => {
           Storybook
         </Link>
         <ul className="flex space-x-4">
-          {" "}
-          <li>
-            <Link to="/upload/story">Upload Story</Link>
-          </li>
-          <li>
-            <Link to="/upload/script">Upload Script</Link>
-          </li>
-          {/* <li>
-            <Link to="/account">Account</Link>
-          </li> */}
           {user ? (
-            <div onClick={toggleMenu} className="cursor-pointer relative">
-              <img src={user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full" />
-              {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
-                  <button
-                    onClick={() => {
-                      navigate(`/user/${user.userName}`);
-                      toggleMenu();
-                    }}
-                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
-                  >
-                    My Content
-                  </button>
-                  <button
-                    onClick={() => {
-                      navigate(`/user/${user.userName}/settings`);
-                      toggleMenu();
-                    }}
-                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
-                  >
-                    Settings
-                  </button>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
+            <>
+              <li>
+                <Link to="/upload/story">Upload Story</Link>
+              </li>
+              <li>
+                <Link to="/upload/script">Upload Script</Link>
+              </li>
+              <div onClick={toggleMenu} className="cursor-pointer relative">
+                <img src={user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full" />
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                    <button
+                      onClick={() => {
+                        navigate(`/user/${user.userName}`);
+                        toggleMenu();
+                      }}
+                      className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    >
+                      My Content
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigate(`/user/${user.userName}/settings`);
+                        toggleMenu();
+                      }}
+                      className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    >
+                      Settings
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
             <li>
               <Link to="/login">Login</Link>

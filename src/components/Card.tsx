@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Timestamp } from "firebase/firestore";
 import dbApi from "../utils/firebaseService";
 import { InteractionType } from "../types";
@@ -31,7 +31,7 @@ const formatTimestamp = (timestamp?: Timestamp): string => {
   return `${year}${month}`;
 };
 
-export const PlaylistCard: React.FC<PlaylistCardProps> = ({ image, title, tags = [], author, onClick }) => {
+export const PlaylistCard = ({ image, title, tags = [], author, onClick }: PlaylistCardProps) => {
   return (
     <div
       className="flex items-center w-full h-24 bg-slate-200 rounded-lg overflow-hidden cursor-pointer mb-2"
@@ -53,15 +53,7 @@ export const PlaylistCard: React.FC<PlaylistCardProps> = ({ image, title, tags =
   );
 };
 
-export const ScriptCard: React.FC<ScriptCardProps> = ({
-  scriptId,
-  title,
-  author,
-  tags = [],
-  summary,
-  created_at,
-  language,
-}) => {
+export const ScriptCard = ({ scriptId, title, author, tags = [], summary, created_at, language }: ScriptCardProps) => {
   const formattedDate = formatTimestamp(created_at);
 
   const [interactions, setInteractions] = useState<InteractionType[]>([]);

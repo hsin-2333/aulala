@@ -43,33 +43,41 @@ const ContentInfoSideBar = () => {
   }, [storyInfo]);
 
   return (
-    <div className="pb-12">
-      <div className="space-y-4 py-4">
-        <div className="px-3 py-2">
-          <h2 className="text-left mb-2 px-4 text-lg font-semibold tracking-tight">{title}</h2>
-          <div className="space-y-1 ">
-            <div className="w-full justify-start flex items-center size-default gap-2">
-              {tags.map((tag, index) => (
-                <span key={index} className="text-gray-00 text-sm p-1 rounded-sm bg-slate-300">
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <p className="text-left mb-2 px-4 text-sm font-thin tracking-tight">{summary}</p>
-          </div>
-          <div className="flex m-2 px-4  bg-white-200  h-[1px] w-full"></div>
-          <h2 className="text-left mb-2 px-4 text-lg font-semibold tracking-tight">Attendees</h2>
-          <div className="text-left mb-2 px-4  flex flex-row gap-4 justify-start">
-            {avatars.map((attendee, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <img src={attendee.avatar} alt={`Avatar of ${attendee.userName}`} className="w-8 h-8 rounded-full" />
-                <div className="text-left text-sm font-semibold tracking-tight leading-7">{attendee.userName}</div>
+    <>
+      {storyInfo && (
+        <div className="pb-12">
+          <div className="space-y-4 py-4">
+            <div className="px-3 py-2">
+              <h2 className="text-left mb-2 px-4 text-lg font-semibold tracking-tight">{title}</h2>
+              <div className="space-y-1 ">
+                <div className="w-full justify-start flex items-center size-default gap-2">
+                  {tags.map((tag, index) => (
+                    <span key={index} className="text-gray-00 text-sm p-1 rounded-sm bg-slate-300">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-left mb-2 px-4 text-sm font-thin tracking-tight">{summary}</p>
               </div>
-            ))}
+              <div className="flex m-2 px-4  bg-white-200  h-[1px] w-full"></div>
+              <h2 className="text-left mb-2 px-4 text-lg font-semibold tracking-tight">Attendees</h2>
+              <div className="text-left mb-2 px-4  flex flex-row gap-4 justify-start">
+                {avatars.map((attendee, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <img
+                      src={attendee.avatar}
+                      alt={`Avatar of ${attendee.userName}`}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <div className="text-left text-sm font-semibold tracking-tight leading-7">{attendee.userName}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 
