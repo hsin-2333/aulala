@@ -92,7 +92,7 @@ const RecentPlayBar = () => {
           </div>
         </div>
 
-        <div className="flex flex-grow flex-row justify-center gap-4">
+        <div className="flex w-2/6  flex-grow flex-row justify-center gap-4">
           <button onClick={togglePlayPause} className="w-20">
             <Icon name="play" filled={isPlaying} className="mx-auto h-9 w-9" color="#82ca9eaf" />
           </button>
@@ -107,25 +107,27 @@ const RecentPlayBar = () => {
           </div>
         </div>
 
-        <button>
-          <Icon name="volume" className="h-6 w-6 " />
-        </button>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={volume}
-          onChange={handleVolumeChange}
-          className="w-24"
-          style={{
-            background:
-              "linear-gradient(to right, #82ca9e 0%, #82ca9e " +
-              volume +
-              "%, #cccccc4e " +
-              volume +
-              "%, #cccccc4e 100%)",
-          }}
-        />
+        <div className="flex w-2/6 items-center justify-center">
+          <button>
+            <Icon name="volume" className="h-6 w-6 " />
+          </button>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={volume}
+            onChange={handleVolumeChange}
+            className="w-24"
+            style={{
+              background:
+                "linear-gradient(to right, #82ca9e 0%, #82ca9e " +
+                volume +
+                "%, #cccccc4e " +
+                volume +
+                "%, #cccccc4e 100%)",
+            }}
+          />
+        </div>
       </div>
     </div>
   );
