@@ -14,7 +14,7 @@ import Account from "./pages/Account";
 import LoginComponent from "./pages/Login";
 import StoryContent from "./pages/UserContent/Story";
 import ScriptContent from "./pages/UserContent/Script";
-import Layout from "./components/Layout";
+import Layout, { OuterLayout } from "./components/Layout";
 import UploadScript from "./pages/Account/Upload/UploadScript";
 import UploadStory from "./pages/Account/Upload/UploadStory";
 import Notifications from "./pages/Account/Notification";
@@ -32,25 +32,25 @@ function App() {
               <Route
                 path="/"
                 element={
-                  <Layout>
+                  <OuterLayout>
                     <HomePage />
-                  </Layout>
+                  </OuterLayout>
                 }
               />
               <Route
                 path="/story/:storyId"
                 element={
-                  <Layout>
+                  <OuterLayout>
                     <StoryContent />
-                  </Layout>
+                  </OuterLayout>
                 }
               />
               <Route
                 path="/script/:scriptId"
                 element={
-                  <Layout>
+                  <OuterLayout>
                     <ScriptContent />
-                  </Layout>
+                  </OuterLayout>
                 }
               />
               <Route

@@ -193,6 +193,13 @@ const Icon: React.FC<IconProps> = ({ name, className, filled = false, color = "c
           <path d="M9 12l2 2 4-4" />
         </svg>
       );
+
+    case "volume":
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={className} fill="#ffffff9b">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-.77-3.29-2-4.29v8.58c1.23-1 2-2.52 2-4.29zm2.5 0c0 2.5-1.12 4.71-2.88 6.12l1.42 1.42C19.99 17.57 21 14.92 21 12s-1.01-5.57-2.96-7.54l-1.42 1.42C18.88 7.29 19.5 9.5 19.5 12z" />
+        </svg>
+      );
     default:
       return null;
   }

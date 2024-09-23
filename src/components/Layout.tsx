@@ -6,9 +6,10 @@ import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
 
 interface LayoutProps {
   children: ReactNode;
+  isOuterPage?: boolean; // 添加 isHomePage 屬性，並設置為可選
 }
 
-const Layout = ({ children }: LayoutProps) => {
+export const OuterLayout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const [key, setKey] = useState(0);
 
@@ -18,13 +19,26 @@ const Layout = ({ children }: LayoutProps) => {
   }, [location]);
 
   return (
+    <div className="flex min-h-screen	flex-col">
+      <div className="flex-1">
+        <Header />
+        <main className="p-4 flex-1 ">
+          <MainContent isOuterPage={true}>{children}</MainContent>
+        </main>
+        <RecentPlayBar key={key} />
+      </div>
+    </div>
+  );
+};
+
+const Layout = ({ children }: LayoutProps) => {
+  return (
     <div className="flex min-h-screen	">
       <div className="flex-1">
         <Header />
         <main className="p-4 flex-1 ">
-          <MainContent>{children}</MainContent>
+          <MainContent isOuterPage={false}>{children}</MainContent>
         </main>
-        <RecentPlayBar key={key} />
       </div>
     </div>
   );
@@ -106,14 +120,18 @@ const Header = () => {
 
 export default Layout;
 
-const MainContent = ({ children }: LayoutProps) => {
+const MainContent = ({ isOuterPage, children }: LayoutProps) => {
   return (
     <div className="border border-slate-200">
-      <div className="grid lg:grid-cols-5 h-screen">
-        <Sidebar />
+      <div className={`grid h-screen ${isOuterPage ? "lg:grid-cols-5" : "lg:grid-cols-5"}`}>
+        {!isOuterPage && <Sidebar />}
 
         {/* <Sidebar playlists={playlists} className="hidden lg:block" /> */}
-        <div className="col-span-3 lg:col-span-3 lg:border-l overflow-y-auto">
+        <div
+          className={` ${
+            isOuterPage ? "col-span-4 lg:col-span-4" : " col-span-4 lg:col-span-4"
+          } lg:border-l overflow-y-auto`}
+        >
           <div className="h-full px-4 py-6 lg:px-8">
             <div className="h-full space-y-6">
               <div className="border-none p-0 outline-none ">{children}</div>
@@ -129,7 +147,7 @@ const MainContent = ({ children }: LayoutProps) => {
             </div>
           </div>
         </div>
-        <ContentInfoSideBar />
+        {isOuterPage && <ContentInfoSideBar />}
       </div>
     </div>
   );
