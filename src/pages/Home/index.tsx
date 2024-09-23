@@ -6,7 +6,7 @@ import dbApi from "../../utils/firebaseService";
 import { useNavigate } from "react-router-dom";
 import { CategoryOptions } from "../../constants/categoryOptions";
 import { QueryConditions } from "../../types";
-import { PlaylistCard } from "../../components/Card";
+import { PlaylistCard, AudioCard } from "../../components/Card";
 import SortedMenu from "./SortedMenu";
 
 interface Story {
@@ -155,7 +155,7 @@ function HomePage() {
         <div className="flex gap-4 align-middle">
           <input
             type="text"
-            placeholder="search title, tag, author, summary"
+            placeholder="Search title, summary, author, tags"
             value={searchTerm}
             onKeyDown={handleKeyDown}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -165,7 +165,7 @@ function HomePage() {
           {searchTerm && (
             <button
               onClick={clearSearch}
-              className=" w-1 h-1 border-none absolute right-6 top-2 bg-transparent text-gray-500 hover:text-gray-700"
+              className=" w-1 h-1 border-none absolute right-44 top-2 bg-transparent text-gray-500 hover:text-gray-700"
             >
               ✖
             </button>
@@ -225,18 +225,20 @@ function HomePage() {
             <div>沒有結果喔 試試其他關鍵字</div>
           )
         ) : (
-          sortedStoryList?.map((story: Story) => (
-            <PlaylistCard
-              onClick={() => handleContentClick(story.id, "story")}
-              key={story.id}
-              //@ts-expect-error(123)
-              image={story.img_url?.[0]}
-              title={story.title || "Untitled"}
-              //@ts-expect-error(123)
-              tags={story.tags}
-              author={story.author || "Unknown"}
-            />
-          ))
+          <div className=" flex w-full h-40 space-x-4 overflow-x-auto gap-4">
+            {sortedStoryList?.map((story: Story) => (
+              <AudioCard
+                onClick={() => handleContentClick(story.id, "story")}
+                key={story.id}
+                //@ts-expect-error(123)
+                image={story.img_url?.[0]}
+                title={story.title || "Untitled"}
+                //@ts-expect-error(123)
+                tags={story.tags}
+                author={story.author || "Unknown"}
+              />
+            ))}
+          </div>
         )}
       </ul>
       <br />
