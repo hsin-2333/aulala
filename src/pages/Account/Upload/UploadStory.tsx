@@ -32,6 +32,7 @@ const UploadStory = () => {
   const [audioName, setAudioName] = useState<string | null>(null);
   const [audioDuration, setAudioDuration] = useState<number | null>(null);
   const [tagsOptions, setTagsOptions] = useState<{ value: string; label: string }[]>([]);
+  const [currentStep, setCurrentStep] = useState(1);
 
   const filteredCategoryOptions = CategoryOptions.filter((option) => option.label !== "All");
   const AudioInputRef = useRef<HTMLInputElement>(null);
@@ -50,6 +51,10 @@ const UploadStory = () => {
     };
     fetchTags();
   }, []);
+
+  const basicInfoRef = useRef<HTMLDivElement>(null);
+  const moreInfoRef = useRef<HTMLDivElement>(null);
+  const coverImageRef = useRef<HTMLDivElement>(null);
 
   const handleAudioUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -108,16 +113,46 @@ const UploadStory = () => {
       }
     }
   };
+
+  const handleStepClick = (step: number) => {
+    setCurrentStep(step);
+    let ref;
+    switch (step) {
+      case 1:
+        ref = basicInfoRef;
+        break;
+      case 2:
+        ref = moreInfoRef;
+        break;
+      case 3:
+        ref = coverImageRef;
+        break;
+      default:
+        ref = basicInfoRef;
+    }
+    ref.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Upload Section</h2>
+
       {!isAudioUploaded ? (
-        <>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Upload Audio</label>
-            <input type="file" accept="audio/*" onChange={handleAudioUpload} ref={AudioInputRef} />
-          </div>
-        </>
+        <div className="flex gap-4 flex-col items-center">
+          <label className="block text-sm font-medium text-gray-700">Only accept audio below 8 MB</label>
+          <input type="file" accept="audio/*" onChange={handleAudioUpload} ref={AudioInputRef} className="hidden" />
+          <button
+            className="flex items-center size-default bg-primary text-white"
+            type="button"
+            onClick={() => {
+              if (AudioInputRef.current) {
+                AudioInputRef.current.click();
+              }
+            }}
+          >
+            Select Audio File
+          </button>
+        </div>
       ) : (
         <>
           <div>
@@ -126,54 +161,88 @@ const UploadStory = () => {
               Audio Duration: {audioDuration ? `${audioDuration.toFixed(2)} seconds` : "Loading..."}
             </h6>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Title</label>
-              <input className="border border-input w-full" {...register("title", { required: true })} />
-              {errors.title && <span className="text-red-500 text-sm">This field is required</span>}
+          <div className="flex justify-around m-8 ">
+            <button
+              onClick={() => handleStepClick(1)}
+              className={`px-4 py-2  ${currentStep === 1 ? "bg-slate-500 text-white" : "bg-gray-200"}`}
+            >
+              Audio Info
+            </button>
+            <button
+              onClick={() => handleStepClick(2)}
+              className={`px-4 py-2 ${currentStep === 2 ? "bg-slate-500 text-white" : "bg-gray-200"}`}
+            >
+              More Info
+            </button>
+            <button
+              onClick={() => handleStepClick(3)}
+              className={`px-4 py-2 ${currentStep === 3 ? "bg-slate-500 text-white" : "bg-gray-200"}`}
+            >
+              Add Cover Image
+            </button>
+          </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left gap-3">
+            <div ref={basicInfoRef}>
+              <h3 className="text-xl font-semibold mb-3">Audio Info</h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <input className="border border-input w-full" {...register("title", { required: true })} />
+                {errors.title && <span className="text-red-500 text-sm">This field is required</span>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 ">Intro</label>
+                <input className="border border-input w-full" {...register("intro", { required: true })} />
+                {errors.intro && <span className="text-red-500 text-sm">This field is required</span>}
+              </div>
+              <div>
+                <label>Summary</label>
+                <textarea {...register("summary", { required: true })} className="border border-input w-full" />
+                {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Intro</label>
-              <input className="border border-input w-full" {...register("intro", { required: true })} />
-              {errors.intro && <span className="text-red-500 text-sm">This field is required</span>}
+            <div ref={moreInfoRef}>
+              <h3 className="text-xl font-semibold mb-3">More Info</h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Category</label>
+                <Select
+                  options={filteredCategoryOptions}
+                  onChange={(selectedOption) => setValue("category", selectedOption?.value || "")}
+                />
+                {errors.category && <span className="text-red-500 text-sm">This field is required</span>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Tags</label>
+                <CreatableSelect
+                  isMulti
+                  options={tagsOptions}
+                  onChange={(selectedOptions) =>
+                    setValue("tags", [...selectedOptions] as { value: string; label: string }[])
+                  }
+                />
+                {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Scheduled Release Date</label>
+                <input
+                  className="border border-input w-full"
+                  type="datetime-local"
+                  {...register("scheduled_release_date", { required: true })}
+                />
+                {errors.scheduled_release_date && <span className="text-red-500 text-sm">This field is required</span>}
+              </div>
             </div>
-            <div>
-              <label>Summary</label>
-              <textarea {...register("summary", { required: true })} className="border border-input w-full" />
-              {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Category</label>
-              <Select
-                options={filteredCategoryOptions}
-                onChange={(selectedOption) => setValue("category", selectedOption?.value || "")}
-              />
-              {errors.category && <span className="text-red-500 text-sm">This field is required</span>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Tags</label>
-              <CreatableSelect
-                isMulti
-                options={tagsOptions}
-                onChange={(selectedOptions) =>
-                  setValue("tags", [...selectedOptions] as { value: string; label: string }[])
-                }
-              />
-              {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Scheduled Release Date</label>
-              <input
-                className="border border-input w-full"
-                type="datetime-local"
-                {...register("scheduled_release_date", { required: true })}
-              />
-              {errors.scheduled_release_date && <span className="text-red-500 text-sm">This field is required</span>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Cover Image</label>
-              <input className="border border-input w-full" type="file" accept="image/*" onChange={handleImageUpload} />
-              {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
+            <div ref={coverImageRef}>
+              <h3 className="text-xl font-semibold mb-3">Add Cover Image</h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Cover Image</label>
+                <input
+                  className="border border-input w-full"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+                {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
+              </div>
             </div>
             <button className="flex items-center size-default bg-primary text-white " type="submit">
               Submit
