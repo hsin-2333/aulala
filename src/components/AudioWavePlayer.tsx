@@ -10,9 +10,10 @@ interface AudioWavePlayerProps {
   audio_url: string;
   storyId: string;
   segments: { text: string; start: number; end: number }[];
+  showSubtitles: boolean;
 }
 
-function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps) {
+function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioWavePlayerProps) {
   const { user } = useContext(AuthContext);
   const audioRefMain = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
@@ -20,6 +21,9 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
   const currentTextRef = useRef<string>("");
   const [currentText, setCurrentText] = useState<string[]>([]);
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState<number>(-1);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
@@ -81,6 +85,7 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
 
       const updateCurrentTime = () => {
         const currentTime = wavesurfer.getCurrentTime();
+        setCurrentTime(currentTime);
         if (currentTime - lastUpdateTime > 0.8) {
           lastUpdateTime = currentTime;
           updateSubtitles(currentTime);
@@ -101,6 +106,9 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
       }, 100);
 
       wavesurfer.on("seeking", handleSeek);
+      wavesurfer.on("ready", () => {
+        setDuration(wavesurfer.getDuration());
+      });
 
       return () => {
         cancelAnimationFrame(animationFrameId);
@@ -128,22 +136,37 @@ function AudioWavePlayer({ audio_url, storyId, segments }: AudioWavePlayerProps)
 
   return (
     <div className="mb-6">
-      <div className="subtitle">
-        {currentText.map((text, index) => (
-          <p
-            key={index}
-            className={
-              index === currentSegmentIndex
-                ? "highlight mb-4 before:content-none"
-                : "text-gray-700 mb-4 before:content-none"
-            }
-          >
-            {text}
-          </p>
-        ))}
-      </div>
+      {showSubtitles && (
+        <div className="subtitle w-full h-72 border border-gray-200 rounded-lg p-8  mb-8">
+          <div className="flex gap-3">
+            {/* <div>
+              <span className="leading-6">換成start time</span>
+            </div> */}
+            <div className="flex-1">
+              {currentText.map((text, index) => (
+                <p
+                  key={index}
+                  className={
+                    index === currentSegmentIndex
+                      ? "highlight mb-4 before:content-none"
+                      : "text-gray-700 mb-4 before:content-none"
+                  }
+                >
+                  {text}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div id="waveform" ref={audioRefMain} />
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex justify-between text-sm text-gray-400 mt-2">
+        <span className="leading-6">{new Date(currentTime * 1000).toISOString().substr(14, 5)}</span>
+        <span className="leading-6">{new Date(duration * 1000).toISOString().substr(14, 5)}</span>
+      </div>
+
+      <div className="flex items-center justify-center gap-4  mt-4 ">
         <button onClick={handlePlayPause} className="flex items-center">
           <Icon name="play" filled={isPlaying} className="mr-2 h-8 w-8" color="#82ca9eaf" />
         </button>
