@@ -176,7 +176,9 @@ function HomePage() {
       <div className="text-left">
         {CategoryOptions.map((category) => (
           <span
-            className="mr-4 cursor-pointer inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+            className={`mr-4 cursor-pointer inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ${
+              selectedCategory === category.value ? "ring-gray-700 bg-slate-400 bg-opacity-50" : "ring-gray-500/10"
+            }`}
             key={category.value}
             onClick={() => setSelectedCategory(category.value)}
           >
