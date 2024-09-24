@@ -52,10 +52,6 @@ const UploadStory = () => {
     fetchTags();
   }, []);
 
-  const basicInfoRef = useRef<HTMLDivElement>(null);
-  const moreInfoRef = useRef<HTMLDivElement>(null);
-  const coverImageRef = useRef<HTMLDivElement>(null);
-
   const handleAudioUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
@@ -116,21 +112,6 @@ const UploadStory = () => {
 
   const handleStepClick = (step: number) => {
     setCurrentStep(step);
-    let ref;
-    switch (step) {
-      case 1:
-        ref = basicInfoRef;
-        break;
-      case 2:
-        ref = moreInfoRef;
-        break;
-      case 3:
-        ref = coverImageRef;
-        break;
-      default:
-        ref = basicInfoRef;
-    }
-    ref.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -182,71 +163,97 @@ const UploadStory = () => {
             </button>
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left gap-3">
-            <div ref={basicInfoRef}>
-              <h3 className="text-xl font-semibold mb-3">Audio Info</h3>
+            {currentStep === 1 && (
               <div>
-                <label className="block text-sm font-medium text-gray-700">Title</label>
-                <input className="border border-input w-full" {...register("title", { required: true })} />
-                {errors.title && <span className="text-red-500 text-sm">This field is required</span>}
+                <h3 className="text-xl font-semibold mb-3">Audio Info</h3>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Title</label>
+                  <input className="border border-input w-full" {...register("title", { required: true })} />
+                  {errors.title && <span className="text-red-500 text-sm">This field is required</span>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 ">Intro</label>
+                  <input className="border border-input w-full" {...register("intro", { required: true })} />
+                  {errors.intro && <span className="text-red-500 text-sm">This field is required</span>}
+                </div>
+                <div>
+                  <label>Summary</label>
+                  <textarea {...register("summary", { required: true })} className="border border-input w-full" />
+                  {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
+                </div>
+                <div className="flex justify-end">
+                  <button type="button" onClick={() => handleStepClick(2)} className="px-4 py-2 bg-primary text-white">
+                    Next
+                  </button>
+                </div>
               </div>
+            )}
+            {currentStep === 2 && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 ">Intro</label>
-                <input className="border border-input w-full" {...register("intro", { required: true })} />
-                {errors.intro && <span className="text-red-500 text-sm">This field is required</span>}
+                <h3 className="text-xl font-semibold mb-3">More Info</h3>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Category</label>
+                  <Select
+                    options={filteredCategoryOptions}
+                    onChange={(selectedOption) => setValue("category", selectedOption?.value || "")}
+                  />
+                  {errors.category && <span className="text-red-500 text-sm">This field is required</span>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Tags</label>
+                  <CreatableSelect
+                    isMulti
+                    options={tagsOptions}
+                    onChange={(selectedOptions) =>
+                      setValue("tags", [...selectedOptions] as { value: string; label: string }[])
+                    }
+                  />
+                  {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Scheduled Release Date</label>
+                  <input
+                    className="border border-input w-full"
+                    type="datetime-local"
+                    {...register("scheduled_release_date", { required: true })}
+                  />
+                  {errors.scheduled_release_date && (
+                    <span className="text-red-500 text-sm">This field is required</span>
+                  )}
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <button type="button" onClick={() => handleStepClick(1)} className="px-4 py-2 bg-gray-300">
+                    Previous
+                  </button>
+                  <button type="button" onClick={() => handleStepClick(3)} className="px-4 py-2 bg-primary text-white">
+                    Next
+                  </button>
+                </div>
               </div>
+            )}
+            {currentStep === 3 && (
               <div>
-                <label>Summary</label>
-                <textarea {...register("summary", { required: true })} className="border border-input w-full" />
-                {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
+                <h3 className="text-xl font-semibold mb-3">Add Cover Image</h3>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Cover Image</label>
+                  <input
+                    className="border border-input w-full"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                  />
+                  {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <button type="button" onClick={() => handleStepClick(2)} className="px-4 py-2 bg-gray-300">
+                    Previous
+                  </button>
+                  <button type="submit" className="px-4 py-2 bg-primary text-white">
+                    Submit
+                  </button>
+                </div>
               </div>
-            </div>
-            <div ref={moreInfoRef}>
-              <h3 className="text-xl font-semibold mb-3">More Info</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Category</label>
-                <Select
-                  options={filteredCategoryOptions}
-                  onChange={(selectedOption) => setValue("category", selectedOption?.value || "")}
-                />
-                {errors.category && <span className="text-red-500 text-sm">This field is required</span>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Tags</label>
-                <CreatableSelect
-                  isMulti
-                  options={tagsOptions}
-                  onChange={(selectedOptions) =>
-                    setValue("tags", [...selectedOptions] as { value: string; label: string }[])
-                  }
-                />
-                {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Scheduled Release Date</label>
-                <input
-                  className="border border-input w-full"
-                  type="datetime-local"
-                  {...register("scheduled_release_date", { required: true })}
-                />
-                {errors.scheduled_release_date && <span className="text-red-500 text-sm">This field is required</span>}
-              </div>
-            </div>
-            <div ref={coverImageRef}>
-              <h3 className="text-xl font-semibold mb-3">Add Cover Image</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Cover Image</label>
-                <input
-                  className="border border-input w-full"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                />
-                {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
-              </div>
-            </div>
-            <button className="flex items-center size-default bg-primary text-white " type="submit">
-              Submit
-            </button>
+            )}
           </form>
         </>
       )}
