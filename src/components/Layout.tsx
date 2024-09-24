@@ -293,6 +293,7 @@ const Sidebar = () => {
           <div className="space-y-1 ">
             <NavLink
               to={`/user/${user?.userName}`}
+              end
               className={({ isActive }) =>
                 `w-full justify-start flex items-center size-default hover:bg-primary/90 ${
                   isActive ? "active-bg" : "bg-primary/90"
@@ -314,7 +315,32 @@ const Sidebar = () => {
                 <rect width="7" height="7" x="14" y="14" rx="1" />
                 <rect width="7" height="7" x="3" y="14" rx="1" />
               </svg>
-              My Content
+              My Homepage
+            </NavLink>
+            <NavLink
+              to={`/user/${user?.userName}/uploads`}
+              className={({ isActive }) =>
+                `w-full justify-start flex items-center size-default hover:bg-primary/90 ${
+                  isActive ? "active-bg" : "bg-primary/90"
+                }`
+              }
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mr-2 h-4 w-4"
+              >
+                <rect width="7" height="7" x="3" y="3" rx="1" />
+                <rect width="7" height="7" x="14" y="3" rx="1" />
+                <rect width="7" height="7" x="14" y="14" rx="1" />
+                <rect width="7" height="7" x="3" y="14" rx="1" />
+              </svg>
+              Upload Content
             </NavLink>
             <NavLink
               to={`/account/${user?.userName}/notification`}

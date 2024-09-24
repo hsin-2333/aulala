@@ -88,6 +88,8 @@ const UploadStory = () => {
 
   const onSubmit = async (data: FormData) => {
     if (file) {
+      let storyId: string | null = null;
+
       try {
         const storyData = {
           ...data,
@@ -95,17 +97,30 @@ const UploadStory = () => {
           author: user?.userName || "Unknown",
           tags: data.tags.map((tag) => tag.value),
           voice_actor: [user?.userName || ""], //之後要增加多位聲優
+          status: "Processing",
         };
 
-        navigate(`/user/${user?.userName}`);
+        navigate(`/user/${user?.userName}/uploads`);
 
-        const storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
+        storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
         for (const tag of data.tags) {
           await dbApi.addOrUpdateTag(tag.value, storyId, null);
         }
+
+        await dbApi.updateStoryStatus(storyId, "Done");
         window.alert("成功上傳");
       } catch (error) {
         console.error("Error uploading story and audio:", error);
+        if (storyId) {
+          // 如果上傳失敗，回滾狀態
+          await dbApi.updateStoryStatus(storyId, "Failed");
+          setFile(null);
+          setImageFile(null);
+          setImageUrl(null);
+          setIsAudioUploaded(false);
+          setAudioName(null);
+          setAudioDuration(null);
+        }
       }
     }
   };

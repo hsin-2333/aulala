@@ -62,6 +62,7 @@ export interface Story {
   title: string;
   author: string;
   img_url?: string[];
+  status?: string;
   image?: string;
   summary?: string;
   tags?: string[];

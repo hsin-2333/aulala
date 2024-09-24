@@ -475,6 +475,11 @@ const dbApi = {
     }
   },
 
+  async updateStoryStatus(storyId: string, status: string) {
+    const storyRef = doc(db, "stories", storyId);
+    await updateDoc(storyRef, { status });
+  },
+
   async subscribeToInteractions(scriptId: string, callback: (data: Interactions) => void) {
     const q = query(collection(db, "interactions"), where("script_id", "==", scriptId));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {

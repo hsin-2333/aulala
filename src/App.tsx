@@ -18,7 +18,7 @@ import Layout, { OuterLayout } from "./components/Layout";
 import UploadScript from "./pages/Account/Upload/UploadScript";
 import UploadStory from "./pages/Account/Upload/UploadStory";
 import Notifications from "./pages/Account/Notification";
-
+import StoryTable from "./pages/Account/UploadsContent/Uploads";
 const queryClient = new QueryClient();
 
 function App() {
@@ -61,6 +61,14 @@ function App() {
                   </Layout>
                 }
               />
+              <Route
+                path="/user/:userName/uploads"
+                element={
+                  <Layout>
+                    <StoryTable />
+                  </Layout>
+                }
+              />
               <Route path="/login" element={<LoginComponent />} />
               <Route
                 path="/account/:userName/notification"
@@ -85,7 +93,6 @@ function App() {
                 element={
                   <PrivateRoute>
                     <Layout>
-                      {" "}
                       <Account />
                     </Layout>
                   </PrivateRoute>
