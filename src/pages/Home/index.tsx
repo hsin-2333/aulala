@@ -225,7 +225,7 @@ function HomePage() {
             <div>沒有結果喔 試試其他關鍵字</div>
           )
         ) : (
-          <div className=" flex w-full h-40 space-x-4 overflow-x-auto gap-4">
+          <div>
             {sortedStoryList?.map((story: Story) => (
               <AudioCard
                 onClick={() => handleContentClick(story.id, "story")}
