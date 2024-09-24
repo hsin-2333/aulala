@@ -23,7 +23,7 @@ export const OuterLayout = ({ children }: LayoutProps) => {
     <div className="flex min-h-screen	flex-col">
       <div className="flex-1">
         <Header />
-        <main className="p-4 flex-1 ">
+        <main className="p-4 flex-1 pb-24">
           <MainContent isOuterPage={true}>{children}</MainContent>
         </main>
         {user && <RecentPlayBar key={key} />}

@@ -106,3 +106,24 @@ export const ScriptCard = ({ scriptId, title, author, tags = [], summary, create
     </div>
   );
 };
+export const AudioCard: React.FC<PlaylistCardProps> = ({ image, title, tags = [], author, onClick }) => {
+  return (
+    <div
+      className="flex items-center w-full h-24 bg-slate-200 rounded-lg overflow-hidden cursor-pointer mb-2"
+      onClick={onClick}
+    >
+      <img className="h-full w-24 object-cover" src={image} alt={title} />
+      <div className="flex-grow pl-4 text-left">
+        <div className="font-bold text-l">{title}</div>
+        <div className="justify-items-start	">{author}</div>
+        <div className="flex space-x-2 mt-2">
+          {tags.map((tag, index) => (
+            <span key={index} className="rounded-sm bg-slate-300">
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
