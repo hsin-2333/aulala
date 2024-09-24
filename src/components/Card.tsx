@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Timestamp } from "firebase/firestore";
 import dbApi from "../utils/firebaseService";
 import { InteractionType } from "../types";
-
+import Icon from "./Icon";
+import { AuthContext } from "../context/AuthContext";
 interface PlaylistCardProps {
+  id?: string;
   image: string;
   title: string;
   tags: string[];
@@ -106,23 +108,53 @@ export const ScriptCard = ({ scriptId, title, author, tags = [], summary, create
     </div>
   );
 };
-export const AudioCard: React.FC<PlaylistCardProps> = ({ image, title, tags = [], author, onClick }) => {
+export const AudioCard: React.FC<PlaylistCardProps> = ({ id, image, title, tags = [], author, onClick }) => {
+  const { user } = useContext(AuthContext);
+
+  const togglePlayPause = async () => {
+    if (user && id) {
+      const currentTime = Date.now();
+      try {
+        await dbApi.updateRecentPlay(user.uid, id, currentTime);
+        console.log("Updated recent play");
+      } catch (error) {
+        console.error("Error updating recent play: ", error);
+      }
+    }
+  };
+
   return (
     <div
-      className="flex items-center w-full h-24 bg-slate-200 rounded-lg overflow-hidden cursor-pointer mb-2"
+      className="flex items-center w-full h-fit p-4 gap-2 bg-slate-100 rounded-md overflow-hidden cursor-pointer mb-2"
       onClick={onClick}
     >
-      <img className="h-full w-24 object-cover" src={image} alt={title} />
-      <div className="flex-grow pl-4 text-left">
-        <div className="font-bold text-l">{title}</div>
-        <div className="justify-items-start	">{author}</div>
+      <img className="h-24 w-24 rounded-lg object-cover" src={image} alt={title} />
+      <div className="h-24 flex flex-grow text-left flex-col justify-between ">
+        <div>
+          <div className="font-bold text-xl">{title}</div>
+          <div className="justify-items-start mt-1	">
+            by <span className="">{author}</span>
+          </div>
+        </div>
+
         <div className="flex space-x-2 mt-2">
           {tags.map((tag, index) => (
-            <span key={index} className="rounded-sm bg-slate-300">
+            <span key={index} className="rounded-sm px-1 bg-slate-300">
               {tag}
             </span>
           ))}
         </div>
+      </div>
+      <div className="flex  justify-end gap-4  mt-4 ">
+        <button
+          onClick={(event) => {
+            event.stopPropagation();
+            togglePlayPause();
+          }}
+          className="z-10 flex items-center"
+        >
+          <Icon name="play" className="mr-2 h-8 w-8" color="#28302bad" />
+        </button>
       </div>
     </div>
   );

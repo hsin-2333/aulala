@@ -230,6 +230,7 @@ function HomePage() {
               <AudioCard
                 onClick={() => handleContentClick(story.id, "story")}
                 key={story.id}
+                id={story.id}
                 //@ts-expect-error(123)
                 image={story.img_url?.[0]}
                 title={story.title || "Untitled"}
