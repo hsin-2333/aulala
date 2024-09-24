@@ -212,8 +212,8 @@ export const CommentToolbar = ({ userName, storyId, scriptId }: InteractionToolb
 
         {comments.length > 0 ? (
           comments.map((comment) => (
-            <div key={comment.id} className="mb-4 border border-gray-600">
-              <div className="flex  gap-3">
+            <div key={comment.id} className="mb-4 pb-3 border-b-2  w-full">
+              <div className="flex  gap-3 justify-between">
                 <h6 className="text-gray-700">{comment.userName}</h6>
                 <h6 className="text-gray-500">
                   {comment.created_at && typeof comment.created_at !== "string"

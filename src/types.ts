@@ -65,6 +65,7 @@ export interface Story {
   status?: string;
   image?: string;
   summary?: string;
+  content?: string;
   tags?: string[];
   created_at?: Timestamp | string;
   language?: string;

@@ -133,7 +133,7 @@ function HomePage() {
 
   //之後替換成skeleton
   if (isScriptLoading || isStoryLoading) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
   if (storyError || scriptError) {
     return <div>Error fetching data: {storyError?.message || scriptError?.message}</div>;

@@ -59,6 +59,8 @@ function ScriptContent() {
         <div>
           <h2 className="text-2xl font-semibold mb-2">{script.title}</h2>
           <p className="text-gray-700 mb-4 before:content-none">{script.summary}</p>
+          <p className="text-gray-700 mb-4 before:content-none">{script.content}</p>
+
           {/* <img className="w-32 h-auto rounded-lg mb-4" src={scriptData.img_url[0]} alt={scriptData.title} /> */}
         </div>
       )}
