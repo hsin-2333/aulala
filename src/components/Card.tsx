@@ -4,6 +4,8 @@ import dbApi from "../utils/firebaseService";
 import { InteractionType } from "../types";
 import Icon from "./Icon";
 import { AuthContext } from "../context/AuthContext";
+import { RecentPlayContext } from "../context/RecentPlayContext";
+
 interface PlaylistCardProps {
   id?: string;
   image: string;
@@ -11,6 +13,7 @@ interface PlaylistCardProps {
   tags: string[];
   author: string;
   onClick?: () => void;
+  onCardClick?: () => void;
 }
 
 interface ScriptCardProps {
@@ -108,18 +111,40 @@ export const ScriptCard = ({ scriptId, title, author, tags = [], summary, create
     </div>
   );
 };
-export const AudioCard: React.FC<PlaylistCardProps> = ({ id, image, title, tags = [], author, onClick }) => {
+export const AudioCard: React.FC<PlaylistCardProps> = ({
+  id,
+  image,
+  title,
+  tags = [],
+  author,
+  onClick,
+  onCardClick,
+}) => {
   const { user } = useContext(AuthContext);
+  const context = useContext(RecentPlayContext);
+  if (context === undefined) {
+    throw new Error("SomeComponent must be used within a RecentPlayProvider");
+  }
+  const { isPlaying, setIsPlaying, fetchRecentPlay } = context;
 
-  const togglePlayPause = async () => {
+  const togglePlayPause = async (event: React.MouseEvent) => {
+    event.stopPropagation(); // 防止事件冒泡
     if (user && id) {
-      const currentTime = Date.now();
+      // const currentTime = Date.now();
+      const currentTime = 0;
       try {
+        console.log("更新時間點=", currentTime);
         await dbApi.updateRecentPlay(user.uid, id, currentTime);
+        fetchRecentPlay();
         console.log("Updated recent play");
       } catch (error) {
         console.error("Error updating recent play: ", error);
       }
+    }
+    if (onCardClick) {
+      console.log("onCardClick");
+      onCardClick(); //打開主頁側邊選單
+      setIsPlaying(!isPlaying);
     }
   };
 
@@ -146,13 +171,7 @@ export const AudioCard: React.FC<PlaylistCardProps> = ({ id, image, title, tags 
         </div>
       </div>
       <div className="flex  justify-end gap-4  mt-4 ">
-        <button
-          onClick={(event) => {
-            event.stopPropagation();
-            togglePlayPause();
-          }}
-          className="z-10 flex items-center"
-        >
+        <button onClick={togglePlayPause} className="z-10 flex items-center">
           <Icon name="play" className="mr-2 h-8 w-8" color="#28302bad" />
         </button>
       </div>

@@ -16,7 +16,12 @@ interface Story {
   created_at?: { seconds: number; nanoseconds: number };
 }
 
-function HomePage() {
+// HomePage.tsx
+interface HomePageProps {
+  onCardClick?: () => void;
+}
+
+function HomePage({ onCardClick }: HomePageProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [searchResults, setSearchResults] = useState<lunr.Index.Result[]>([]);
@@ -228,6 +233,7 @@ function HomePage() {
           <div>
             {sortedStoryList?.map((story: Story) => (
               <AudioCard
+                onCardClick={onCardClick}
                 onClick={() => handleContentClick(story.id, "story")}
                 key={story.id}
                 id={story.id}

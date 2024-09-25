@@ -19,6 +19,7 @@ import UploadScript from "./pages/Account/Upload/UploadScript";
 import UploadStory from "./pages/Account/Upload/UploadStory";
 import Notifications from "./pages/Account/Notification";
 import StoryTable from "./pages/Account/UploadsContent/Uploads";
+import TestUI from "./components/testUI";
 const queryClient = new QueryClient();
 
 function App() {
@@ -33,7 +34,7 @@ function App() {
                 path="/testUI"
                 element={
                   <>
-                    <HomePage />
+                    <TestUI />
                   </>
                 }
               />

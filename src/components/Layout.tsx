@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState, ReactNode } from "react";
+import * as React from "react";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import RecentPlayBar from "./RecentPlayBar";
 import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
-
 interface LayoutProps {
   children: ReactNode;
   isOuterPage?: boolean; // 添加 isHomePage 屬性，並設置為可選
@@ -60,8 +60,8 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gray-800 text-white p-4">
-      <nav className="container mx-auto flex justify-between items-center">
+    <header className="bg-gray-800 text-white p-4 w-full">
+      <nav className=" mx-4 flex justify-between items-center">
         <Link to="/" className="text-2xl font-bold">
           Storybook
         </Link>
@@ -120,33 +120,33 @@ const Header = () => {
 export default Layout;
 
 const MainContent = ({ isOuterPage, children }: LayoutProps) => {
+  const [isDetailVisible, setIsDetailVisible] = useState(false);
+
+  const handleCardClick = () => {
+    setIsDetailVisible(true);
+  };
+
   return (
     <div className="border border-slate-200">
       <div className={`grid h-screen ${isOuterPage ? "lg:grid-cols-5" : "lg:grid-cols-5"}`}>
         {!isOuterPage && <Sidebar />}
 
-        {/* <Sidebar playlists={playlists} className="hidden lg:block" /> */}
         <div
-          className={` ${
-            isOuterPage ? "col-span-4 lg:col-span-4" : " col-span-4 lg:col-span-4"
+          className={`${
+            isDetailVisible ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
           } lg:border-l overflow-y-auto`}
         >
           <div className="h-full px-4 py-6 lg:px-8">
             <div className="h-full space-y-6">
-              <div className="border-none p-0 outline-none ">{children}</div>
-              {/* <div className="h-full flex-col border-none p-0 data-[state=active]:flex">
-                <div className="flex items-center justify-between text-left">
-                  <div className="space-y-1">
-                    <h2 className="text-2xl font-semibold tracking-tight">New Episodes</h2>
-                    <p className="text-sm text-muted-foreground">Your favorite podcasts. Updated daily.</p>
-                  </div>
-                </div>
-                <div className="my-4" />
-              </div> */}
+              <div className="border-none p-0 outline-none">
+                <div className="card"></div>
+                {/* {children} */}
+                {React.cloneElement(children as React.ReactElement, { onCardClick: handleCardClick })}
+              </div>
             </div>
           </div>
         </div>
-        {isOuterPage && <ContentInfoSideBar />}
+        {isDetailVisible && <ContentInfoSideBar />}
       </div>
     </div>
   );
