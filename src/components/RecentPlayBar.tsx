@@ -15,8 +15,8 @@ const RecentPlayBar = () => {
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
-  const { recentPlay, storyInfo } = context;
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { isPlaying, setIsPlaying, recentPlay, storyInfo } = context;
+  // const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     if (recentPlay) {
@@ -24,6 +24,10 @@ const RecentPlayBar = () => {
       currentTimeRef.current = recentPlay.played_at;
     }
   }, [recentPlay]);
+
+  useEffect(() => {
+    currentTimeRef.current = currentTime;
+  }, [currentTime]);
 
   useEffect(() => {
     if (storyInfo?.audio_url) {
@@ -47,7 +51,9 @@ const RecentPlayBar = () => {
       });
 
       wavesurfer.on("audioprocess", () => {
-        setCurrentTime(wavesurfer.getCurrentTime());
+        const currentTime = wavesurfer.getCurrentTime();
+        setCurrentTime(currentTime);
+        currentTimeRef.current = currentTime;
       });
 
       return () => {
@@ -58,10 +64,12 @@ const RecentPlayBar = () => {
 
   const togglePlayPause = () => {
     const wavesurfer = audioRef.current;
+    console.log("togglePlayPause ==== audioRef.current ===", audioRef.current);
     if (wavesurfer) {
       if (isPlaying) {
         wavesurfer.pause();
       } else {
+        wavesurfer.seekTo(currentTimeRef.current / wavesurfer.getDuration());
         wavesurfer.play();
       }
       setIsPlaying(!isPlaying);

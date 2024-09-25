@@ -15,15 +15,17 @@ type RecentPlay = {
 type RecentPlayContextType = {
   recentPlay: RecentPlay | null;
   storyInfo: Story | null;
+  isPlaying: boolean;
+  setIsPlaying: (isPlaying: boolean) => void;
   fetchRecentPlay: () => Promise<void>;
 };
 
 export const RecentPlayContext = createContext<RecentPlayContextType | undefined>(undefined);
-
 export const RecentPlayProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useContext(AuthContext);
   const [recentPlay, setRecentPlay] = useState<RecentPlay | null>(null);
   const [storyInfo, setStoryInfo] = useState<Story | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const fetchRecentPlay = useCallback(async () => {
     if (user) {
@@ -36,7 +38,6 @@ export const RecentPlayProvider = ({ children }: { children: ReactNode }) => {
         const recentPlay = recentPlays[0] as RecentPlay;
         setRecentPlay(recentPlay);
 
-        // 根據 story_id 查詢故事資料
         const StoryCondition = {
           id: recentPlay.story_id,
         };
@@ -53,7 +54,7 @@ export const RecentPlayProvider = ({ children }: { children: ReactNode }) => {
   }, [user, fetchRecentPlay]);
 
   return (
-    <RecentPlayContext.Provider value={{ recentPlay, storyInfo, fetchRecentPlay }}>
+    <RecentPlayContext.Provider value={{ recentPlay, storyInfo, isPlaying, setIsPlaying, fetchRecentPlay }}>
       {children}
     </RecentPlayContext.Provider>
   );

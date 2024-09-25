@@ -17,7 +17,7 @@ function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioW
   const { user } = useContext(AuthContext);
   const audioRefMain = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  // const [isPlaying, setIsPlaying] = useState(false);
   const currentTextRef = useRef<string>("");
   const [currentText, setCurrentText] = useState<string[]>([]);
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState<number>(-1);
@@ -28,7 +28,7 @@ function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioW
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
-  const { fetchRecentPlay } = context;
+  const { isPlaying, setIsPlaying, fetchRecentPlay } = context;
 
   const AudioSegments = segments;
   useEffect(() => {
@@ -124,11 +124,12 @@ function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioW
         wavesurfer.pause();
       } else {
         wavesurfer.play();
-        if (user) {
-          const currentTime = wavesurfer.getCurrentTime();
-          await dbApi.updateRecentPlay(user.uid, storyId, currentTime);
-          fetchRecentPlay();
-        }
+      }
+      if (user) {
+        const currentTime = wavesurfer.getCurrentTime();
+        console.log("更新時間");
+        await dbApi.updateRecentPlay(user.uid, storyId, currentTime);
+        fetchRecentPlay();
       }
       setIsPlaying(!isPlaying);
     }
