@@ -30,6 +30,14 @@ function App() {
           <RecentPlayProvider>
             <Routes>
               <Route
+                path="/testUI"
+                element={
+                  <>
+                    <HomePage />
+                  </>
+                }
+              />
+              <Route
                 path="/"
                 element={
                   <OuterLayout>

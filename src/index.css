@@ -17,6 +17,7 @@
   -moz-osx-font-smoothing: grayscale;
   padding: 0;
   min-height: 100vh;
+  max-width: none;
 
   color: #334155;
   --color-primary: #334155;
