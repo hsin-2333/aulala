@@ -129,7 +129,7 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
   };
 
   return (
-    <div className="border border-slate-200">
+    <div className="border border-slate-200 " style={{ backgroundColor: "#F4F5FC" }}>
       <div className={`grid h-screen ${isOuterPage ? "lg:grid-cols-5" : "lg:grid-cols-5"}`}>
         {!isOuterPage && <Sidebar />}
 
@@ -141,7 +141,6 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
           <div className="h-full px-4 py-6 lg:px-8">
             <div className="h-full space-y-6">
               <div className="border-none p-0 outline-none">
-                <div className="card"></div>
                 {/* {children} */}
                 {React.cloneElement(children as React.ReactElement, { onCardClick: handleCardClick })}
               </div>

@@ -1,13 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 //@ts-expect-error(123)
 import lunr from "lunr";
 import dbApi from "../../utils/firebaseService";
-import { useNavigate } from "react-router-dom";
 import { CategoryOptions } from "../../constants/categoryOptions";
 import { QueryConditions } from "../../types";
 import { AudioCard } from "../../components/Card";
 import SortedMenu from "./SortedMenu";
+import SearchComponent from "./SearchComponent";
 import { Card, CardBody } from "@nextui-org/react";
 import { LuFolderHeart } from "react-icons/lu";
 
@@ -18,20 +19,15 @@ interface Story {
   created_at?: { seconds: number; nanoseconds: number };
 }
 
-// HomePage.tsx
 interface HomePageProps {
   onCardClick?: () => void;
 }
 
 function HomePage({ onCardClick }: HomePageProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [searchResults, setSearchResults] = useState<lunr.Index.Result[]>([]);
-  const [searchClicked, setSearchClicked] = useState<boolean>(false);
   const [sortOrder, setSortOrder] = useState<string>("由遠到近");
 
-  console.log("searchResults", searchResults);
-  console.log("searchTerm", searchTerm);
   const navigate = useNavigate();
 
   const {
@@ -45,7 +41,6 @@ function HomePage({ onCardClick }: HomePageProps) {
       if (selectedCategory) {
         conditions.category = selectedCategory;
       }
-      // return dbApi.queryCollection("stories", conditions, 20);
       const stories = await dbApi.queryCollection("stories", conditions, 20);
       return stories.map((story) => ({ ...story, id: story.id }));
     },
@@ -62,47 +57,10 @@ function HomePage({ onCardClick }: HomePageProps) {
       if (selectedCategory) {
         conditions.category = selectedCategory;
       }
-      // return dbApi.queryCollection("scripts", conditions, 20);
-      const stories = await dbApi.queryCollection("scripts", conditions, 20);
-      return stories.map((script) => ({ ...script, id: script.id }));
+      const scripts = await dbApi.queryCollection("scripts", conditions, 20);
+      return scripts.map((script) => ({ ...script, id: script.id }));
     },
   });
-
-  const idx = useMemo(() => {
-    if (!storyList || !scriptList) return null;
-
-    return lunr(function (this: lunr.Builder) {
-      this.ref("id");
-      this.field("id");
-      this.field("title");
-      this.field("author");
-      this.field("summary");
-      this.field("tags");
-
-      storyList.forEach((story) => {
-        this.add(story);
-      });
-
-      scriptList.forEach((script) => {
-        this.add(script);
-      });
-    });
-  }, [storyList, scriptList]);
-
-  const handleSearch = () => {
-    setSearchClicked(true);
-    if (idx && searchTerm) {
-      const results = idx.search(searchTerm);
-      setSearchResults(results);
-    } else {
-      setSearchResults([]);
-    }
-  };
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
 
   const handleSortOrderChange = (order: string) => {
     setSortOrder(order);
@@ -138,64 +96,28 @@ function HomePage({ onCardClick }: HomePageProps) {
     });
   }, [scriptList, sortOrder]);
 
-  //之後替換成skeleton
   if (isScriptLoading || isStoryLoading) {
-    return <div></div>;
+    return <div>Loading...</div>;
   }
   if (storyError || scriptError) {
     return <div>Error fetching data: {storyError?.message || scriptError?.message}</div>;
   }
 
   const handleContentClick = (id: string, type: "script" | "story") => {
-    console.log("handleContentClick", id, type);
     if (type === "script") navigate(`/script/${id}`);
     if (type === "story") navigate(`/story/${id}`);
-  };
-  const clearSearch = () => {
-    setSearchTerm("");
-    setSearchResults([]);
-    setSearchClicked(false);
   };
 
   return (
     <>
-      <div className="mb-4 relative">
-        <div className="flex gap-4 align-middle">
-          <input
-            type="text"
-            placeholder="Search title, summary, author, tags"
-            value={searchTerm}
-            onKeyDown={handleKeyDown}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            // onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          {searchTerm && (
-            <button
-              onClick={clearSearch}
-              className=" w-1 h-1 border-none absolute right-44 top-2 bg-transparent text-gray-500 hover:text-gray-700"
-            >
-              ✖
-            </button>
-          )}
-          <SortedMenu onSortOrderChange={handleSortOrderChange} />
-        </div>
-      </div>
+      <SearchComponent storyList={storyList || []} scriptList={scriptList || []} onSearchResults={setSearchResults} />
+      <SortedMenu onSortOrderChange={handleSortOrderChange} />
 
       <div className="flex items-center justify-between text-left">
         <div className="space-y-1 w-full">
-          <h2 className="text-2xl font-semibold tracking-tight ">Categories</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">Categories</h2>
           <div className="flex w-2/4 justify-between">
             {CategoryOptions.map((category) => (
-              // <span
-              //   className={`mr-4 cursor-pointer inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ${
-              //     selectedCategory === category.value ? "ring-gray-700 bg-slate-400 bg-opacity-50" : "ring-gray-500/10"
-              //   }`}
-              //   key={category.value}
-              //   onClick={() => setSelectedCategory(category.value)}
-              // >
-              //   {category.label}
-              // </span>
               <Card
                 shadow="none"
                 className={`border border-default-200 w-32 h-20 ${
@@ -205,13 +127,11 @@ function HomePage({ onCardClick }: HomePageProps) {
                 isPressable
                 onPress={() => setSelectedCategory(category.value)}
               >
-                {/* <CardBody className="overflow-visible p-0"></CardBody> */}
-                <CardBody className="text-small justify-start flex flex-col relative ">
-                  {/* <b>{category.value}</b> */}
+                <CardBody className="text-small justify-start flex flex-col relative">
                   <p
-                    className={` text-medium ${
+                    className={`text-medium ${
                       selectedCategory === category.value ? "text-primary-800" : "text-default-900"
-                    } `}
+                    }`}
                   >
                     {category.label}
                   </p>
@@ -237,36 +157,32 @@ function HomePage({ onCardClick }: HomePageProps) {
 
       <div className="flex items-center justify-between text-left">
         <div className="space-y-1">
-          <h2 className="text-2xl font-semibold tracking-tight ">Stories</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">Stories</h2>
           <p className="text-sm text-muted-foreground">Top picks for you. Updated daily.</p>
         </div>
       </div>
       <div className="relative">
         <div className="my-4" />
       </div>
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4 2xl:grid-cols-4 ">
-        {searchClicked ? (
-          searchResults.length > 0 ? (
-            searchResults.map((result) => {
-              const story = sortedStoryList?.find((s) => s.id === result.ref);
-              return (
-                story && (
-                  <AudioCard
-                    onClick={() => handleContentClick(story.id, "story")}
-                    key={story.id}
-                    //@ts-expect-error(123)
-                    image={story.img_url?.[0]}
-                    title={story.title || "Untitled"}
-                    //@ts-expect-error(123)
-                    tags={story.tags}
-                    author={story.author || "Unknown"}
-                  />
-                )
-              );
-            })
-          ) : (
-            <div>沒有結果喔 試試其他關鍵字</div>
-          )
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4 2xl:grid-cols-4">
+        {searchResults.length > 0 ? (
+          searchResults.map((result) => {
+            const story = sortedStoryList?.find((s) => s.id === result.ref);
+            return (
+              story && (
+                <AudioCard
+                  onClick={() => handleContentClick(story.id, "story")}
+                  key={story.id}
+                  //@ts-expect-error(123)
+                  image={story.img_url?.[0]}
+                  title={story.title || "Untitled"}
+                  //@ts-expect-error(123)
+                  tags={story.tags}
+                  author={story.author || "Unknown"}
+                />
+              )
+            );
+          })
         ) : (
           <>
             {sortedStoryList?.map((story: Story) => (
@@ -289,16 +205,15 @@ function HomePage({ onCardClick }: HomePageProps) {
       <br />
       <div className="flex items-center justify-between text-left">
         <div className="space-y-1">
-          <h2 className="text-2xl font-semibold tracking-tight ">Script</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">Script</h2>
           <p className="text-sm text-muted-foreground">Top picks for you. Updated daily.</p>
         </div>
       </div>
       <div className="relative">
         <div className="my-4" />
         <ul>
-          {searchClicked ? (
-            searchResults.length > 0 ? (
-              searchResults.map((result) => {
+          {searchResults.length > 0
+            ? searchResults.map((result) => {
                 const script = sortedScriptList?.find((s) => s.id === result.ref);
                 return (
                   script && (
@@ -315,23 +230,18 @@ function HomePage({ onCardClick }: HomePageProps) {
                   )
                 );
               })
-            ) : (
-              <div>沒有結果喔 試試其他關鍵字</div>
-            )
-          ) : (
-            sortedScriptList?.map((script: Story) => (
-              <AudioCard
-                onClick={() => handleContentClick(script.id, "script")}
-                key={script.id}
-                //@ts-expect-error(123)
-                image={script.img_url?.[0]}
-                title={script.title || "Untitled"}
-                //@ts-expect-error(123)
-                tags={script.tags}
-                author={script.author || "Unknown"}
-              />
-            ))
-          )}
+            : sortedScriptList?.map((script: Story) => (
+                <AudioCard
+                  onClick={() => handleContentClick(script.id, "script")}
+                  key={script.id}
+                  //@ts-expect-error(123)
+                  image={script.img_url?.[0]}
+                  title={script.title || "Untitled"}
+                  //@ts-expect-error(123)
+                  tags={script.tags}
+                  author={script.author || "Unknown"}
+                />
+              ))}
         </ul>
       </div>
     </>
