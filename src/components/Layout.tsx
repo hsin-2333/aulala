@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState, ReactNode } from "react";
 import * as React from "react";
-import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import RecentPlayBar from "./RecentPlayBar";
 import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
+import { NavbarComponent } from "../components/Nav/Navbar";
+
 interface LayoutProps {
   children: ReactNode;
-  isOuterPage?: boolean; // 添加 isHomePage 屬性，並設置為可選
+  isOuterPage?: boolean;
 }
 
 export const OuterLayout = ({ children }: LayoutProps) => {
@@ -22,7 +24,8 @@ export const OuterLayout = ({ children }: LayoutProps) => {
   return (
     <div className="flex min-h-screen	flex-col">
       <div className="flex-1">
-        <Header />
+        {/* <Header /> */}
+        <NavbarComponent />
         <main className="p-4 flex-1 pb-24">
           <MainContent isOuterPage={true}>{children}</MainContent>
         </main>
@@ -32,11 +35,12 @@ export const OuterLayout = ({ children }: LayoutProps) => {
   );
 };
 
-const Layout = ({ children }: LayoutProps) => {
+export const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex min-h-screen	">
       <div className="flex-1">
-        <Header />
+        {/* <Header /> */}
+        <NavbarComponent />
         <main className="p-4 flex-1 ">
           <MainContent isOuterPage={false}>{children}</MainContent>
         </main>
@@ -45,79 +49,77 @@ const Layout = ({ children }: LayoutProps) => {
   );
 };
 
-const Header = () => {
-  const { user } = useContext(AuthContext);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigate = useNavigate();
-  const { Logout } = useContext(AuthContext);
+// const Header = () => {
+//   const { user } = useContext(AuthContext);
+//   const [isMenuOpen, setIsMenuOpen] = useState(false);
+//   const navigate = useNavigate();
+//   const { Logout } = useContext(AuthContext);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-  const handleLogout = () => {
-    Logout();
-    navigate("/");
-  };
+//   const toggleMenu = () => {
+//     setIsMenuOpen(!isMenuOpen);
+//   };
+//   const handleLogout = () => {
+//     Logout();
+//     navigate("/");
+//   };
 
-  return (
-    <header className="bg-gray-800 text-white p-4 w-full">
-      <nav className=" mx-4 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold">
-          Storybook
-        </Link>
-        <ul className="flex space-x-4">
-          {user ? (
-            <>
-              <li>
-                <Link to="/upload/story">Upload Story</Link>
-              </li>
-              <li>
-                <Link to="/upload/script">Upload Script</Link>
-              </li>
-              <div onClick={toggleMenu} className="cursor-pointer relative">
-                <img src={user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full" />
-                {isMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
-                    <button
-                      onClick={() => {
-                        navigate(`/user/${user.userName}`);
-                        toggleMenu();
-                      }}
-                      className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
-                    >
-                      My Content
-                    </button>
-                    <button
-                      onClick={() => {
-                        navigate(`/user/${user.userName}/settings`);
-                        toggleMenu();
-                      }}
-                      className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
-                    >
-                      Settings
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-          )}
-        </ul>
-      </nav>
-    </header>
-  );
-};
-
-export default Layout;
+//   return (
+//     <header className="bg-gray-800 text-white p-4 w-full">
+//       <nav className=" mx-4 flex justify-between items-center">
+//         <Link to="/" className="text-2xl font-bold">
+//           Storybook
+//         </Link>
+//         <ul className="flex space-x-4">
+//           {user ? (
+//             <>
+//               <li>
+//                 <Link to="/upload/story">Upload Story</Link>
+//               </li>
+//               <li>
+//                 <Link to="/upload/script">Upload Script</Link>
+//               </li>
+//               <div onClick={toggleMenu} className="cursor-pointer relative">
+//                 <img src={user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full" />
+//                 {isMenuOpen && (
+//                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+//                     <button
+//                       onClick={() => {
+//                         navigate(`/user/${user.userName}`);
+//                         toggleMenu();
+//                       }}
+//                       className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+//                     >
+//                       My Content
+//                     </button>
+//                     <button
+//                       onClick={() => {
+//                         navigate(`/user/${user.userName}/settings`);
+//                         toggleMenu();
+//                       }}
+//                       className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+//                     >
+//                       Settings
+//                     </button>
+//                     <button
+//                       onClick={handleLogout}
+//                       className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+//                     >
+//                       Logout
+//                     </button>
+//                   </div>
+//                 )}
+//               </div>
+//             </>
+//           ) : (
+//             <li>
+//               <Link to="/login">Login</Link>
+//             </li>
+//           )}
+//         </ul>
+//       </nav>
+//     </header>
+//   );
+// };
 
 const MainContent = ({ isOuterPage, children }: LayoutProps) => {
   const [isDetailVisible, setIsDetailVisible] = useState(false);
