@@ -5,6 +5,7 @@ import { InteractionType } from "../types";
 import Icon from "./Icon";
 import { AuthContext } from "../context/AuthContext";
 import { RecentPlayContext } from "../context/RecentPlayContext";
+import { Card, CardBody, Button } from "@nextui-org/react";
 
 interface PlaylistCardProps {
   id?: string;
@@ -149,32 +150,59 @@ export const AudioCard: React.FC<PlaylistCardProps> = ({
   };
 
   return (
-    <div
-      className="flex items-center w-full h-fit p-4 gap-2 bg-slate-100 rounded-md overflow-hidden cursor-pointer mb-2"
-      onClick={onClick}
+    <Card
+      isBlurred
+      className="border-none bg-background/60 dark:bg-default-100/50 max-w-[510px] cursor-pointer mb-2"
+      shadow="sm"
+      // onClick={onClick}
+      isPressable
+      onPress={onClick}
     >
-      <img className="h-24 w-24 rounded-lg object-cover" src={image} alt={title} />
-      <div className="h-24 flex flex-grow text-left flex-col justify-between ">
-        <div>
-          <div className="font-bold text-xl">{title}</div>
-          <div className="justify-items-start mt-1	">
-            by <span className="">{author}</span>
+      <CardBody>
+        <div className="grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-center justify-center">
+          <div className="relative col-span-6 md:col-span-4 w-full h-36 md:h-full">
+            <img
+              alt={title}
+              className="object-cover rounded-lg w-full h-full md:max-w-32 md:max-h-32 "
+              src={image}
+              width="100%"
+              style={{ height: "100%", borderRadius: "0.5rem" }}
+            />
+          </div>
+
+          <div className="flex h-full flex-col col-span-6 md:col-span-8">
+            <div className="flex justify-between items-start h-full">
+              <div className="flex flex-col gap-0 justify-between">
+                <div>
+                  <h1 className="text-medium font-semibold ">{title}</h1>
+                  <h3 className="text-small tracking-tight text-default-400">by {author}</h3>
+                  <p className="text-small pt-2 overflow-hidden">
+                    這邊要放 Intro!! Frontend developer and UI/UX enthusiast. Join me on this coding adventure!
+                  </p>
+                </div>
+
+                <div className="flex space-x-2 mt-2 text-small text-default-400">
+                  {tags.map((tag, index) => (
+                    <span key={index} className="rounded-sm ">
+                      # {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <Button
+                isIconOnly
+                className="text-default-900/60 data-[hover]:bg-foreground/10 -translate-y-2 translate-x-2"
+                radius="full"
+                variant="light"
+                onClick={togglePlayPause}
+              >
+                <Icon name="play" className="h-6 w-6" color="hsl(var(--nextui-primary-200))" />
+              </Button>
+            </div>
           </div>
         </div>
-
-        <div className="flex space-x-2 mt-2">
-          {tags.map((tag, index) => (
-            <span key={index} className="rounded-sm px-1 bg-slate-300">
-              {tag}
-            </span>
-          ))}
-        </div>
-      </div>
-      <div className="flex  justify-end gap-4  mt-4 ">
-        <button onClick={togglePlayPause} className="z-10 flex items-center">
-          <Icon name="play" className="mr-2 h-8 w-8" color="#28302bad" />
-        </button>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 };

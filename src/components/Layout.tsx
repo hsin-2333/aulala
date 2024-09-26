@@ -133,7 +133,7 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
 
         <div
           className={`${
-            isDetailVisible ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
+            isDetailVisible || !isOuterPage ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
           } lg:border-l overflow-y-auto`}
         >
           <div className="h-full px-4 py-6 lg:px-8">
@@ -295,8 +295,8 @@ const Sidebar = () => {
               to={`/user/${user?.userName}`}
               end
               className={({ isActive }) =>
-                `w-full justify-start flex items-center size-default hover:bg-primary/90 ${
-                  isActive ? "active-bg" : "bg-primary/90"
+                `w-full justify-start flex items-center size-default hover:bg-primary/50 ${
+                  isActive ? "bg-primary/50" : "none"
                 }`
               }
             >
@@ -320,8 +320,8 @@ const Sidebar = () => {
             <NavLink
               to={`/user/${user?.userName}/uploads`}
               className={({ isActive }) =>
-                `w-full justify-start flex items-center size-default hover:bg-primary/90 ${
-                  isActive ? "active-bg" : "bg-primary/90"
+                `w-full justify-start flex items-center size-default hover:bg-primary/50 ${
+                  isActive ? "bg-primary/50" : "none"
                 }`
               }
             >
@@ -345,8 +345,8 @@ const Sidebar = () => {
             <NavLink
               to={`/account/${user?.userName}/notification`}
               className={({ isActive }) =>
-                `w-full justify-start flex items-center size-default hover:bg-primary/90 ${
-                  isActive ? "active-bg" : "bg-primary/90"
+                `w-full justify-start flex items-center size-default hover:bg-primary/50 ${
+                  isActive ? "bg-primary/50" : "none"
                 }`
               }
             >

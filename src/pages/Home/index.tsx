@@ -6,7 +6,7 @@ import dbApi from "../../utils/firebaseService";
 import { useNavigate } from "react-router-dom";
 import { CategoryOptions } from "../../constants/categoryOptions";
 import { QueryConditions } from "../../types";
-import { PlaylistCard, AudioCard } from "../../components/Card";
+import { AudioCard } from "../../components/Card";
 import SortedMenu from "./SortedMenu";
 
 interface Story {
@@ -145,6 +145,7 @@ function HomePage({ onCardClick }: HomePageProps) {
   }
 
   const handleContentClick = (id: string, type: "script" | "story") => {
+    console.log("handleContentClick", id, type);
     if (type === "script") navigate(`/script/${id}`);
     if (type === "story") navigate(`/story/${id}`);
   };
@@ -206,14 +207,14 @@ function HomePage({ onCardClick }: HomePageProps) {
       <div className="relative">
         <div className="my-4" />
       </div>
-      <ul>
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4 2xl:grid-cols-4 ">
         {searchClicked ? (
           searchResults.length > 0 ? (
             searchResults.map((result) => {
               const story = sortedStoryList?.find((s) => s.id === result.ref);
               return (
                 story && (
-                  <PlaylistCard
+                  <AudioCard
                     onClick={() => handleContentClick(story.id, "story")}
                     key={story.id}
                     //@ts-expect-error(123)
@@ -230,7 +231,7 @@ function HomePage({ onCardClick }: HomePageProps) {
             <div>沒有結果喔 試試其他關鍵字</div>
           )
         ) : (
-          <div>
+          <>
             {sortedStoryList?.map((story: Story) => (
               <AudioCard
                 onCardClick={onCardClick}
@@ -245,9 +246,9 @@ function HomePage({ onCardClick }: HomePageProps) {
                 author={story.author || "Unknown"}
               />
             ))}
-          </div>
+          </>
         )}
-      </ul>
+      </section>
       <br />
       <div className="flex items-center justify-between text-left">
         <div className="space-y-1">
@@ -264,7 +265,7 @@ function HomePage({ onCardClick }: HomePageProps) {
                 const script = sortedScriptList?.find((s) => s.id === result.ref);
                 return (
                   script && (
-                    <PlaylistCard
+                    <AudioCard
                       onClick={() => handleContentClick(script.id, "script")}
                       key={script.id}
                       //@ts-expect-error(123)
@@ -282,7 +283,7 @@ function HomePage({ onCardClick }: HomePageProps) {
             )
           ) : (
             sortedScriptList?.map((script: Story) => (
-              <PlaylistCard
+              <AudioCard
                 onClick={() => handleContentClick(script.id, "script")}
                 key={script.id}
                 //@ts-expect-error(123)
