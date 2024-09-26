@@ -8,6 +8,8 @@ import { CategoryOptions } from "../../constants/categoryOptions";
 import { QueryConditions } from "../../types";
 import { AudioCard } from "../../components/Card";
 import SortedMenu from "./SortedMenu";
+import { Card, CardBody } from "@nextui-org/react";
+import { LuFolderHeart } from "react-icons/lu";
 
 interface Story {
   id: string;
@@ -156,7 +158,7 @@ function HomePage({ onCardClick }: HomePageProps) {
   };
 
   return (
-    <div>
+    <>
       <div className="mb-4 relative">
         <div className="flex gap-4 align-middle">
           <input
@@ -180,18 +182,53 @@ function HomePage({ onCardClick }: HomePageProps) {
         </div>
       </div>
 
-      <div className="text-left">
-        {CategoryOptions.map((category) => (
-          <span
-            className={`mr-4 cursor-pointer inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ${
-              selectedCategory === category.value ? "ring-gray-700 bg-slate-400 bg-opacity-50" : "ring-gray-500/10"
-            }`}
-            key={category.value}
-            onClick={() => setSelectedCategory(category.value)}
-          >
-            {category.label}
-          </span>
-        ))}
+      <div className="flex items-center justify-between text-left">
+        <div className="space-y-1 w-full">
+          <h2 className="text-2xl font-semibold tracking-tight ">Categories</h2>
+          <div className="flex w-2/4 justify-between">
+            {CategoryOptions.map((category) => (
+              // <span
+              //   className={`mr-4 cursor-pointer inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ${
+              //     selectedCategory === category.value ? "ring-gray-700 bg-slate-400 bg-opacity-50" : "ring-gray-500/10"
+              //   }`}
+              //   key={category.value}
+              //   onClick={() => setSelectedCategory(category.value)}
+              // >
+              //   {category.label}
+              // </span>
+              <Card
+                shadow="none"
+                className={`border border-default-200 w-32 h-20 ${
+                  selectedCategory === category.value ? "bg-blue-50" : "bg-white"
+                }`}
+                key={category.value}
+                isPressable
+                onPress={() => setSelectedCategory(category.value)}
+              >
+                {/* <CardBody className="overflow-visible p-0"></CardBody> */}
+                <CardBody className="text-small justify-start flex flex-col relative ">
+                  {/* <b>{category.value}</b> */}
+                  <p
+                    className={` text-medium ${
+                      selectedCategory === category.value ? "text-primary-800" : "text-default-900"
+                    } `}
+                  >
+                    {category.label}
+                  </p>
+                  <LuFolderHeart
+                    className="h-6 w-6 absolute bottom-3 right-3"
+                    color={
+                      selectedCategory === category.value
+                        ? "hsl(var(--nextui-primary-500))"
+                        : "hsl(var(--nextui-primary-200))"
+                    }
+                    fill={selectedCategory === category.value ? "hsl(var(--nextui-primary-200))" : "none"}
+                  />
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="relative">
@@ -297,7 +334,7 @@ function HomePage({ onCardClick }: HomePageProps) {
           )}
         </ul>
       </div>
-    </div>
+    </>
   );
 }
 
