@@ -20,6 +20,7 @@ import UploadStory from "./pages/Account/Upload/UploadStory";
 import Notifications from "./pages/Account/Notification";
 import StoryTable from "./pages/Account/UploadsContent/Uploads";
 import TestUI from "./components/testUI";
+import SearchResultsPage from "./pages/SearchResultsPage";
 const queryClient = new QueryClient();
 
 function App() {
@@ -43,6 +44,14 @@ function App() {
                 element={
                   <OuterLayout>
                     <HomePage />
+                  </OuterLayout>
+                }
+              />
+              <Route
+                path="/search"
+                element={
+                  <OuterLayout>
+                    <SearchResultsPage />
                   </OuterLayout>
                 }
               />

@@ -10,12 +10,17 @@ import {
   Button,
   Link,
   DropdownSection,
+  Input,
 } from "@nextui-org/react";
-import { useContext } from "react";
+import { FiSearch } from "react-icons/fi";
+
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 export function NavbarComponent() {
+  const [searchTerm, setSearchTerm] = useState("");
+
   const navigate = useNavigate();
   const { Logout } = useContext(AuthContext);
   const { user } = useContext(AuthContext);
@@ -23,6 +28,13 @@ export function NavbarComponent() {
   const handleLogout = () => {
     Logout();
     navigate("/");
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+    }
   };
 
   return (
@@ -53,6 +65,22 @@ export function NavbarComponent() {
         {" "}
         {user ? (
           <>
+            <form onSubmit={handleSearchSubmit} className="flex items-center">
+              <Input
+                classNames={{
+                  base: "max-w-full sm:max-w-[10rem] h-10",
+                  mainWrapper: "h-full",
+                  input: "text-small",
+                  inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+                }}
+                placeholder="Search Title, Author, Summary, Tags"
+                size="sm"
+                startContent={<FiSearch size={18} />}
+                type="search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </form>
             <Button as={Link} color="primary" variant="flat" radius="sm" href="/upload/story">
               Upload
             </Button>
