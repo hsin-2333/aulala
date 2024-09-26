@@ -9,7 +9,7 @@ import { QueryConditions } from "../../types";
 import { AudioCard } from "../../components/Card";
 import SortedMenu from "./SortedMenu";
 // import SearchComponent from "./SearchComponent";
-import { Card, CardBody } from "@nextui-org/react";
+import { Card, CardBody, Divider } from "@nextui-org/react";
 import { LuFolderHeart } from "react-icons/lu";
 
 interface Story {
@@ -111,7 +111,6 @@ function HomePage({ onCardClick }: HomePageProps) {
   return (
     <>
       {/* <SearchComponent storyList={storyList || []} scriptList={scriptList || []} onSearchResults={setSearchResults} /> */}
-      <SortedMenu onSortOrderChange={handleSortOrderChange} />
 
       <div className="flex items-center justify-between text-left">
         <div className="space-y-1 w-full">
@@ -150,15 +149,19 @@ function HomePage({ onCardClick }: HomePageProps) {
           </div>
         </div>
       </div>
+      <Divider className="my-4" />
 
       <div className="relative">
         <div className="my-4" />
       </div>
 
-      <div className="flex items-center justify-between text-left">
-        <div className="space-y-1">
+      <div className="flex items-center  justify-between text-left">
+        <div className="space-y-1 w-full">
           <h2 className="text-2xl font-semibold tracking-tight">Stories</h2>
-          <p className="text-sm text-muted-foreground">Top picks for you. Updated daily.</p>
+          <div className="flex justify-between ">
+            <p className="text-sm text-muted-foreground">Top picks for you. Updated daily.</p>
+            <SortedMenu onSortOrderChange={handleSortOrderChange} />
+          </div>
         </div>
       </div>
       <div className="relative">
