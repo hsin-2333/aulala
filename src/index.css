@@ -1,9 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import "geist";
 #root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "GeistSans", "GeistMono", sans-serif;
   /* line-height: 1.5;
   font-weight: 400; */
 
