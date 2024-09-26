@@ -206,3 +206,90 @@ export const AudioCard: React.FC<PlaylistCardProps> = ({
     </Card>
   );
 };
+
+export const SearchResultCard = ({ id, image, title, author, onClick, onCardClick }: PlaylistCardProps) => {
+  const { user } = useContext(AuthContext);
+  const context = useContext(RecentPlayContext);
+  if (context === undefined) {
+    throw new Error("SomeComponent must be used within a RecentPlayProvider");
+  }
+  const { isPlaying, setIsPlaying, fetchRecentPlay } = context;
+
+  const togglePlayPause = async (event: React.MouseEvent) => {
+    event.stopPropagation(); // 防止事件冒泡
+    if (user && id) {
+      // const currentTime = Date.now();
+      const currentTime = 0;
+      try {
+        console.log("更新時間點=", currentTime);
+        await dbApi.updateRecentPlay(user.uid, id, currentTime);
+        fetchRecentPlay();
+        console.log("Updated recent play");
+      } catch (error) {
+        console.error("Error updating recent play: ", error);
+      }
+    }
+    if (onCardClick) {
+      console.log("onCardClick");
+      onCardClick(); //打開主頁側邊選單
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  return (
+    <Card
+      isBlurred
+      className="border-none bg-background/60 dark:bg-default-100/50 max-w-[860px] cursor-pointer mb-2"
+      shadow="sm"
+      // onClick={onClick}
+      isPressable
+      onPress={onClick}
+    >
+      <CardBody>
+        <div className="max-h-40  grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-start justify-center">
+          <div className="relative sm:col-span-2 col-span-2 md:col-span-2 md:h-full w-fit ">
+            <img
+              alt={title}
+              className="object-cover rounded-lg w-full h-full md:max-w-32 md:max-h-32 "
+              src={image}
+              width="100%"
+              style={{ height: "100px", width: "100px", borderRadius: "0.5rem" }}
+            />
+          </div>
+
+          <div className="flex flex-col sm:col-span-3  col-span-4 md:col-span-10 h-full">
+            <div className="flex justify-between items-start h-full">
+              <div className="flex flex-col gap-0 col-span-3 justify-between">
+                <div>
+                  <h1 className="text-medium font-semibold ">{title}</h1>
+                  <div className="flex gap-1">
+                    <h3 className="text-small tracking-tight text-default-400">{author}</h3>
+                    <h3 className="text-small tracking-tight text-default-400">•</h3>
+                    <h3 className="text-small tracking-tight text-default-400">bookmarked:{author}</h3>
+                    <h3 className="text-small tracking-tight text-default-400">•</h3>
+                    <h3 className="text-small tracking-tight text-default-400">時間:{author}</h3>
+                  </div>
+                  <p className="text-small pt-2 overflow-hidden">
+                    這邊要放 Intro!! Frontend developer and UI/UX enthusiast. Join me on this coding adventure!
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center h-full">
+                <Button
+                  isIconOnly
+                  className="text-default-900/60 data-[hover]:bg-foreground/10 -translate-y-2 translate-x-2"
+                  radius="full"
+                  variant="light"
+                  onClick={togglePlayPause}
+                >
+                  <Icon name="play" className="h-6 w-6" color="hsl(var(--nextui-primary-200))" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardBody>
+    </Card>
+  );
+};

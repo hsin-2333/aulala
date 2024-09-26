@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 //@ts-expect-error(123)
 import lunr from "lunr";
 import dbApi from "../utils/firebaseService";
-import { AudioCard } from "../components/Card";
+import { SearchResultCard } from "../components/Card";
 
 interface Story {
   id: string;
@@ -14,6 +14,8 @@ interface Story {
 
 const SearchResultsPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const [searchResults, setSearchResults] = useState<lunr.Index.Result[]>([]);
   const [storyList, setStoryList] = useState<Story[]>([]);
   const [scriptList, setScriptList] = useState<Story[]>([]);
@@ -55,15 +57,20 @@ const SearchResultsPage = () => {
     }
   }, [storyList, scriptList, query]);
 
+  const handleContentClick = (id: string, type: "script" | "story") => {
+    if (type === "script") navigate(`/script/${id}`);
+    if (type === "story") navigate(`/story/${id}`);
+  };
+
   return (
-    <div>
+    <div className="mx-auto flex flex-col align-middle">
       <h1>Search Results for "{query}"</h1>
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4 2xl:grid-cols-4">
+      <section className="grid grid-cols-1 gap-6 align-middle mx-auto mt-5">
         {searchResults.map((result) => {
           const story = storyList.find((s) => s.id === result.ref);
           return (
             story && (
-              <AudioCard
+              <SearchResultCard
                 key={story.id}
                 id={story.id}
                 //@ts-expect-error(123)
@@ -72,6 +79,7 @@ const SearchResultsPage = () => {
                 //@ts-expect-error(123)
                 tags={story.tags}
                 author={story.author || "Unknown"}
+                onClick={() => handleContentClick(story.id, "story")}
               />
             )
           );

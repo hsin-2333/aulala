@@ -8,7 +8,7 @@ import { CategoryOptions } from "../../constants/categoryOptions";
 import { QueryConditions } from "../../types";
 import { AudioCard } from "../../components/Card";
 import SortedMenu from "./SortedMenu";
-import SearchComponent from "./SearchComponent";
+// import SearchComponent from "./SearchComponent";
 import { Card, CardBody } from "@nextui-org/react";
 import { LuFolderHeart } from "react-icons/lu";
 
@@ -25,7 +25,7 @@ interface HomePageProps {
 
 function HomePage({ onCardClick }: HomePageProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [searchResults, setSearchResults] = useState<lunr.Index.Result[]>([]);
+  const [searchResults] = useState<lunr.Index.Result[]>([]);
   const [sortOrder, setSortOrder] = useState<string>("由遠到近");
 
   const navigate = useNavigate();
@@ -110,7 +110,7 @@ function HomePage({ onCardClick }: HomePageProps) {
 
   return (
     <>
-      <SearchComponent storyList={storyList || []} scriptList={scriptList || []} onSearchResults={setSearchResults} />
+      {/* <SearchComponent storyList={storyList || []} scriptList={scriptList || []} onSearchResults={setSearchResults} /> */}
       <SortedMenu onSortOrderChange={handleSortOrderChange} />
 
       <div className="flex items-center justify-between text-left">
