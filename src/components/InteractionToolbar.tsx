@@ -3,6 +3,7 @@ import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import dbApi from "../utils/firebaseService";
 import { Comment } from "../types";
 import Icon from "./Icon";
+import { Textarea, Button, Divider } from "@nextui-org/react";
 
 interface InteractionToolbarProps {
   userName: string;
@@ -192,36 +193,34 @@ export const CommentToolbar = ({ userName, storyId, scriptId }: InteractionToolb
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <textarea
-          className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Leave a comment"
-        ></textarea>
-        <button className="flex items-center size-default bg-primary text-white " type="submit">
-          Submit
-        </button>
-      </form>
-
       <section className="flex items-start justify-center flex-col ">
-        <hr className="border-t border-gray-400 m-1" />
-
         <h2 className="text-lg"> Comments</h2>
-        <hr className="border-t border-gray-400 m-1" />
-
+        <form onSubmit={handleSubmit} className="w-full text-right my-4">
+          <Textarea
+            variant="bordered"
+            labelPlacement="outside"
+            placeholder="Leave a comment"
+            minRows={1}
+            maxRows={3}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+          <Button size="sm" radius="sm" color="primary" type="submit" className="my-2">
+            Comment
+          </Button>
+        </form>
         {comments.length > 0 ? (
           comments.map((comment) => (
-            <div key={comment.id} className="mb-4 pb-3 border-b-2  w-full">
+            <div key={comment.id} className="mb-4 pb-3 w-full">
               <div className="flex  gap-3 justify-between">
-                <h6 className="text-gray-700">{comment.userName}</h6>
-                <h6 className="text-gray-500">
+                <h6 className="text-small text-default-400">{comment.userName}</h6>
+                <h6 className="text-small text-default-400">
                   {comment.created_at && typeof comment.created_at !== "string"
                     ? new Date(comment.created_at.seconds * 1000).toLocaleString()
                     : comment.created_at}
                 </h6>
               </div>
-              <p className="text-gray-700">{comment.comment}</p>
+              <p className="text-default-900">{comment.comment}</p> <Divider className="my-2 " />
             </div>
           ))
         ) : (
