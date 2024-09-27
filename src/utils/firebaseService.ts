@@ -480,6 +480,11 @@ const dbApi = {
     await updateDoc(storyRef, { status });
   },
 
+  async updateStory(storyId: string, data: { title: string; summary: string }) {
+    const storyRef = doc(db, "stories", storyId);
+    await updateDoc(storyRef, data);
+  },
+
   async subscribeToInteractions(scriptId: string, callback: (data: Interactions) => void) {
     const q = query(collection(db, "interactions"), where("script_id", "==", scriptId));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -491,6 +496,16 @@ const dbApi = {
     });
 
     return unsubscribe;
+  },
+
+  async deleteStory(storyId: string) {
+    try {
+      const storyRef = doc(db, "stories", storyId);
+      await deleteDoc(storyRef);
+      console.log("Story deleted with ID: ", storyId);
+    } catch (e) {
+      console.error("Error deleting story: ", e);
+    }
   },
 };
 export default dbApi;
