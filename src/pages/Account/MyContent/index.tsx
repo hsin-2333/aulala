@@ -5,16 +5,7 @@ import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
 import { Story } from "../../../types";
-// interface Story {
-//   id: string;
-//   title: string;
-//   author: string;
-//   img_url?: string[];
-//   image?: string;
-//   summary?: string;
-//   tags?: string[];
-//   created_at?: Timestamp;
-// }
+import { Select, SelectItem } from "@nextui-org/react";
 
 const MyContent = () => {
   const navigate = useNavigate();
@@ -81,29 +72,32 @@ const MyContent = () => {
       <div className="relative">
         <div className="my-4" />
       </div>
-      <div className="border-b border-gray-200 mb-4 ">
-        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-          <button
-            onClick={() => setSelectedTab("story")}
-            className={`whitespace-nowrap border-b-2 font-medium text-sm ${
-              selectedTab === "story"
-                ? "border-indigo-500 text-indigo-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            }`}
-          >
+      <div className="border-b border-gray-200 mb-4 text-left py-4">
+        <Select
+          label="Sort by"
+          labelPlacement="outside-left"
+          placeholder="Select a tab"
+          className="max-w-xs"
+          classNames={{
+            label: "text-nowrap h-10 flex justify-center items-center mr-2",
+          }}
+          variant="bordered"
+          onSelectionChange={(keys) => {
+            const selectedKey = Array.from(keys).join(""); // 提取選擇的值
+            setSelectedTab(selectedKey);
+          }}
+          defaultSelectedKeys={["story"]}
+          scrollShadowProps={{
+            isEnabled: false,
+          }}
+        >
+          <SelectItem key="story" value="story">
             Story
-          </button>
-          <button
-            onClick={() => setSelectedTab("script")}
-            className={`whitespace-nowrap  border-b-2 font-medium text-sm ${
-              selectedTab === "script"
-                ? "border-indigo-500 text-indigo-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            }`}
-          >
+          </SelectItem>
+          <SelectItem key="script" value="script">
             Script
-          </button>
-        </nav>
+          </SelectItem>
+        </Select>
       </div>
       <div className="flex flex-wrap justify-center overflow-y-auto">
         {isStoryLoading || isScriptLoading ? <p>Loading...</p> : renderContent()}

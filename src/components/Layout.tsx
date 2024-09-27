@@ -138,7 +138,7 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
             isDetailVisible || !isOuterPage ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
           } lg:border-l overflow-y-auto`}
         >
-          <div className="h-full px-4 py-6 lg:px-8">
+          <div className="h-full py-6 lg:px-8">
             <div className="h-full space-y-6">
               <div className="border-none p-0 outline-none">
                 {/* {children} */}
