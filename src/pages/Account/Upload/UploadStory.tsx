@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
 import dbApi from "../../../utils/firebaseService";
 import { CategoryOptions } from "../../../constants/categoryOptions";
-import Select from "react-select";
+import { Select, SelectItem } from "@nextui-org/react";
 import CreatableSelect from "react-select/creatable";
+import { Input, Button } from "@nextui-org/react";
 
 interface FormData {
   title: string;
@@ -42,6 +43,7 @@ const UploadStory = () => {
     handleSubmit,
     formState: { errors },
     setValue,
+    trigger,
   } = useForm<FormData>();
 
   useEffect(() => {
@@ -125,8 +127,24 @@ const UploadStory = () => {
     }
   };
 
-  const handleStepClick = (step: number) => {
-    setCurrentStep(step);
+  const handleStepClick = async (step: number) => {
+    // 檢查當前步驟的必填字段
+    let isValid = true;
+    if (step > currentStep) {
+      if (currentStep === 1) {
+        isValid = await trigger(["title", "intro", "summary"]);
+      } else if (currentStep === 2) {
+        isValid = await trigger(["category", "tags", "scheduled_release_date"]);
+      }
+    }
+
+    if (isValid) {
+      setCurrentStep(step);
+    } else if (step < currentStep) {
+      setCurrentStep(step);
+    } else {
+      window.alert("請填寫所有必填字段");
+    }
   };
 
   return (
@@ -177,45 +195,78 @@ const UploadStory = () => {
               Add Cover Image
             </button>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left gap-3">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left ">
             {currentStep === 1 && (
-              <div>
-                <h3 className="text-xl font-semibold mb-3">Audio Info</h3>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Title</label>
-                  <input className="border border-input w-full" {...register("title", { required: true })} />
+              <div className="h-full">
+                <h3 className="text-xl font-semibold">Audio Info</h3>
+                <div className="mt-4 border border-transparent">
+                  <Input
+                    label="Title"
+                    isRequired
+                    placeholder="Your Audio Story Title"
+                    labelPlacement="outside"
+                    radius="sm"
+                    variant="bordered"
+                    {...register("title", { required: true })}
+                  />
                   {errors.title && <span className="text-red-500 text-sm">This field is required</span>}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 ">Intro</label>
-                  <input className="border border-input w-full" {...register("intro", { required: true })} />
+                <div className="mt-4 border border-transparent">
+                  <Input
+                    label="Intro"
+                    isRequired
+                    placeholder="Enter intro"
+                    labelPlacement="outside"
+                    radius="sm"
+                    variant="bordered"
+                    {...register("intro", { required: true })}
+                  />
                   {errors.intro && <span className="text-red-500 text-sm">This field is required</span>}
                 </div>
-                <div>
-                  <label>Summary</label>
-                  <textarea {...register("summary", { required: true })} className="border border-input w-full" />
+                <div className="mt-4 border border-transparent">
+                  <Input
+                    label="Summary"
+                    isRequired
+                    placeholder="Enter summary"
+                    labelPlacement="outside"
+                    radius="sm"
+                    variant="bordered"
+                    {...register("summary", { required: true })}
+                  />
                   {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
                 </div>
-                <div className="flex justify-end">
-                  <button type="button" onClick={() => handleStepClick(2)} className="px-4 py-2 bg-primary text-white">
+                <div className="flex justify-end mt-2">
+                  <Button type="button" onClick={() => handleStepClick(2)} color="primary" radius="sm">
                     Next
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
             {currentStep === 2 && (
               <div>
                 <h3 className="text-xl font-semibold mb-3">More Info</h3>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Category</label>
+                <div className="mt-4 border border-transparent">
                   <Select
-                    options={filteredCategoryOptions}
-                    onChange={(selectedOption) => setValue("category", selectedOption?.value || "")}
-                  />
+                    placeholder="Select a category"
+                    onSelectionChange={(keys) => setValue("category", Array.from(keys).join(""))}
+                    defaultSelectedKeys={[]}
+                    disableAnimation
+                    labelPlacement="outside"
+                    radius="sm"
+                    label="Category"
+                    isRequired
+                    variant="bordered"
+                  >
+                    {filteredCategoryOptions.map((option) => (
+                      <SelectItem key={option.label}>{option.label}</SelectItem>
+                    ))}
+                  </Select>
                   {errors.category && <span className="text-red-500 text-sm">This field is required</span>}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Tags</label>
+                <div className="mt-4 border border-transparent">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Tags<span className="text-red-500 text-sm">*</span>
+                  </label>
                   <CreatableSelect
                     isMulti
                     options={tagsOptions}
@@ -225,31 +276,34 @@ const UploadStory = () => {
                   />
                   {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Scheduled Release Date</label>
-                  <input
-                    className="border border-input w-full"
+
+                <div className="mt-4 border border-transparent">
+                  <Input
                     type="datetime-local"
+                    label="Release Date"
+                    isRequired
+                    placeholder="Pick Release Date"
+                    labelPlacement="outside"
+                    radius="sm"
+                    variant="bordered"
                     {...register("scheduled_release_date", { required: true })}
                   />
-                  {errors.scheduled_release_date && (
-                    <span className="text-red-500 text-sm">This field is required</span>
-                  )}
+                  {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
-                  <button type="button" onClick={() => handleStepClick(1)} className="px-4 py-2 bg-gray-300">
+                  <Button type="button" onClick={() => handleStepClick(1)} color="default" variant="light" radius="sm">
                     Previous
-                  </button>
-                  <button type="button" onClick={() => handleStepClick(3)} className="px-4 py-2 bg-primary text-white">
+                  </Button>
+                  <Button type="button" onClick={() => handleStepClick(3)} color="primary" radius="sm">
                     Next
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
             {currentStep === 3 && (
               <div>
                 <h3 className="text-xl font-semibold mb-3">Add Cover Image</h3>
-                <div>
+                {/* <div className="mt-4 border border-transparent">
                   <label className="block text-sm font-medium text-gray-700">Cover Image</label>
                   <input
                     className="border border-input w-full"
@@ -257,15 +311,33 @@ const UploadStory = () => {
                     accept="image/*"
                     onChange={handleImageUpload}
                   />
+
                   {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
+                </div> */}
+
+                <div className="mt-4 border border-transparent">
+                  <Input
+                    label="Cover Image"
+                    isRequired
+                    placeholder="Choose a cover image"
+                    labelPlacement="outside"
+                    radius="sm"
+                    variant="bordered"
+                    accept="image/*"
+                    type="file"
+                    onChange={handleImageUpload}
+                  />
+                  {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
+
+                  {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
-                  <button type="button" onClick={() => handleStepClick(2)} className="px-4 py-2 bg-gray-300">
+                  <Button type="button" onClick={() => handleStepClick(2)} color="default" variant="light" radius="sm">
                     Previous
-                  </button>
-                  <button type="submit" className="px-4 py-2 bg-primary text-white">
+                  </Button>
+                  <Button type="submit" color="primary" radius="sm">
                     Submit
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
