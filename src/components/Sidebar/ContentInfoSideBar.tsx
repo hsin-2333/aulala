@@ -1,6 +1,8 @@
 import { RecentPlayContext } from "../../context/RecentPlayContext";
 import { useContext, useEffect, useState } from "react";
 import dbApi from "../../utils/firebaseService";
+import { Card, CardHeader, CardBody, Button, Chip, User, Link } from "@nextui-org/react";
+import { IoClose } from "react-icons/io5";
 
 type UserWithAvatar = {
   id: string;
@@ -8,7 +10,11 @@ type UserWithAvatar = {
   avatar: string;
 };
 
-const ContentInfoSideBar = () => {
+type ClickHandler = {
+  setIsDetailVisible: (visible: boolean) => void;
+};
+
+const ContentInfoSideBar = ({ setIsDetailVisible }: ClickHandler) => {
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
@@ -47,32 +53,65 @@ const ContentInfoSideBar = () => {
       {storyInfo && (
         <div className="pb-12">
           <div className="space-y-4 py-4">
-            <div className="px-3 py-2">
-              <h2 className="text-left mb-2 px-4 text-lg font-semibold tracking-tight">{title}</h2>
+            <div className="px-4 py-2">
+              <div className="flex justify-between">
+                <h2 className="text-left mb-2 text-lg font-semibold tracking-tight">{title}</h2>
+
+                <Button
+                  isIconOnly
+                  className="text-default-900/60 data-[hover]:bg-foreground/10 -translate-y-2 translate-x-2"
+                  radius="full"
+                  variant="light"
+                  onClick={() => setIsDetailVisible(false)}
+                >
+                  <IoClose name="closed" className="h-6 w-6" />
+                </Button>
+              </div>
               <div className="space-y-1 ">
-                <div className="w-full justify-start flex items-center size-default gap-2">
+                <div className="w-full justify-start flex gap-2">
                   {tags.map((tag, index) => (
-                    <span key={index} className="text-gray-00 text-sm p-1 rounded-sm bg-slate-300">
+                    <Chip key={index} className="capitalize" color="primary" size="sm" variant="flat">
                       {tag}
-                    </span>
+                    </Chip>
                   ))}
                 </div>
-                <p className="text-left mb-2 px-4 text-sm font-thin tracking-tight">{summary}</p>
               </div>
-              <div className="flex m-2 px-4  bg-white-200  h-[1px] w-full"></div>
-              <h2 className="text-left mb-2 px-4 text-lg font-semibold tracking-tight">Attendees</h2>
-              <div className="text-left mb-2 px-4  flex flex-row gap-4 justify-start">
-                {avatars.map((attendee, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <img
-                      src={attendee.avatar}
-                      alt={`Avatar of ${attendee.userName}`}
-                      className="w-8 h-8 rounded-full"
-                    />
-                    <div className="text-left text-sm font-semibold tracking-tight leading-7">{attendee.userName}</div>
+              <div className="flex m-2 bg-white-200  h-[8px] w-full"></div>
+              <Card shadow="none" radius="lg" className="space-y-1 py-2">
+                <CardHeader>
+                  <h2 className="text-left text-lg font-semibold tracking-tight">Summary</h2>
+                </CardHeader>
+                <CardBody>
+                  <div className="text-left flex flex-row gap-4 justify-start">
+                    <p className="text-left text-sm font-thin tracking-tight">{summary}</p>
                   </div>
-                ))}
-              </div>
+                </CardBody>
+              </Card>
+              <div className="flex m-2 bg-white-200  h-[8px] w-full"></div>
+              <Card shadow="none" radius="lg" className="space-y-1 py-2">
+                <CardHeader>
+                  <h2 className="text-left text-lg font-semibold tracking-tight">Attendees</h2>
+                </CardHeader>
+                <CardBody>
+                  <div className="text-left flex flex-row gap-4 justify-start">
+                    {avatars.map((attendee, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <User
+                          name={
+                            <Link href={`/user/${attendee.userName}`} size="sm" color="foreground" underline="hover">
+                              {attendee.userName}
+                            </Link>
+                          }
+                          description="voice actor"
+                          avatarProps={{
+                            src: attendee.avatar,
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </CardBody>
+              </Card>
             </div>
           </div>
         </div>
