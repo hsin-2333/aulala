@@ -32,7 +32,8 @@ const SubtitlesComponent = () => {
           id={`subtitle-${segment.start}`}
           style={{
             padding: "5px",
-            backgroundColor: currentTime >= segment.start && currentTime <= segment.end ? "yellow" : "transparent",
+
+            backgroundColor: currentTime >= segment.start && currentTime <= segment.end ? "#82ca9e40" : "transparent",
           }}
         >
           {segment.text}

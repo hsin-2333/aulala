@@ -7,7 +7,7 @@ import dbApi from "../../utils/firebaseService";
 import { Story } from "../../types";
 import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
 import { Button } from "@nextui-org/react";
-import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
+import { Tabs, Tab, Card, CardBody, ScrollShadow } from "@nextui-org/react";
 import SubtitlesComponent from "../UserContent/Segments";
 
 function StoryContent() {
@@ -65,9 +65,10 @@ function StoryContent() {
         <div className="flex-1 px-6">
           <Tabs aria-label="Story tabs" variant="underlined">
             <Tab key="script" title="Script">
-              <Card shadow="none">
-                <CardBody>
-                  {/* {story && story.audio_url && story.id && story.segments && (
+              <ScrollShadow hideScrollBar size={100} className="h-[400px]">
+                <Card shadow="none" className="max-h-[700px]">
+                  <CardBody>
+                    {/* {story && story.audio_url && story.id && story.segments && (
                     <AudioWavePlayer
                       audio_url={story.audio_url}
                       storyId={story.id}
@@ -75,12 +76,13 @@ function StoryContent() {
                       showSubtitles={true}
                     />
                   )} */}
-                  <SubtitlesComponent />
-                </CardBody>
-              </Card>
+                    <SubtitlesComponent />
+                  </CardBody>
+                </Card>
+              </ScrollShadow>
             </Tab>
             <Tab key="Comments" title="Comments">
-              <Card shadow="none">
+              <Card shadow="none" className="max-h-[400px] bg-white">
                 <CardBody>{user && <CommentToolbar userName={user.userName} storyId={story?.id} />}</CardBody>
               </Card>
             </Tab>
