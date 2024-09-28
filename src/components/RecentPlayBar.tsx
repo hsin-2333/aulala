@@ -1,33 +1,36 @@
-import { useState, useRef, useEffect, useContext } from "react";
+import { useState, useRef, useEffect, useContext, useCallback } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { RecentPlayContext } from "../context/RecentPlayContext";
+import { AuthContext } from "../context/AuthContext";
 import Icon from "./Icon";
+import { debounce } from "lodash";
+import dbApi from "../utils/firebaseService";
 
 const RecentPlayBar = () => {
-  // const { recentPlay, storyInfo } = useRecentPlay();
+  const { user } = useContext(AuthContext);
   const audioRef = useRef<WaveSurfer | null>(null);
   const currentTimeRef = useRef<number>(0);
   const volumeRef = useRef<number>(100);
   const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
   const [volume, setVolume] = useState(100);
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
-  const { isPlaying, setIsPlaying, recentPlay, storyInfo } = context;
+  const { isPlaying, setIsPlaying, recentPlay, storyInfo, currentTime, setCurrentTime, fetchRecentPlay } = context;
+
   // const [isPlaying, setIsPlaying] = useState(false);
 
-  useEffect(() => {
+  const setLastPlayTimestamp = useCallback(() => {
     if (recentPlay) {
       setCurrentTime(recentPlay.played_at);
       currentTimeRef.current = recentPlay.played_at;
+      console.log("setLastPlayTimestamp", recentPlay.played_at);
     }
-  }, [recentPlay]);
-
+  }, [recentPlay, setCurrentTime]);
   useEffect(() => {
-    currentTimeRef.current = currentTime;
-  }, [currentTime]);
+    setLastPlayTimestamp();
+  }, [setLastPlayTimestamp]);
 
   useEffect(() => {
     if (storyInfo?.audio_url) {
@@ -50,21 +53,45 @@ const RecentPlayBar = () => {
         wavesurfer.seekTo(currentTimeRef.current / wavesurfer.getDuration());
       });
 
-      wavesurfer.on("audioprocess", () => {
+      // wavesurfer.on("audioprocess", () => {
+      //   const currentTime = wavesurfer.getCurrentTime();
+      //   console.log("currentTime", currentTime);
+      //   setCurrentTime(currentTime);
+      //   currentTimeRef.current = currentTime;
+      // });
+
+      const debouncedUpdateRecentPlay = debounce((currentTime: number) => {
+        if (user && storyInfo.id) {
+          dbApi.updateRecentPlay(user.uid, storyInfo.id, currentTime);
+          console.log("更新最近播放");
+          fetchRecentPlay();
+        }
+      }, 1000);
+
+      let lastUpdateTime = 0;
+      let animationFrameId: number;
+      const updateCurrentTime = () => {
         const currentTime = wavesurfer.getCurrentTime();
         setCurrentTime(currentTime);
-        currentTimeRef.current = currentTime;
-      });
+        if (currentTime - lastUpdateTime > 0.8) {
+          lastUpdateTime = currentTime;
+          console.log("更新," + lastUpdateTime, " currentTime=", currentTime);
+          debouncedUpdateRecentPlay(currentTime);
+        }
+        animationFrameId = requestAnimationFrame(updateCurrentTime);
+      };
+
+      animationFrameId = requestAnimationFrame(updateCurrentTime);
 
       return () => {
+        cancelAnimationFrame(animationFrameId);
         wavesurfer.destroy();
       };
     }
-  }, [storyInfo?.audio_url]);
+  }, [storyInfo?.audio_url, setCurrentTime, fetchRecentPlay, user, storyInfo?.id]);
 
   const togglePlayPause = () => {
     const wavesurfer = audioRef.current;
-    console.log("togglePlayPause ==== audioRef.current ===", audioRef.current);
     if (wavesurfer) {
       if (isPlaying) {
         wavesurfer.pause();

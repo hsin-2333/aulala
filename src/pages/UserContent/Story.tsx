@@ -1,4 +1,4 @@
-import AudioWavePlayer from "../../components/AudioWavePlayer";
+// import AudioWavePlayer from "../../components/AudioWavePlayer";
 import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
@@ -8,6 +8,7 @@ import { Story } from "../../types";
 import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
 import { Button } from "@nextui-org/react";
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
+import SubtitlesComponent from "../UserContent/Segments";
 
 function StoryContent() {
   const { user } = useContext(AuthContext);
@@ -66,14 +67,15 @@ function StoryContent() {
             <Tab key="script" title="Script">
               <Card shadow="none">
                 <CardBody>
-                  {story && story.audio_url && story.id && story.segments && (
+                  {/* {story && story.audio_url && story.id && story.segments && (
                     <AudioWavePlayer
                       audio_url={story.audio_url}
                       storyId={story.id}
                       segments={story.segments}
                       showSubtitles={true}
                     />
-                  )}
+                  )} */}
+                  <SubtitlesComponent />
                 </CardBody>
               </Card>
             </Tab>
