@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 //@ts-expect-error(123)
@@ -11,7 +11,8 @@ import SortedMenu from "./SortedMenu";
 // import SearchComponent from "./SearchComponent";
 import { Card, CardBody, Divider } from "@nextui-org/react";
 import { LuFolderHeart } from "react-icons/lu";
-
+import { AuthContext } from "../../context/AuthContext";
+import { RecentPlayContext } from "../../context/RecentPlayContext";
 interface Story {
   id: string;
   title?: string;
@@ -24,6 +25,12 @@ interface HomePageProps {
 }
 
 function HomePage({ onCardClick }: HomePageProps) {
+  const { user } = useContext(AuthContext);
+  const context = useContext(RecentPlayContext);
+  if (context === undefined) {
+    throw new Error("SomeComponent must be used within a RecentPlayProvider");
+  }
+  const { fetchRecentPlay } = context;
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchResults] = useState<lunr.Index.Result[]>([]);
   const [sortOrder, setSortOrder] = useState<string>("由遠到近");
@@ -105,7 +112,14 @@ function HomePage({ onCardClick }: HomePageProps) {
 
   const handleContentClick = (id: string, type: "script" | "story") => {
     if (type === "script") navigate(`/script/${id}`);
-    if (type === "story") navigate(`/story/${id}`);
+    if (type === "story") {
+      if (user) {
+        dbApi.updateRecentPlay(user.uid, id, 0).then(() => {
+          fetchRecentPlay();
+        });
+      }
+      navigate(`/story/${id}`);
+    }
   };
 
   return (
