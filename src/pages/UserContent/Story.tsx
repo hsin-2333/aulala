@@ -6,8 +6,7 @@ import { useParams } from "react-router-dom";
 import dbApi from "../../utils/firebaseService";
 import { Story } from "../../types";
 import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
-import { Button } from "@nextui-org/react";
-import { Tabs, Tab, Card, CardBody, ScrollShadow } from "@nextui-org/react";
+import { Tabs, Tab, Card, CardBody, ScrollShadow, Button } from "@nextui-org/react";
 import SubtitlesComponent from "../UserContent/Segments";
 
 function StoryContent() {

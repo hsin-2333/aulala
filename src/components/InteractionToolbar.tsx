@@ -51,9 +51,18 @@ export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionT
 
   return (
     <div className="interaction-toolbar flex">
-      <button onClick={() => likeMutation.mutate()} className="flex items-center">
-        <Icon name="like" filled={liked} className="mr-2 h-6 w-6" color={liked ? "#fca5a5cc" : "currentColor"} />
-      </button>
+      {/* <button onClick={() => likeMutation.mutate()} className="flex items-center"> */}
+      <Button
+        isIconOnly
+        className="text-default-900/60 data-[hover]:bg-foreground/10  "
+        radius="full"
+        variant="light"
+        onPress={() => likeMutation.mutate()}
+        // onClick={togglePlayPause}
+      >
+        <Icon name="like" filled={liked} className="h-6 w-6" color={liked ? "#fca5a5cc" : "currentColor"} />
+      </Button>
+      {/* </button> */}
       {storyId ? (
         <PlaylistButton userName={userName} storyId={storyId} />
       ) : (
@@ -126,14 +135,21 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
   });
 
   return (
-    <button onClick={() => playlistMutation.mutate()} className="flex items-center">
+    <Button
+      isIconOnly
+      className="text-default-900/60 data-[hover]:bg-foreground/10  "
+      radius="full"
+      variant="light"
+      onPress={() => playlistMutation.mutate()}
+      // onClick={togglePlayPause}
+    >
       <Icon
         name={inPlaylist ? "added-to-playlist" : "add-to-playlist"}
         filled={inPlaylist}
-        className="mr-2 h-6 w-6"
+        className="h-6 w-6"
         color={inPlaylist ? "#82ca9e90" : "currentColor"}
       />
-    </button>
+    </Button>
   );
 };
 
