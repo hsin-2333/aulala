@@ -61,12 +61,17 @@ const RecentPlayBar = () => {
         }
       });
 
-      wavesurfer.on("audioprocess", () => {
-        const currentTime = wavesurfer.getCurrentTime();
-        console.log("currentTime", currentTime);
-        setCurrentTime(currentTime);
-        currentTimeRef.current = currentTime;
-      });
+      ///播放過程會不停渲染!!!
+      // wavesurfer.on("audioprocess", () => {
+      //   console.log("播放中 ---------");
+      //   const currentTime = wavesurfer.getCurrentTime();
+      //   if (Math.abs(currentTime - currentTimeRef.current) > 1) {
+      //     // 只有當時間變化超過 1 秒時才更新
+      //     console.log("currentTime", currentTime);
+      //     setCurrentTime(currentTime);
+      //     currentTimeRef.current = currentTime;
+      //   }
+      // });
 
       const debouncedUpdateRecentPlay = debounce((currentTime: number) => {
         if (user && storyInfo.id) {
