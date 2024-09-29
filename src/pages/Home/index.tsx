@@ -6,7 +6,7 @@ import lunr from "lunr";
 import dbApi from "../../utils/firebaseService";
 import { CategoryOptions } from "../../constants/categoryOptions";
 import { QueryConditions } from "../../types";
-import { AudioCard } from "../../components/Card";
+import { AudioCard, ImageCard } from "../../components/Card";
 import SortedMenu from "./SortedMenu";
 // import SearchComponent from "./SearchComponent";
 import { Card, CardBody, Divider } from "@nextui-org/react";
@@ -182,7 +182,7 @@ function HomePage({ onCardClick }: HomePageProps) {
       <div className="relative">
         <div className="my-4" />
       </div>
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4 2xl:grid-cols-4">
+      {/* <section className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4 2xl:grid-cols-4">
         {searchResults.length > 0 ? (
           searchResults.map((result) => {
             const story = sortedStoryList?.find((s) => s.id === result.ref);
@@ -219,6 +219,49 @@ function HomePage({ onCardClick }: HomePageProps) {
                 date={convertTimestampToDate(story.created_at).toLocaleDateString() || ""}
               />
             ))}
+          </>
+        )}
+      </section> */}
+      <section className="mb-4 h-auto whitespace-nowrap flex overflow-x-auto space-x-8 custom-scrollbar scroll-padding ">
+        {searchResults.length > 0 ? (
+          searchResults.map((result) => {
+            const story = sortedStoryList?.find((s) => s.id === result.ref);
+            return (
+              story && (
+                <AudioCard
+                  onClick={() => handleContentClick(story.id, "story")}
+                  key={story.id}
+                  //@ts-expect-error(123)
+                  image={story.img_url?.[0]}
+                  title={story.title || "Untitled"}
+                  //@ts-expect-error(123)
+                  tags={story.tags}
+                  author={story.author || "Unknown"}
+                />
+              )
+            );
+          })
+        ) : (
+          <>
+            {sortedStoryList?.map((story: Story) => {
+              const date = story.created_at ? convertTimestampToDate(story.created_at).toLocaleDateString() : "";
+              return (
+                <ImageCard
+                  onCardClick={onCardClick}
+                  onClick={() => handleContentClick(story.id, "story")}
+                  key={story.id}
+                  id={story.id}
+                  //@ts-expect-error(123)
+                  image={story.img_url?.[0]}
+                  title={story.title || "Untitled"}
+                  //@ts-expect-error(123)
+                  tags={story.tags}
+                  author={story.author || "Unknown"}
+                  duration={story.duration}
+                  date={date}
+                />
+              );
+            })}
           </>
         )}
       </section>

@@ -212,7 +212,7 @@ export const ScriptCard = ({ scriptId, title, author, tags = [], summary, create
 //   );
 // };
 
-export const AudioCard_a: React.FC<PlaylistCardProps> = ({
+export const AudioCard: React.FC<PlaylistCardProps> = ({
   id,
   image,
   title,
@@ -291,7 +291,7 @@ export const AudioCard_a: React.FC<PlaylistCardProps> = ({
   );
 };
 
-export const AudioCard: React.FC<PlaylistCardProps> = ({
+export const ImageCard: React.FC<PlaylistCardProps> = ({
   id,
   image,
   title,
@@ -328,7 +328,7 @@ export const AudioCard: React.FC<PlaylistCardProps> = ({
   const isCurrentStory = id === storyInfo?.id;
   const storyDuration = duration ? `${Math.round((duration / 60) * 2) / 2} min` : "";
   return (
-    <Card isPressable onPress={onClick} className="bg-transparent " shadow="none" radius="none">
+    <Card isPressable onPress={onClick} className="flex-shrink-0 bg-transparent " shadow="none" radius="none">
       <CardBody className="overflow-visible py-2 p-0">
         <div className="z-3  relative group w-[240px]">
           <Image src={image} alt="Card background" className="z-0 object-cover rounded-xl" width={240} height={240} />
