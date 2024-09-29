@@ -18,6 +18,7 @@ interface Story {
   title?: string;
   author?: string;
   created_at?: { seconds: number; nanoseconds: number };
+  duration?: number;
 }
 
 interface HomePageProps {
@@ -214,6 +215,8 @@ function HomePage({ onCardClick }: HomePageProps) {
                 //@ts-expect-error(123)
                 tags={story.tags}
                 author={story.author || "Unknown"}
+                duration={story.duration}
+                date={convertTimestampToDate(story.created_at).toLocaleDateString() || ""}
               />
             ))}
           </>
