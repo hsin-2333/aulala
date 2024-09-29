@@ -13,6 +13,8 @@ const RecentPlayBar = () => {
   const volumeRef = useRef<number>(100);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(100);
+  // const [isReady, setIsReady] = useState(false); // 新增 isReady 状态
+
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
@@ -29,6 +31,7 @@ const RecentPlayBar = () => {
     }
   }, [recentPlay, setCurrentTime]);
   useEffect(() => {
+    console.log("useEffect 設定最新時間setLastPlayTimestamp");
     setLastPlayTimestamp();
   }, [setLastPlayTimestamp]);
 
@@ -48,17 +51,22 @@ const RecentPlayBar = () => {
       audioRef.current = wavesurfer;
 
       wavesurfer.on("ready", () => {
+        console.log("ready");
         setDuration(wavesurfer.getDuration());
         wavesurfer.setVolume(volumeRef.current / 100);
         wavesurfer.seekTo(currentTimeRef.current / wavesurfer.getDuration());
+        // setIsReady(true);
+        if (isPlaying) {
+          wavesurfer.play();
+        }
       });
 
-      // wavesurfer.on("audioprocess", () => {
-      //   const currentTime = wavesurfer.getCurrentTime();
-      //   console.log("currentTime", currentTime);
-      //   setCurrentTime(currentTime);
-      //   currentTimeRef.current = currentTime;
-      // });
+      wavesurfer.on("audioprocess", () => {
+        const currentTime = wavesurfer.getCurrentTime();
+        console.log("currentTime", currentTime);
+        setCurrentTime(currentTime);
+        currentTimeRef.current = currentTime;
+      });
 
       const debouncedUpdateRecentPlay = debounce((currentTime: number) => {
         if (user && storyInfo.id) {
@@ -88,7 +96,7 @@ const RecentPlayBar = () => {
         wavesurfer.destroy();
       };
     }
-  }, [storyInfo?.audio_url, setCurrentTime, fetchRecentPlay, user, storyInfo?.id]);
+  }, [storyInfo?.audio_url, setCurrentTime, fetchRecentPlay, user, storyInfo?.id, isPlaying]);
 
   const togglePlayPause = () => {
     const wavesurfer = audioRef.current;
@@ -96,12 +104,26 @@ const RecentPlayBar = () => {
       if (isPlaying) {
         wavesurfer.pause();
       } else {
-        wavesurfer.seekTo(currentTimeRef.current / wavesurfer.getDuration());
         wavesurfer.play();
+        wavesurfer.seekTo(currentTimeRef.current / wavesurfer.getDuration());
       }
       setIsPlaying(!isPlaying);
     }
   };
+
+  // useEffect(() => {
+  //   const wavesurfer = audioRef.current;
+  //   console.log("下方播放條 isPlaying", isPlaying);
+  //   if (wavesurfer && isReady) {
+  //     console.log("有 wavesurfer", wavesurfer);
+  //     if (isPlaying) {
+  //       wavesurfer.play();
+  //       console.log("播放");
+  //     } else {
+  //       wavesurfer.pause();
+  //     }
+  //   }
+  // }, [isPlaying, isReady]);
 
   const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = +event.target.value;

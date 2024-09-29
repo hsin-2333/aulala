@@ -126,29 +126,26 @@ export const AudioCard: React.FC<PlaylistCardProps> = ({
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
-  const { isPlaying, setIsPlaying, fetchRecentPlay } = context;
+  const { storyInfo, isPlaying, setIsPlaying, fetchRecentPlay } = context;
 
   const togglePlayPause = async (event: React.MouseEvent) => {
     event.stopPropagation(); // 防止事件冒泡
     if (user && id) {
-      // const currentTime = Date.now();
-      const currentTime = 0;
       try {
-        console.log("更新時間點=", currentTime);
-        await dbApi.updateRecentPlay(user.uid, id, currentTime);
+        await dbApi.updateRecentPlay(user.uid, id, 0);
         fetchRecentPlay();
-        console.log("Updated recent play");
+        setIsPlaying(true);
       } catch (error) {
         console.error("Error updating recent play: ", error);
       }
     }
     if (onCardClick) {
-      console.log("onCardClick");
       onCardClick(); //打開主頁側邊選單
       setIsPlaying(!isPlaying);
     }
   };
 
+  const isCurrentStory = id === storyInfo?.id;
   return (
     <Card
       isBlurred
@@ -197,7 +194,12 @@ export const AudioCard: React.FC<PlaylistCardProps> = ({
                 variant="light"
                 onClick={togglePlayPause}
               >
-                <Icon name="play" className="h-6 w-6" color="hsl(var(--nextui-primary-200))" />
+                <Icon
+                  name="play"
+                  filled={isPlaying && isCurrentStory}
+                  className="h-6 w-6"
+                  color="hsl(var(--nextui-primary-200))"
+                />
               </Button>
             </div>
           </div>
