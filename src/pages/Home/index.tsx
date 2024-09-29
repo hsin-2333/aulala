@@ -134,12 +134,10 @@ function HomePage({ onCardClick }: HomePageProps) {
 
   return (
     <>
-      {/* <SearchComponent storyList={storyList || []} scriptList={scriptList || []} onSearchResults={setSearchResults} /> */}
-
       <div className="flex items-center justify-between text-left">
         <div className="space-y-1 w-full">
           <h2 className="text-2xl font-semibold tracking-tight">Categories</h2>
-          <div className="flex w-2/4 justify-between">
+          <div className="flex w-full justify-start gap-4 mt-2">
             {CategoryOptions.map((category) => (
               <Card
                 shadow="none"

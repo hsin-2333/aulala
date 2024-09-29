@@ -137,7 +137,7 @@ const RecentPlayBar = () => {
   return (
     <>
       {recentPlay && (
-        <div className="fixed bottom-0 left-0 right-0 ">
+        <div className="h-[80px] fixed bottom-0 left-0 right-0 z-10">
           <div className=" bg-slate-800 p-4  flex items-center space-x-4 justify-between px-11">
             <div className="text-left w-1/6 flex gap-4">
               <img

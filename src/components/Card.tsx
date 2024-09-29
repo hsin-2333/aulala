@@ -130,11 +130,11 @@ export const ScriptCard = ({
   onClick,
 }: ScriptCardProps) => {
   const [interactions, setInteractions] = useState<InteractionType[]>([]);
-  console.log(interactions);
 
   useEffect(() => {
     if (!scriptId) return;
 
+    console.log("不會八");
     const fetchData = async () => {
       const unsubscribe = await dbApi.subscribeToInteractions(scriptId, setInteractions);
       return unsubscribe;
@@ -152,7 +152,7 @@ export const ScriptCard = ({
   };
 
   return (
-    <Card className="w-full  mb-2 " isPressable onPress={onClick} shadow="none">
+    <Card className="w-full border border-default-200 mb-2 " isPressable onPress={onClick} shadow="none">
       <CardHeader className="flex flex-col items-start">
         <div className="flex gap-2 align-middle items-center">
           <Image alt="story cover image" height={40} radius="sm" width={40} src={image} />
@@ -176,7 +176,7 @@ export const ScriptCard = ({
             </Chip>
           ))}
         </div>
-        <div className="flex flex-wrap gap-4 ml-1 mr-4 items-end ">
+        <div className="flex flex-wrap gap-2 ml-1  items-end ">
           <p className="text-gray-600 hover:text-gray-800">收藏 {getCount("bookmarked")}</p>
           <p className="text-gray-600 hover:text-gray-800">愛心 {getCount("like")}</p>
           <p className="text-gray-600 hover:text-gray-800">留言 {getCount("comment")}</p>

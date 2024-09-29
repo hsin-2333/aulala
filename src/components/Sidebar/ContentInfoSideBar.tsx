@@ -51,7 +51,7 @@ const ContentInfoSideBar = ({ setIsDetailVisible }: ClickHandler) => {
   return (
     <>
       {storyInfo && (
-        <div className="pb-12">
+        <div className="pb-12 overflow-y-auto" style={{ height: "calc(100vh - 80px)" }}>
           <div className="space-y-4 py-4">
             <div className="px-4 py-2">
               <div className="flex justify-between">

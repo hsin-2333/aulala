@@ -23,11 +23,11 @@ export const OuterLayout = ({ children }: LayoutProps) => {
   }, [location]);
 
   return (
-    <div className="flex min-h-screen	flex-col">
+    <div className="flex h-screen overflow-hidden  flex-col">
       <div className="flex-1">
         {/* <Header /> */}
         <NavbarComponent />
-        <main className="p-4 flex-1 pb-24">
+        <main className=" flex-1 pb-24">
           <MainContent isOuterPage={true}>{children}</MainContent>
         </main>
         {user && <RecentPlayBar key={key} />}
@@ -42,7 +42,7 @@ export const Layout = ({ children }: LayoutProps) => {
       <div className="flex-1">
         {/* <Header /> */}
         <NavbarComponent />
-        <main className="p-4 flex-1 ">
+        <main className="flex-1 ">
           <MainContent isOuterPage={false}>{children}</MainContent>
         </main>
       </div>
@@ -130,26 +130,28 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
   };
 
   return (
-    <div className="border border-slate-200 " style={{ backgroundColor: "#F4F5FC" }}>
-      <div className={`grid h-screen ${isOuterPage ? "lg:grid-cols-5" : "lg:grid-cols-5"}`}>
-        {!isOuterPage && <Sidebar />}
+    <div
+      style={{ height: "calc(100vh-80px)" }}
+      className={`grid overflow-y-hidden ${isOuterPage ? "lg:grid-cols-5" : "lg:grid-cols-5"}`}
+    >
+      {!isOuterPage && <Sidebar />}
 
-        <div
-          className={`${
-            isDetailVisible || !isOuterPage ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
-          } lg:border-l overflow-y-auto`}
-        >
-          <div className="h-full py-6 lg:px-8">
-            <div className="h-full space-y-6">
-              <div className="border-none p-0 outline-none">
-                {/* {children} */}
-                {React.cloneElement(children as React.ReactElement, { onCardClick: handleCardClick })}
-              </div>
+      <div
+        style={{ height: "calc(100vh - 80px)" }}
+        className={`${
+          isDetailVisible || !isOuterPage ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
+        } lg:border-l overflow-y-scroll custom-scrollbar scroll-padding space-y-8`}
+      >
+        <div className="py-6 lg:px-8">
+          <div className="space-y-6">
+            <div className="border-none p-0 outline-none">
+              {/* {children} */}
+              {React.cloneElement(children as React.ReactElement, { onCardClick: handleCardClick })}
             </div>
           </div>
         </div>
-        {isDetailVisible && <ContentInfoSideBar setIsDetailVisible={setIsDetailVisible} />}
       </div>
+      {isDetailVisible && <ContentInfoSideBar setIsDetailVisible={setIsDetailVisible} />}
     </div>
   );
 };
