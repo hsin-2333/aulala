@@ -4,9 +4,8 @@ import { useNavigate } from "react-router-dom";
 import dbApi from "../../utils/firebaseService";
 import { CategoryOptions } from "../../constants/categoryOptions";
 import { QueryConditions } from "../../types";
-import { AudioCard, ImageCard } from "../../components/Card";
+import { ImageCard, ScriptCard } from "../../components/Card";
 import SortedMenu from "./SortedMenu";
-// import SearchComponent from "./SearchComponent";
 import { Card, CardBody, Divider } from "@nextui-org/react";
 import { LuFolderHeart } from "react-icons/lu";
 import { AuthContext } from "../../context/AuthContext";
@@ -18,6 +17,7 @@ interface Story {
   author?: string;
   created_at?: { seconds: number; nanoseconds: number };
   duration?: number;
+  summary?: string;
 }
 
 interface HomePageProps {
@@ -102,6 +102,17 @@ function HomePage({ onCardClick }: HomePageProps) {
     });
   }, [scriptList, sortOrder]);
 
+  const latestReleases = useMemo(() => {
+    const combinedList = [...(storyList || []), ...(scriptList || [])];
+    return combinedList
+      .sort((a, b) => {
+        const dateA = convertTimestampToDate(a.created_at!).getTime();
+        const dateB = convertTimestampToDate(b.created_at!).getTime();
+        return dateB - dateA;
+      })
+      .slice(0, 5);
+  }, [storyList, scriptList]);
+
   if (isScriptLoading || isStoryLoading) {
     return <div>Loading...</div>;
   }
@@ -168,11 +179,39 @@ function HomePage({ onCardClick }: HomePageProps) {
         <div className="my-4" />
       </div>
 
+      <div className="flex items-center justify-between text-left">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-semibold tracking-tight">New Stories</h2>
+          <p className="text-sm text-muted-foreground">Check out the latest releases.</p>
+        </div>
+      </div>
+      <div className="relative">
+        <div className="my-4" />
+      </div>
+
+      <section className="mb-4 h-auto whitespace-nowrap flex overflow-x-auto space-x-8 custom-scrollbar scroll-padding ">
+        {latestReleases.map((release: Story) => (
+          <ImageCard
+            onCardClick={onCardClick}
+            onClick={() => handleContentClick(release.id, "story")}
+            key={release.id}
+            id={release.id}
+            //@ts-expect-error(123)
+            image={release.img_url?.[0]}
+            title={release.title || "Untitled"}
+            //@ts-expect-error(123)
+            tags={release.tags}
+            author={release.author || "Unknown"}
+            duration={release.duration}
+          />
+        ))}
+      </section>
+
       <div className="flex items-center  justify-between text-left">
         <div className="space-y-1 w-full">
           <h2 className="text-2xl font-semibold tracking-tight">Stories</h2>
           <div className="flex justify-between ">
-            <p className="text-sm text-muted-foreground">Top picks for you. Updated daily.</p>
+            <p className="text-sm text-muted-foreground">Top picks for you. </p>
             <SortedMenu onSortOrderChange={handleSortOrderChange} />
           </div>
         </div>
@@ -211,9 +250,11 @@ function HomePage({ onCardClick }: HomePageProps) {
       </div>
       <div className="relative">
         <div className="my-4" />
-        <ul>
-          {sortedScriptList?.map((script: Story) => (
-            <AudioCard
+      </div>
+      <section className="mb-4 h-auto flex flex-wrap gap-4 custom-scrollbar scroll-padding">
+        {sortedScriptList?.map((script: Story) => (
+          <div key={script.id} className="flex flex-grow justify-start sm:w-1/2 lg:w-1/3 xl:w-1/4 mb-4">
+            <ScriptCard
               onClick={() => handleContentClick(script.id, "script")}
               key={script.id}
               //@ts-expect-error(123)
@@ -222,10 +263,13 @@ function HomePage({ onCardClick }: HomePageProps) {
               //@ts-expect-error(123)
               tags={script.tags}
               author={script.author || "Unknown"}
+              summary={script.summary || ""}
+              scriptId={script.id}
+              date={script.created_at ? convertTimestampToDate(script.created_at).toLocaleDateString() : ""}
             />
-          ))}
-        </ul>
-      </div>
+          </div>
+        ))}
+      </section>
     </>
   );
 }

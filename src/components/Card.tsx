@@ -6,7 +6,7 @@ import Icon from "./Icon";
 import { AuthContext } from "../context/AuthContext";
 import { RecentPlayContext } from "../context/RecentPlayContext";
 import { Button } from "@nextui-org/react";
-import { Card, CardHeader, CardBody, Divider, Image } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Divider, Image, CardFooter, Chip } from "@nextui-org/react";
 
 interface PlaylistCardProps {
   id?: string;
@@ -23,22 +23,25 @@ interface PlaylistCardProps {
 interface ScriptCardProps {
   scriptId: string | undefined;
   title: string;
-  author: string;
+  author?: string;
   tags: string[];
-  language: string;
+  language?: string;
   summary: string;
-  created_at: Timestamp;
+  image?: string;
+  date: string;
+  created_at?: Timestamp;
+  onClick?: () => void;
 }
 
-const formatTimestamp = (timestamp?: Timestamp): string => {
-  if (!timestamp) {
-    return "Invalid date";
-  }
-  const date = timestamp.toDate();
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  return `${year}${month}`;
-};
+// const formatTimestamp = (timestamp?: Timestamp): string => {
+//   if (!timestamp) {
+//     return "Invalid date";
+//   }
+//   const date = timestamp.toDate();
+//   const year = date.getFullYear();
+//   const month = (date.getMonth() + 1).toString().padStart(2, "0");
+//   return `${year}${month}`;
+// };
 
 export const PlaylistCard = ({ image, title, tags = [], author, onClick }: PlaylistCardProps) => {
   return (
@@ -62,11 +65,73 @@ export const PlaylistCard = ({ image, title, tags = [], author, onClick }: Playl
   );
 };
 
-export const ScriptCard = ({ scriptId, title, author, tags = [], summary, created_at, language }: ScriptCardProps) => {
-  const formattedDate = formatTimestamp(created_at);
+// export const ScriptCard = ({ scriptId, title, author, tags = [], summary, created_at, language }: ScriptCardProps) => {
+//   const formattedDate = formatTimestamp(created_at);
 
+//   const [interactions, setInteractions] = useState<InteractionType[]>([]);
+//   console.log(interactions);
+//   useEffect(() => {
+//     if (!scriptId) return;
+
+//     const fetchData = async () => {
+//       const unsubscribe = await dbApi.subscribeToInteractions(scriptId, setInteractions);
+//       return unsubscribe;
+//     };
+
+//     const unsubscribePromise = fetchData();
+
+//     return () => {
+//       unsubscribePromise.then((unsubscribe) => unsubscribe());
+//     };
+//   }, [scriptId]);
+
+//   const getCount = (type: string) => {
+//     return interactions.filter((interaction) => interaction.interaction_type === type).length;
+//   };
+
+//   return (
+//     <div className="flex flex-col w-full bg-gray-100 rounded-lg overflow-hidden mb-2">
+//       <div className="flex items-center p-4 ">
+//         <div className="flex-grow text-left">
+//           <div className="font-bold text-xl text-black">{title}</div>
+//           <div className="text-gray-600">
+//             {author} • {formattedDate}
+//           </div>
+//           <div className="flex space-x-2 mt-2 ">
+//             {tags.map((tag, index) => (
+//               <span key={index} className="text-gray-00 text-sm p-1 rounded-sm bg-slate-300">
+//                 {tag}
+//               </span>
+//             ))}
+//           </div>
+//         </div>
+//       </div>
+//       <div className="p-4 text-gray-700  text-left">{summary}</div>
+//       <div className="flex items-center justify-between p-4 ">
+//         <div className="flex space-x-4">
+//           <p className="text-gray-600 hover:text-gray-800">收藏 {getCount("bookmarked")}</p>
+//           <p className="text-gray-600 hover:text-gray-800">愛心 {getCount("like")}</p>
+//           <p className="text-gray-600 hover:text-gray-800">留言 {getCount("comment")}</p>
+//         </div>
+//         <p className="text-gray-600 hover:text-gray-800">{language}</p>
+//       </div>
+//     </div>
+//   );
+// };
+
+export const ScriptCard = ({
+  scriptId,
+  title,
+  tags = [],
+  summary,
+  language,
+  date,
+  image,
+  onClick,
+}: ScriptCardProps) => {
   const [interactions, setInteractions] = useState<InteractionType[]>([]);
   console.log(interactions);
+
   useEffect(() => {
     if (!scriptId) return;
 
@@ -87,32 +152,38 @@ export const ScriptCard = ({ scriptId, title, author, tags = [], summary, create
   };
 
   return (
-    <div className="flex flex-col w-full bg-gray-100 rounded-lg overflow-hidden mb-2">
-      <div className="flex items-center p-4 ">
-        <div className="flex-grow text-left">
-          <div className="font-bold text-xl text-black">{title}</div>
-          <div className="text-gray-600">
-            {author} • {formattedDate}
-          </div>
-          <div className="flex space-x-2 mt-2 ">
-            {tags.map((tag, index) => (
-              <span key={index} className="text-gray-00 text-sm p-1 rounded-sm bg-slate-300">
-                {tag}
-              </span>
-            ))}
+    <Card className="w-full  mb-2 " isPressable onPress={onClick} shadow="none">
+      <CardHeader className="flex flex-col items-start">
+        <div className="flex gap-2 align-middle items-center">
+          <Image alt="story cover image" height={40} radius="sm" width={40} src={image} />
+          <div>
+            <h2 className="font-bold text-xl break-words whitespace-normal text-left">{title}</h2>
+            <p className="text-small text-default-500 text-left">{date}</p>
           </div>
         </div>
-      </div>
-      <div className="p-4 text-gray-700  text-left">{summary}</div>
-      <div className="flex items-center justify-between p-4 ">
-        <div className="flex space-x-4">
+      </CardHeader>
+
+      <CardBody className="px-4">
+        <p className="text-gray-700 break-words whitespace-normal">{summary}</p>
+      </CardBody>
+      <Divider className="bg-slate-100" />
+
+      <CardFooter className="flex flex-wrap items-center w-full justify-between py-4 gap-2">
+        <div className="flex flex-wrap space-x-2 flex-grow">
+          {tags.map((tag, index) => (
+            <Chip key={index} color="primary">
+              {tag}
+            </Chip>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-4 ml-1 mr-4 items-end ">
           <p className="text-gray-600 hover:text-gray-800">收藏 {getCount("bookmarked")}</p>
           <p className="text-gray-600 hover:text-gray-800">愛心 {getCount("like")}</p>
           <p className="text-gray-600 hover:text-gray-800">留言 {getCount("comment")}</p>
         </div>
         <p className="text-gray-600 hover:text-gray-800">{language}</p>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 };
 // export const AudioCard: React.FC<PlaylistCardProps> = ({
