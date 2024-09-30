@@ -7,6 +7,7 @@ import { AuthContext } from "../context/AuthContext";
 import { RecentPlayContext } from "../context/RecentPlayContext";
 import { Button } from "@nextui-org/react";
 import { Card, CardHeader, CardBody, Divider, Image, CardFooter, Chip } from "@nextui-org/react";
+import { LiaComment } from "react-icons/lia";
 
 interface PlaylistCardProps {
   id?: string;
@@ -177,11 +178,20 @@ export const ScriptCard = ({
           ))}
         </div>
         <div className="flex flex-wrap gap-2 ml-1  items-end ">
-          <p className="text-gray-600 hover:text-gray-800">收藏 {getCount("bookmarked")}</p>
-          <p className="text-gray-600 hover:text-gray-800">愛心 {getCount("like")}</p>
-          <p className="text-gray-600 hover:text-gray-800">留言 {getCount("comment")}</p>
+          <p className="text-default-500 hover:text-gray-800 flex  gap-1 items-center">
+            {" "}
+            <Icon name="bookmarked" className="h-4 w-4" color="hsl(var(--nextui-default-500))" />
+            {getCount("bookmarked")}
+          </p>
+          <p className="text-default-500 hover:text-gray-800 flex  gap-1 items-center">
+            <Icon name="like" className="h-4 w-4" color="hsl(var(--nextui-default-500))" /> {getCount("like")}
+          </p>
+
+          <p className="text-default-500 hover:text-gray-800 flex  gap-1 items-center ">
+            <LiaComment className="h-5 w-5" color="hsl(var(--nextui-default-500))" /> {getCount("comment")}
+          </p>
         </div>
-        <p className="text-gray-600 hover:text-gray-800">{language}</p>
+        <p className="text-default-500 hover:text-gray-800">{language}</p>
       </CardFooter>
     </Card>
   );
