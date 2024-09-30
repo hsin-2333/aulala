@@ -49,6 +49,15 @@ export const ScriptLayout = ({ children }: LayoutProps) => {
   );
 };
 
+export const UserHomeLayout = ({ children }: LayoutProps) => {
+  return (
+    <div className="h-screen flex flex-col">
+      <NavbarComponent />
+      <div className="flex-grow mt-16 ">{children}</div>
+    </div>
+  );
+};
+
 export const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex min-h-screen	">
@@ -236,7 +245,7 @@ const Sidebar = () => {
           {/* <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">Discover</h2> */}
           <div className="space-y-1 ">
             <NavLink
-              to={`/user/${user?.userName}`}
+              to={`/account/${user?.userName}`}
               end
               className={({ isActive }) =>
                 `w-full justify-start flex items-center size-default hover:bg-primary/50 ${
@@ -259,7 +268,7 @@ const Sidebar = () => {
                 <rect width="7" height="7" x="14" y="14" rx="1" />
                 <rect width="7" height="7" x="3" y="14" rx="1" />
               </svg>
-              My Homepage
+              Your Homepage
             </NavLink>
             <NavLink
               to={`/user/${user?.userName}/uploads`}

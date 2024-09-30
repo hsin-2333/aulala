@@ -73,6 +73,7 @@ export interface Story {
   audio_url?: string;
   segments?: { text: string; start: number; end: number }[];
   duration?: number;
+  intro?: string;
 }
 
 export interface InteractionType {

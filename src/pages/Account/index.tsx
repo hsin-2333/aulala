@@ -18,19 +18,18 @@ function Account() {
   return (
     <>
       {user && (
-        <div className="min-h-screen">
-          <div className="relative h-max">
+        <div>
+          <div className="relative">
             <div
-              className="w-full h-32 bg-cover bg-center"
+              className="w-full h-32 bg-cover bg-center bg-gradient-to-tr from-blue-200 to-cyan-200 "
               style={{
-                backgroundColor: "#64e07767",
                 top: "-50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
                 position: "absolute",
               }}
             ></div>
-            <div className="absolute top-12 left-16 transform -translate-x-1/2 flex justify-center items-center h-full flex-col">
+            <div className="absolute top-12 left-20 transform -translate-x-1/2 flex justify-center items-center h-full flex-col">
               <img src={user.avatar} alt="User Avatar" className="w-24 h-24 rounded-full border-4 border-white" />
               {/* <h1 className="text-2xl font-bold mt-4">{user.userName}</h1>
               <div className="flex justify-center space-x-4 mt-4">
@@ -49,12 +48,22 @@ function Account() {
             </div>
           </div>
 
-          <div className="container w-full pt-16 ">
+          <div className="container w-full pt-16  " style={{ height: "calc(100vh-100px)" }}>
             <div className="w-full flex flex-col justify-s">
-              <Tabs aria-label="Dynamic tabs" items={tabs} variant="underlined" className="pl-60 ">
+              <Tabs
+                aria-label="Dynamic tabs "
+                items={tabs}
+                variant="underlined"
+                classNames={{
+                  tabList: "gap-6 w-full relative rounded-none p-0 pl-64 border-b border-divider",
+                  cursor: "w-full bg-primary-200",
+                  tab: "max-w-fit px-0 h-12",
+                  tabContent: "group-data-[selected=true]:text-primary-600",
+                }}
+              >
                 {(item) => (
                   <Tab key={item.id} title={item.label}>
-                    <div className="flex w-full">
+                    <div className="flex w-full pl-6">
                       {/* 左側的 info div */}
                       <div className="w-60 px-4 flex-shrink-0">
                         <div className="text-left">
@@ -78,7 +87,7 @@ function Account() {
                         </div>
                       </div>
                       {/* 右側的 tab content */}
-                      <div className="flex-grow overflow-auto px-4">{item.content}</div>
+                      <div className="pr-6">{item.content}</div>
                     </div>
                   </Tab>
                 )}

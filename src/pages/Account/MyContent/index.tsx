@@ -39,16 +39,21 @@ const MyContent = () => {
   const renderContent = () => {
     if (selectedTab === "story") {
       return storyList?.map((story) => (
-        <AudioCard
-          key={story.id}
-          image={story.img_url?.[0] || "default_image_url"}
-          title={story.title}
-          author={story.author}
-          tags={story.tags || []}
-          onClick={() => {
-            navigate(`/story/${story.id}`);
-          }}
-        />
+        <div className="border border-default-300 rounded-xl	">
+          <AudioCard
+            key={story.id}
+            image={story.img_url?.[0] || "default_image_url"}
+            title={story.title}
+            author={story.author}
+            tags={story.tags || []}
+            onClick={() => {
+              navigate(`/story/${story.id}`);
+            }}
+            intro={story.intro || ""}
+            duration={story.duration || 0}
+            date={story.created_at ? convertTimestampToDate(story.created_at as Timestamp).toLocaleDateString() : ""}
+          />
+        </div>
       ));
     } else if (selectedTab === "script") {
       return scriptList?.map((script) => (

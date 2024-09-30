@@ -102,7 +102,7 @@ export function NavbarComponent() {
                     <p className="font-semibold">{user.role}</p>
                     <p className="font-semibold">{user.email}</p>
                   </DropdownItem>
-                  <DropdownItem key="contents" href={`/user/${user.userName}`}>
+                  <DropdownItem key="contents" href={`/account/${user.userName}`}>
                     My Contents
                   </DropdownItem>
                   <DropdownItem key="user_settings" href={`/user/${user.userName}/setting`}>

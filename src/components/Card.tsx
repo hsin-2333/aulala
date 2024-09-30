@@ -19,6 +19,7 @@ interface PlaylistCardProps {
   onCardClick?: () => void;
   duration?: number;
   date?: string;
+  intro?: string;
 }
 
 interface ScriptCardProps {
@@ -196,153 +197,58 @@ export const ScriptCard = ({
     </Card>
   );
 };
-// export const AudioCard: React.FC<PlaylistCardProps> = ({
-//   id,
-//   image,
-//   title,
-//   tags = [],
-//   author,
-//   onClick,
-//   onCardClick,
-// }) => {
-//   const { user } = useContext(AuthContext);
-//   const context = useContext(RecentPlayContext);
-//   if (context === undefined) {
-//     throw new Error("SomeComponent must be used within a RecentPlayProvider");
-//   }
-//   const { storyInfo, isPlaying, setIsPlaying, fetchRecentPlay } = context;
-
-//   const togglePlayPause = async (event: React.MouseEvent) => {
-//     event.stopPropagation(); // 防止事件冒泡
-//     if (user && id) {
-//       try {
-//         await dbApi.updateRecentPlay(user.uid, id, 0);
-//         fetchRecentPlay();
-//         setIsPlaying(true);
-//       } catch (error) {
-//         console.error("Error updating recent play: ", error);
-//       }
-//     }
-//     if (onCardClick) {
-//       onCardClick(); //打開主頁側邊選單
-//       setIsPlaying(!isPlaying);
-//     }
-//   };
-
-//   const isCurrentStory = id === storyInfo?.id;
-//   return (
-//     <Card
-//       isBlurred
-//       className="border-none bg-background/60 dark:bg-default-100/50 max-w-[510px] cursor-pointer mb-2"
-//       shadow="sm"
-//       // onClick={onClick}
-//       isPressable
-//       onPress={onClick}
-//     >
-//       <CardBody>
-//         <div className="grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-center justify-center">
-//           <div className="relative col-span-6 md:col-span-4 w-full h-36 md:h-full">
-//             <img
-//               alt={title}
-//               className="object-cover rounded-lg w-full h-full md:max-w-32 md:max-h-32 "
-//               src={image}
-//               width="100%"
-//               style={{ height: "100%", borderRadius: "0.5rem" }}
-//             />
-//           </div>
-
-//           <div className="flex h-full flex-col col-span-6 md:col-span-8">
-//             <div className="flex justify-between items-start h-full">
-//               <div className="flex flex-col gap-0 justify-between">
-//                 <div>
-//                   <h1 className="text-medium font-semibold ">{title}</h1>
-//                   <h3 className="text-small tracking-tight text-default-400">by {author}</h3>
-//                   <p className="text-small pt-2 overflow-hidden">
-//                     這邊要放 Intro!! Frontend developer and UI/UX enthusiast. Join me on this coding adventure!
-//                   </p>
-//                 </div>
-
-//                 <div className="flex space-x-2 mt-2 text-small text-default-400">
-//                   {tags.map((tag, index) => (
-//                     <span key={index} className="rounded-sm ">
-//                       # {tag}
-//                     </span>
-//                   ))}
-//                 </div>
-//               </div>
-
-//               <Button
-//                 isIconOnly
-//                 className="text-default-900/60 data-[hover]:bg-foreground/10 -translate-y-2 translate-x-2"
-//                 radius="full"
-//                 variant="light"
-//                 onClick={togglePlayPause}
-//               >
-//                 <Icon
-//                   name="play"
-//                   filled={isPlaying && isCurrentStory}
-//                   className="h-6 w-6"
-//                   color="hsl(var(--nextui-primary-200))"
-//                 />
-//               </Button>
-//             </div>
-//           </div>
-//         </div>
-//       </CardBody>
-//     </Card>
-//   );
-// };
 
 export const AudioCard: React.FC<PlaylistCardProps> = ({
-  id,
+  // id,
   image,
   title,
   duration,
   author,
   date,
   onClick,
-  onCardClick,
+  // onCardClick,
+  intro,
 }) => {
-  const { user } = useContext(AuthContext);
+  // const { user } = useContext(AuthContext);
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
-  const { storyInfo, isPlaying, setIsPlaying, fetchRecentPlay } = context;
+  // const { storyInfo, isPlaying, setIsPlaying, fetchRecentPlay } = context;
 
-  const togglePlayPause = async (event: React.MouseEvent) => {
-    event.stopPropagation(); // 防止事件冒泡
-    if (user && id) {
-      try {
-        await dbApi.updateRecentPlay(user.uid, id, 0);
-        fetchRecentPlay();
-        setIsPlaying(true);
-      } catch (error) {
-        console.error("Error updating recent play: ", error);
-      }
-    }
-    if (onCardClick) {
-      onCardClick(); //打開主頁側邊選單
-      setIsPlaying(!isPlaying);
-    }
-  };
+  // const togglePlayPause = async (event: React.MouseEvent) => {
+  //   event.stopPropagation(); // 防止事件冒泡
+  //   if (user && id) {
+  //     try {
+  //       await dbApi.updateRecentPlay(user.uid, id, 0);
+  //       fetchRecentPlay();
+  //       setIsPlaying(true);
+  //     } catch (error) {
+  //       console.error("Error updating recent play: ", error);
+  //     }
+  //   }
+  //   if (onCardClick) {
+  //     onCardClick(); //打開主頁側邊選單
+  //     setIsPlaying(!isPlaying);
+  //   }
+  // };
 
-  const isCurrentStory = id === storyInfo?.id;
+  // const isCurrentStory = id === storyInfo?.id;
   const storyDuration = duration ? `${Math.round((duration / 60) * 2) / 2} min` : "";
   return (
-    <Card className="max-w-[300px] group" shadow="none" isPressable onPress={onClick}>
+    <Card className="min-w-72 max-w-[300px] group" shadow="none" isPressable onPress={onClick}>
       <CardHeader className="flex gap-3  justify-between items-center">
         <div className="flex  gap-3">
           <Image alt="story cover image" height={40} radius="sm" src={image} width={40} />
           <div className="flex flex-col">
             <p className="text-md text-left">{author}</p>
             <p className="text-small text-default-500 text-left">
-              {date} | {storyDuration}
+              {date} • {storyDuration}
             </p>
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <Button
             isIconOnly
             className="text-default-900/60 data-[hover]:bg-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -357,14 +263,12 @@ export const AudioCard: React.FC<PlaylistCardProps> = ({
               color="hsl(var(--nextui-primary-200))"
             />
           </Button>
-        </div>
+        </div> */}
       </CardHeader>
       <Divider className="bg-slate-100" />
       <CardBody className="flex gap-3">
-        <span className="text-lg">{title}</span>
-        <p className="text-md">
-          // 這邊要放 Intro!! Frontend developer and UI/UX enthusiast. Join me on this coding adventure!
-        </p>
+        <span className="font-bold text-xl break-words whitespace-normal text-left">{title}</span>
+        <p className="text-gray-700 break-words whitespace-normal">{intro}</p>
       </CardBody>
       {/* <Divider /> */}
       {/* <CardFooter></CardFooter> */}
