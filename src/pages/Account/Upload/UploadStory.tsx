@@ -95,7 +95,7 @@ const UploadStory = () => {
       try {
         const storyData = {
           ...data,
-          duration: audioDuration,
+          duration: audioDuration || 0,
           author: user?.userName || "Unknown",
           tags: data.tags.map((tag) => tag.value),
           voice_actor: [user?.userName || ""], //之後要增加多位聲優
