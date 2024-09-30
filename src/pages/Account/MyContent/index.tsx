@@ -39,7 +39,7 @@ const MyContent = () => {
   const renderContent = () => {
     if (selectedTab === "story") {
       return storyList?.map((story) => (
-        <div className="border border-default-300 rounded-xl	">
+        <div key={story.id} className="border border-default-300 rounded-xl">
           <AudioCard
             key={story.id}
             image={story.img_url?.[0] || "default_image_url"}

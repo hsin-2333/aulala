@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
 import dbApi from "../../../utils/firebaseService";
 import { CategoryOptions } from "../../../constants/categoryOptions";
-import { Select, SelectItem } from "@nextui-org/react";
-import CreatableSelect from "react-select/creatable";
-import { Input, Button } from "@nextui-org/react";
+import { Select, SelectItem, Input, Button, Chip } from "@nextui-org/react";
 
 interface FormData {
   title: string;
@@ -32,12 +30,17 @@ const UploadStory = () => {
   const navigate = useNavigate();
   const [audioName, setAudioName] = useState<string | null>(null);
   const [audioDuration, setAudioDuration] = useState<number | null>(null);
-  const [tagsOptions, setTagsOptions] = useState<{ value: string; label: string }[]>([]);
   const [currentStep, setCurrentStep] = useState(1);
 
   const filteredCategoryOptions = CategoryOptions.filter((option) => option.label !== "All");
   const AudioInputRef = useRef<HTMLInputElement>(null);
 
+  const [tagsOptions, setTagsOptions] = useState<{ value: string; label: string }[]>([]);
+  const [newTag, setNewTag] = useState("");
+  const [selectedTags, setSelectedTags] = useState<{ value: string; label: string }[]>([]);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
+  console.log("selectedTags", selectedTags);
   const {
     register,
     handleSubmit,
@@ -89,6 +92,7 @@ const UploadStory = () => {
   };
 
   const onSubmit = async (data: FormData) => {
+    console.log(data);
     if (file) {
       let storyId: string | null = null;
 
@@ -144,6 +148,39 @@ const UploadStory = () => {
       setCurrentStep(step);
     } else {
       window.alert("請填寫所有必填字段");
+    }
+  };
+
+  const handleTagCreation = () => {
+    if (newTag.trim() !== "" && selectedTags.length < 8) {
+      const newTagOption = { value: newTag, label: newTag };
+      setTagsOptions((prev) => [...prev, newTagOption]);
+      setSelectedTags((prev) => [...prev, newTagOption]);
+      setNewTag("");
+      setIsDropdownVisible(false);
+    } else if (selectedTags.length >= 8) {
+      window.alert("最多只能選擇8個標籤");
+    }
+  };
+
+  const handleTagRemoval = (tagValue: string) => {
+    const removedTag = selectedTags.find((tag) => tag.value === tagValue);
+    if (removedTag) {
+      const newSelectedTags = selectedTags.filter((tag) => tag.value !== tagValue);
+      setSelectedTags(newSelectedTags);
+      setTagsOptions((prev) => [...prev, removedTag]);
+      setValue("tags", newSelectedTags);
+    }
+  };
+
+  const handleTagSelection = (tag: { value: string; label: string }) => {
+    if (selectedTags.length < 8) {
+      setSelectedTags((prev) => [...prev, tag]);
+      setTagsOptions((prev) => prev.filter((option) => option.value !== tag.value));
+      setIsDropdownVisible(false);
+      setValue("tags", [...selectedTags, tag]);
+    } else {
+      window.alert("最多只能選擇8個標籤");
     }
   };
 
@@ -264,19 +301,48 @@ const UploadStory = () => {
                   {errors.category && <span className="text-red-500 text-sm">This field is required</span>}
                 </div>
                 <div className="mt-4 border border-transparent">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Tags<span className="text-red-500 text-sm">*</span>
+                  <label className="block text-sm font-medium text-gray-700  mb-1">
+                    Tags<span className="text-red-500 text-sm ">*</span>
                   </label>
-                  <CreatableSelect
-                    isMulti
-                    options={tagsOptions}
-                    onChange={(selectedOptions) =>
-                      setValue("tags", [...selectedOptions] as { value: string; label: string }[])
-                    }
-                  />
-                  {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
+                  <div className="relative">
+                    <Input
+                      placeholder="Select or Create new tag | max 8 tags"
+                      variant="bordered"
+                      radius="sm"
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      onFocus={() => setIsDropdownVisible(true)}
+                      onBlur={() => setTimeout(() => setIsDropdownVisible(false), 200)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleTagCreation();
+                        }
+                      }}
+                    />
+                    {isDropdownVisible && (
+                      <div className="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1">
+                        {tagsOptions.map((option) => (
+                          <div
+                            key={option.value}
+                            className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                            onClick={() => handleTagSelection(option)}
+                          >
+                            {option.label}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-
+                <div className="flex gap-2 mt-2 ml-1">
+                  {selectedTags.map((tag) => (
+                    <Chip key={tag.value} className="bg-primary-100" onClose={() => handleTagRemoval(tag.value)}>
+                      {tag.label}
+                    </Chip>
+                  ))}
+                </div>
+                {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
                 <div className="mt-4 border border-transparent">
                   <Input
                     type="datetime-local"
@@ -303,18 +369,6 @@ const UploadStory = () => {
             {currentStep === 3 && (
               <div>
                 <h3 className="text-xl font-semibold mb-3">Add Cover Image</h3>
-                {/* <div className="mt-4 border border-transparent">
-                  <label className="block text-sm font-medium text-gray-700">Cover Image</label>
-                  <input
-                    className="border border-input w-full"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                  />
-
-                  {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
-                </div> */}
-
                 <div className="mt-4 border border-transparent">
                   <Input
                     label="Cover Image"
@@ -328,7 +382,6 @@ const UploadStory = () => {
                     onChange={handleImageUpload}
                   />
                   {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
-
                   {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
