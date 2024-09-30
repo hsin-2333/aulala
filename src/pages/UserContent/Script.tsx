@@ -2,7 +2,7 @@ import dbApi from "../../utils/firebaseService";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Story } from "../../types";
 import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
@@ -15,6 +15,7 @@ function ScriptContent() {
   const navigate = useNavigate();
   const { scriptId } = useParams();
   const tabsRef = useRef<HTMLDivElement>(null);
+  const [commentCount, setCommentCount] = useState(0);
 
   const {
     data: scriptData,
@@ -149,12 +150,14 @@ function ScriptContent() {
                       variant="flat"
                       className="group-data-[selected=true]:bg-primary-100 group-data-[selected=true]:text-primary-600"
                     >
-                      35
+                      {commentCount}
                     </Chip>
                   </div>
                 }
               >
-                {user && <CommentToolbar userName={user.userName} scriptId={script?.id} />}
+                {user && (
+                  <CommentToolbar userName={user.userName} scriptId={script?.id} setCommentCount={setCommentCount} />
+                )}
               </Tab>
               <Tab
                 key="voiceActors"

@@ -9,6 +9,7 @@ interface InteractionToolbarProps {
   userName: string;
   storyId?: string;
   scriptId?: string;
+  setCommentCount?: (count: number) => void;
 }
 
 interface BookmarkButtonProps {
@@ -160,7 +161,7 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
   );
 };
 
-export const CommentToolbar = ({ userName, storyId, scriptId }: InteractionToolbarProps) => {
+export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }: InteractionToolbarProps) => {
   const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
 
@@ -203,6 +204,13 @@ export const CommentToolbar = ({ userName, storyId, scriptId }: InteractionToolb
     enabled: !!scriptId || !!storyId,
   });
 
+  // 使用 useEffect 來監聽 commentsData 的變化
+  useEffect(() => {
+    if (commentsData && setCommentCount) {
+      setCommentCount(commentsData.length); // 更新評論數量
+    }
+  }, [commentsData, setCommentCount]);
+
   if (commentsLoading) {
     return <div>Loading...</div>;
   }
@@ -212,7 +220,6 @@ export const CommentToolbar = ({ userName, storyId, scriptId }: InteractionToolb
   }
 
   const comments = commentsData ? commentsData : [];
-  console.log(comments);
 
   return (
     <>
@@ -223,14 +230,29 @@ export const CommentToolbar = ({ userName, storyId, scriptId }: InteractionToolb
             variant="bordered"
             labelPlacement="outside"
             placeholder="Leave a comment"
-            minRows={1}
-            maxRows={3}
+            minRows={comment ? 3 : 1}
+            maxRows={5}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
           />
-          <Button size="sm" radius="sm" color="primary" type="submit" className="my-2">
-            Comment
-          </Button>
+          <div className="flex justify-end h-8 mb-4 gap-1">
+            {comment && (
+              <>
+                <Button
+                  size="sm"
+                  radius="sm"
+                  variant="flat"
+                  className="my-2 bg-transparent"
+                  onClick={() => setComment("")}
+                >
+                  Cancel
+                </Button>
+                <Button size="sm" radius="sm" color="primary" type="submit" className="my-2">
+                  Comment
+                </Button>
+              </>
+            )}
+          </div>
         </form>
         {comments.length > 0 ? (
           comments.map((comment) => (
