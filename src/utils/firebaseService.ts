@@ -176,6 +176,13 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => doc.data().name);
   },
 
+  async getMyCollections(userName: string) {
+    const collectionsRef = collection(db, "collections");
+    const q = query(collectionsRef, where("userName", "==", userName));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => doc.data().collectionName);
+  },
+
   async addOrUpdateTag(tagName: string, scriptId: string | null, storyId: string | null) {
     const tagRef = doc(db, "tags", tagName);
     const tagDoc = await getDoc(tagRef);
@@ -505,6 +512,28 @@ const dbApi = {
       console.log("Story deleted with ID: ", storyId);
     } catch (e) {
       console.error("Error deleting story: ", e);
+    }
+  },
+
+  async addStoryToCollection(storyId: string, collectionName: string, userName: string) {
+    try {
+      const collectionRef = doc(db, "collections", collectionName);
+      const collectionDoc = await getDoc(collectionRef);
+      if (collectionDoc.exists()) {
+        const existingData = collectionDoc.data();
+        const updatedStoryIds = [...new Set([...existingData.storyIds, storyId])];
+        await updateDoc(collectionRef, {
+          storyIds: updatedStoryIds,
+        });
+      } else {
+        await setDoc(collectionRef, {
+          collectionName: collectionName,
+          storyIds: storyId ? [storyId] : [],
+          userName: userName,
+        });
+      }
+    } catch (e) {
+      console.error("Error adding story to collection: ", e); // 修改錯誤信息
     }
   },
 };

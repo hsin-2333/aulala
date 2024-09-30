@@ -19,6 +19,7 @@ interface FormData {
   audio_url: string;
   img_url: string[];
   author: string;
+  collections: string[];
 }
 
 const UploadStory = () => {
@@ -40,7 +41,9 @@ const UploadStory = () => {
   const [selectedTags, setSelectedTags] = useState<{ value: string; label: string }[]>([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
-  console.log("selectedTags", selectedTags);
+  const [collectionsOptions, setCollectionsOptions] = useState<string[] | null>();
+
+  console.log("collectionsOptions", collectionsOptions);
   const {
     register,
     handleSubmit,
@@ -55,7 +58,16 @@ const UploadStory = () => {
       setTagsOptions(tags.map((tag: string) => ({ label: tag, value: tag })));
     };
     fetchTags();
-  }, []);
+
+    const fetchCollections = async () => {
+      if (user?.userName) {
+        const collections = await dbApi.getMyCollections(user.userName);
+        setCollectionsOptions(collections);
+      }
+    };
+
+    fetchCollections();
+  }, [user?.userName]);
 
   const handleAudioUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -104,6 +116,7 @@ const UploadStory = () => {
           tags: data.tags.map((tag) => tag.value),
           voice_actor: [user?.userName || ""], //之後要增加多位聲優
           status: "Processing",
+          collections: data.collections,
         };
 
         navigate(`/user/${user?.userName}/uploads`);
@@ -111,6 +124,10 @@ const UploadStory = () => {
         storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
         for (const tag of data.tags) {
           await dbApi.addOrUpdateTag(tag.value, storyId, null);
+        }
+
+        for (const collection of data.collections) {
+          await dbApi.addStoryToCollection(storyId, collection, user?.userName || "Unknown");
         }
 
         await dbApi.updateStoryStatus(storyId, "Done");
@@ -344,6 +361,28 @@ const UploadStory = () => {
                 </div>
                 {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
                 <div className="mt-4 border border-transparent">
+                  <Select
+                    placeholder="Select collection"
+                    onSelectionChange={(keys) => setValue("collections", Array.from(keys).map(String))}
+                    defaultSelectedKeys={[]}
+                    disableAnimation
+                    labelPlacement="outside"
+                    radius="sm"
+                    selectionMode="multiple"
+                    label="Add to collection"
+                    variant="bordered"
+                  >
+                    {collectionsOptions ? (
+                      collectionsOptions.map((option) => <SelectItem key={option}>{option}</SelectItem>)
+                    ) : (
+                      <Select>
+                        <SelectItem key="a">aaa</SelectItem>
+                      </Select>
+                    )}
+                  </Select>
+                </div>
+
+                <div className="mt-4 border border-transparent">
                   <Input
                     type="datetime-local"
                     label="Release Date"
@@ -356,6 +395,7 @@ const UploadStory = () => {
                   />
                   {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
                 </div>
+
                 <div className="flex justify-end gap-2 mt-4">
                   <Button type="button" onClick={() => handleStepClick(1)} color="default" variant="light" radius="sm">
                     Previous
