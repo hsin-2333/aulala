@@ -53,6 +53,45 @@
 .border-input {
   border: 1px solid #e2e8f0;
 }
+
+.custom-scrollbar {
+  overflow-x: auto;
+  position: relative;
+}
+
+/* 自定義滾動條 */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  transition: visibility 0.3s, opacity 0.3s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  opacity: 0;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar {
+  visibility: visible;
+  opacity: 0;
+}
+.custom-scrollbar:hover::-webkit-scrollbar-track {
+  background: #f1f1f1; /* 滾動條的背景色 */
+  border-radius: 10px;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: #c5c5c5; /* 滾動條的顏色  */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #c5c5c5; /* 滾動條 hover 的顏色 */
+}
+
+/* 增加滾動條和容器内元素之间的距离 */
+.scroll-padding {
+  padding-bottom: 16px;
+}
+
 /* button {
   border-radius: 8px;
   border: 1px solid #747bff;

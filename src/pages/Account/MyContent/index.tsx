@@ -1,4 +1,4 @@
-import { PlaylistCard, ScriptCard } from "../../../components/Card";
+import { ScriptCard, AudioCard } from "../../../components/Card";
 import dbApi from "../../../utils/firebaseService";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
@@ -32,10 +32,14 @@ const MyContent = () => {
     enabled: selectedTab === "script",
   });
 
+  const convertTimestampToDate = (timestamp: { seconds: number; nanoseconds: number }) => {
+    return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+  };
+
   const renderContent = () => {
     if (selectedTab === "story") {
       return storyList?.map((story) => (
-        <PlaylistCard
+        <AudioCard
           key={story.id}
           image={story.img_url?.[0] || "default_image_url"}
           title={story.title}
@@ -58,6 +62,7 @@ const MyContent = () => {
           summary={script.summary || ""}
           tags={script.tags || []}
           created_at={script.created_at as Timestamp}
+          date={script.created_at ? convertTimestampToDate(script.created_at as Timestamp).toLocaleDateString() : ""}
         />
       ));
     }
@@ -99,7 +104,7 @@ const MyContent = () => {
           </SelectItem>
         </Select>
       </div>
-      <div className="flex flex-wrap justify-center overflow-y-auto">
+      <div className="flex flex-wrap justify-start gap-4">
         {isStoryLoading || isScriptLoading ? <p>Loading...</p> : renderContent()}
       </div>
     </div>

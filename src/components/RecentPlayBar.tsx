@@ -61,12 +61,17 @@ const RecentPlayBar = () => {
         }
       });
 
-      wavesurfer.on("audioprocess", () => {
-        const currentTime = wavesurfer.getCurrentTime();
-        console.log("currentTime", currentTime);
-        setCurrentTime(currentTime);
-        currentTimeRef.current = currentTime;
-      });
+      ///播放過程會不停渲染!!!
+      // wavesurfer.on("audioprocess", () => {
+      //   console.log("播放中 ---------");
+      //   const currentTime = wavesurfer.getCurrentTime();
+      //   if (Math.abs(currentTime - currentTimeRef.current) > 1) {
+      //     // 只有當時間變化超過 1 秒時才更新
+      //     console.log("currentTime", currentTime);
+      //     setCurrentTime(currentTime);
+      //     currentTimeRef.current = currentTime;
+      //   }
+      // });
 
       const debouncedUpdateRecentPlay = debounce((currentTime: number) => {
         if (user && storyInfo.id) {
@@ -137,7 +142,7 @@ const RecentPlayBar = () => {
   return (
     <>
       {recentPlay && (
-        <div className="fixed bottom-0 left-0 right-0 ">
+        <div className="h-[80px] fixed bottom-0 left-0 right-0 z-10">
           <div className=" bg-slate-800 p-4  flex items-center space-x-4 justify-between px-11">
             <div className="text-left w-1/6 flex gap-4">
               <img

@@ -6,6 +6,7 @@ import RecentPlayBar from "./RecentPlayBar";
 import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
 import { NavbarComponent } from "../components/Nav/Navbar";
 import { FaBarsProgress } from "react-icons/fa6";
+import { Divider } from "@nextui-org/react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -23,14 +24,26 @@ export const OuterLayout = ({ children }: LayoutProps) => {
   }, [location]);
 
   return (
-    <div className="flex min-h-screen	flex-col">
+    <div className="flex h-screen overflow-hidden  flex-col">
       <div className="flex-1">
-        {/* <Header /> */}
         <NavbarComponent />
-        <main className="p-4 flex-1 pb-24">
+        <main className=" flex-1 pb-24">
           <MainContent isOuterPage={true}>{children}</MainContent>
         </main>
         {user && <RecentPlayBar key={key} />}
+      </div>
+    </div>
+  );
+};
+
+export const ScriptLayout = ({ children }: LayoutProps) => {
+  return (
+    <div className="flex flex-col">
+      <div className="flex-1">
+        <NavbarComponent />
+        <Divider />
+        <div className="bg-gradient-to-tr from-blue-200 to-cyan-200 w-full h-60"></div>
+        <main className=" flex-1 px-6 max-w-[1024px] m-auto  -mt-32">{children}</main>
       </div>
     </div>
   );
@@ -40,87 +53,14 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex min-h-screen	">
       <div className="flex-1">
-        {/* <Header /> */}
         <NavbarComponent />
-        <main className="p-4 flex-1 ">
+        <main className="flex-1 ">
           <MainContent isOuterPage={false}>{children}</MainContent>
         </main>
       </div>
     </div>
   );
 };
-
-// const Header = () => {
-//   const { user } = useContext(AuthContext);
-//   const [isMenuOpen, setIsMenuOpen] = useState(false);
-//   const navigate = useNavigate();
-//   const { Logout } = useContext(AuthContext);
-
-//   const toggleMenu = () => {
-//     setIsMenuOpen(!isMenuOpen);
-//   };
-//   const handleLogout = () => {
-//     Logout();
-//     navigate("/");
-//   };
-
-//   return (
-//     <header className="bg-gray-800 text-white p-4 w-full">
-//       <nav className=" mx-4 flex justify-between items-center">
-//         <Link to="/" className="text-2xl font-bold">
-//           Storybook
-//         </Link>
-//         <ul className="flex space-x-4">
-//           {user ? (
-//             <>
-//               <li>
-//                 <Link to="/upload/story">Upload Story</Link>
-//               </li>
-//               <li>
-//                 <Link to="/upload/script">Upload Script</Link>
-//               </li>
-//               <div onClick={toggleMenu} className="cursor-pointer relative">
-//                 <img src={user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full" />
-//                 {isMenuOpen && (
-//                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
-//                     <button
-//                       onClick={() => {
-//                         navigate(`/user/${user.userName}`);
-//                         toggleMenu();
-//                       }}
-//                       className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
-//                     >
-//                       My Content
-//                     </button>
-//                     <button
-//                       onClick={() => {
-//                         navigate(`/user/${user.userName}/settings`);
-//                         toggleMenu();
-//                       }}
-//                       className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
-//                     >
-//                       Settings
-//                     </button>
-//                     <button
-//                       onClick={handleLogout}
-//                       className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
-//                     >
-//                       Logout
-//                     </button>
-//                   </div>
-//                 )}
-//               </div>
-//             </>
-//           ) : (
-//             <li>
-//               <Link to="/login">Login</Link>
-//             </li>
-//           )}
-//         </ul>
-//       </nav>
-//     </header>
-//   );
-// };
 
 const MainContent = ({ isOuterPage, children }: LayoutProps) => {
   const [isDetailVisible, setIsDetailVisible] = useState(false);
@@ -130,26 +70,28 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
   };
 
   return (
-    <div className="border border-slate-200 " style={{ backgroundColor: "#F4F5FC" }}>
-      <div className={`grid h-screen ${isOuterPage ? "lg:grid-cols-5" : "lg:grid-cols-5"}`}>
-        {!isOuterPage && <Sidebar />}
+    <div
+      style={{ height: "calc(100vh-80px)" }}
+      className={`grid overflow-y-hidden ${isOuterPage ? "lg:grid-cols-5" : "lg:grid-cols-5"}`}
+    >
+      {!isOuterPage && <Sidebar />}
 
-        <div
-          className={`${
-            isDetailVisible || !isOuterPage ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
-          } lg:border-l overflow-y-auto`}
-        >
-          <div className="h-full py-6 lg:px-8">
-            <div className="h-full space-y-6">
-              <div className="border-none p-0 outline-none">
-                {/* {children} */}
-                {React.cloneElement(children as React.ReactElement, { onCardClick: handleCardClick })}
-              </div>
+      <div
+        style={{ height: "calc(100vh - 80px)" }}
+        className={`${
+          isDetailVisible || !isOuterPage ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
+        } lg:border-l overflow-y-scroll custom-scrollbar scroll-padding space-y-8`}
+      >
+        <div className=" lg:px-8">
+          <div className="space-y-6">
+            <div className="border-none p-0 outline-none">
+              {/* {children} */}
+              {React.cloneElement(children as React.ReactElement, { onCardClick: handleCardClick })}
             </div>
           </div>
         </div>
-        {isDetailVisible && <ContentInfoSideBar setIsDetailVisible={setIsDetailVisible} />}
       </div>
+      {isDetailVisible && <ContentInfoSideBar setIsDetailVisible={setIsDetailVisible} />}
     </div>
   );
 };

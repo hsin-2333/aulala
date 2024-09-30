@@ -72,6 +72,7 @@ export interface Story {
   voice_actor?: string[];
   audio_url?: string;
   segments?: { text: string; start: number; end: number }[];
+  duration?: number;
 }
 
 export interface InteractionType {
