@@ -14,7 +14,7 @@ import Account from "./pages/Account";
 import LoginComponent from "./pages/Login";
 import StoryContent from "./pages/UserContent/Story";
 import ScriptContent from "./pages/UserContent/Script";
-import { Layout, OuterLayout } from "./components/Layout";
+import { Layout, OuterLayout, ScriptLayout } from "./components/Layout";
 import UploadScript from "./pages/Account/Upload/UploadScript";
 import UploadStory from "./pages/Account/Upload/UploadStory";
 import Notifications from "./pages/Account/Notification";
@@ -66,9 +66,9 @@ function App() {
               <Route
                 path="/script/:scriptId"
                 element={
-                  <OuterLayout>
+                  <ScriptLayout>
                     <ScriptContent />
-                  </OuterLayout>
+                  </ScriptLayout>
                 }
               />
               <Route

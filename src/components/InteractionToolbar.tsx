@@ -98,14 +98,21 @@ export const BookmarkButton = ({ userName, scriptId }: BookmarkButtonProps) => {
   });
 
   return (
-    <button onClick={() => saveMutation.mutate()} className="flex items-center">
+    <Button
+      isIconOnly
+      className="text-default-900/60 data-[hover]:bg-foreground/10  "
+      radius="full"
+      variant="light"
+      onPress={() => saveMutation.mutate()}
+      // onClick={togglePlayPause}
+    >
       <Icon
         name="bookmarked"
         filled={bookmarked}
-        className="mr-2 h-6 w-6"
+        className=" h-6 w-6"
         color={bookmarked ? "#82ca9e90" : "currentColor"}
       />
-    </button>
+    </Button>
   );
 };
 
