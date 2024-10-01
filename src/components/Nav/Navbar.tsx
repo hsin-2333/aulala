@@ -53,10 +53,10 @@ export function NavbarComponent() {
 
           <NavbarContent className="flex flex-grow gap-4" justify="center"></NavbarContent>
 
-          <NavbarContent as="div" justify="end">
+          <NavbarContent as="div" className="flex flex-shrink-0" justify="end">
             {user ? (
               <>
-                <form onSubmit={handleSearchSubmit} className="flex items-center">
+                <form onSubmit={handleSearchSubmit} className="flex items-center flex-shrink-0">
                   <Input
                     classNames={{
                       base: "max-w-full sm:max-w-[10rem] h-10",
@@ -64,7 +64,7 @@ export function NavbarComponent() {
                       input: "text-small",
                       inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
                     }}
-                    placeholder="Search Title, Author, Summary, Tags"
+                    placeholder="Title, Author, ..."
                     size="sm"
                     startContent={<FiSearch size={18} />}
                     type="search"
@@ -80,7 +80,7 @@ export function NavbarComponent() {
                     <Avatar
                       isBordered
                       as="button"
-                      className="transition-transform"
+                      className="transition-transform w-8 h-8 flex-shrink-0"
                       color="secondary"
                       name={user.userName}
                       size="sm"
