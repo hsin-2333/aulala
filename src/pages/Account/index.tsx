@@ -79,14 +79,13 @@ function Account() {
     <>
       {user && (
         <div>
-          <div className="relative">
+          <div className="relative ">
             <div
-              className="w-full h-32 bg-cover bg-center bg-gradient-to-tr from-blue-200 to-cyan-200 "
+              className="absolute w-full h-32 bg-cover bg-center bg-gradient-to-tr from-blue-200 to-cyan-200 "
               style={{
                 top: "-50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
-                position: "absolute",
               }}
             ></div>
             <Button
@@ -102,8 +101,12 @@ function Account() {
             >
               <BiSolidEditAlt />
             </Button>
-            <div className="absolute top-12 left-20 transform -translate-x-1/2 flex justify-center items-center h-full flex-col">
-              <img src={user.avatar} alt="User Avatar" className="w-24 h-24 rounded-full border-4 border-white" />
+            <div className=" absolute top-2 left-10 sm:top-12 sm:left-20 transform -translate-x-1/2 flex justify-center items-center h-full flex-col">
+              <img
+                src={user.avatar}
+                alt="User Avatar"
+                className="w-14 h-14 sm:w-24 sm:h-24 rounded-full border-2 sm:border-4 border-white"
+              />
             </div>
           </div>
           <div className="container w-full pt-16" style={{ height: "calc(100vh-100px)" }}>
@@ -113,16 +116,16 @@ function Account() {
                 items={tabs}
                 variant="underlined"
                 classNames={{
-                  tabList: "gap-6 w-full relative rounded-none p-0 pl-64 border-b border-divider",
+                  tabList: "gap-6 w-full relative rounded-none p-0 sm:pl-64 border-b border-divider",
                   cursor: "w-full bg-primary-200",
-                  tab: "max-w-fit px-0 h-12",
+                  tab: "w-full sm:max-w-fit px-0 h-12",
                   tabContent: "group-data-[selected=true]:text-primary-600",
                 }}
               >
                 {(item) => (
                   <Tab key={item.id} title={item.label}>
-                    <div className="flex w-full pl-6">
-                      <div className="w-60 px-4 flex-shrink-0">
+                    <div className="flex w-full px-2 pl-0 sm:pl-6">
+                      <div className="hidden sm:block sm:w-60 px-4 flex-shrink-0">
                         <div className="text-left">
                           <h1 className="text-2xl font-bold mt-4">{user.userName}</h1>
                           <p>{user.selfIntro ? user.selfIntro : " "}</p>
@@ -143,7 +146,7 @@ function Account() {
                           )}
                         </div>
                       </div>
-                      <div className="pr-6">{item.content}</div>
+                      <div className="sm:pr-6">{item.content}</div>
                     </div>
                   </Tab>
                 )}
@@ -153,7 +156,12 @@ function Account() {
         </div>
       )}
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center">
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        placement="bottom-center"
+        className="m-0 rounded-b-none sm:rounded-b-3xl "
+      >
         <ModalContent>
           {(onClose) => (
             <form onSubmit={handleSubmit(handleSave)}>

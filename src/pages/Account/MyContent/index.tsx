@@ -78,11 +78,11 @@ const MyContent = () => {
   }, [initialTab]);
 
   return (
-    <div>
+    <div className="">
       <div className="relative">
         <div className="my-4" />
       </div>
-      <div className="border-b border-gray-200 mb-4 text-left py-4 min-w-72">
+      <div className="border-b border-gray-200 mb-4 text-left py-4 min-w-52 sm:min-w-72">
         <Select
           label="Sort by"
           labelPlacement="outside-left"
