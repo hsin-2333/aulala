@@ -6,8 +6,7 @@ import { CategoryOptions } from "../../constants/categoryOptions";
 import { QueryConditions } from "../../types";
 import { ImageCard, ScriptCard } from "../../components/Card";
 import SortedMenu from "./SortedMenu";
-import { Card, CardBody, Divider } from "@nextui-org/react";
-import { LuFolderHeart } from "react-icons/lu";
+import { Divider, Button } from "@nextui-org/react";
 import { AuthContext } from "../../context/AuthContext";
 import { RecentPlayContext } from "../../context/RecentPlayContext";
 
@@ -135,39 +134,41 @@ function HomePage({ onCardClick }: HomePageProps) {
   return (
     <>
       <div className="flex items-center justify-between text-left">
-        <div className="space-y-1 w-full">
-          <h2 className="text-2xl font-semibold tracking-tight">Categories</h2>
-          <div className="flex w-full justify-start gap-4 mt-2">
-            {CategoryOptions.map((category) => (
-              <Card
-                shadow="none"
-                className={`border border-default-200 w-32 h-20 ${
-                  selectedCategory === category.value ? "bg-blue-50" : "bg-white"
-                }`}
-                key={category.value}
-                isPressable
-                onPress={() => setSelectedCategory(category.value)}
-              >
-                <CardBody className="text-small justify-start flex flex-col relative">
-                  <p
-                    className={`text-medium ${
-                      selectedCategory === category.value ? "text-primary-800" : "text-default-900"
-                    }`}
-                  >
-                    {category.label}
-                  </p>
-                  <LuFolderHeart
-                    className="h-6 w-6 absolute bottom-3 right-3"
-                    color={
-                      selectedCategory === category.value
-                        ? "hsl(var(--nextui-primary-500))"
-                        : "hsl(var(--nextui-primary-200))"
-                    }
-                    fill={selectedCategory === category.value ? "hsl(var(--nextui-primary-200))" : "none"}
-                  />
-                </CardBody>
-              </Card>
-            ))}
+        <div className="space-y-1 w-full ">
+          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight py-2 sm:py-6">Explore</h2>
+          <div className="flex w-full justify-start gap-4 mt-2 overflow-x-auto custom-scrollbar">
+            {CategoryOptions.map((category) => {
+              const IconComponent = category.icon; // 動態獲取圖標組件
+              return (
+                <Button
+                  key={category.value}
+                  radius="full"
+                  className={`border border-default-200 flex-shrink-0 h-7 sm:h-8 ${
+                    selectedCategory === category.value ? "bg-blue-50" : "bg-white"
+                  }`}
+                  onClick={() => setSelectedCategory(category.value)}
+                  startContent={
+                    IconComponent && (
+                      <IconComponent
+                        color={selectedCategory === category.value ? "hsl(var(--nextui-primary-500))" : ""}
+                        fill={selectedCategory === category.value ? "hsl(var(--nextui-primary-200))" : "none"}
+                        size={16}
+                      />
+                    )
+                  }
+                >
+                  <div className="justify-start flex flex-shrink-0 flex-row sm:gap-2">
+                    <p
+                      className={`text-sm sm:text-medium ${
+                        selectedCategory === category.value ? "text-primary-800" : "text-default-900"
+                      }`}
+                    >
+                      {category.label}
+                    </p>
+                  </div>
+                </Button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -178,8 +179,8 @@ function HomePage({ onCardClick }: HomePageProps) {
       </div>
 
       <div className="flex items-center justify-between text-left">
-        <div className="space-y-1">
-          <h2 className="text-2xl font-semibold tracking-tight">New Stories</h2>
+        <div className="sm:space-y-1">
+          <h2 className="text-xl sm:text-2xl  font-semibold tracking-tight">New Stories</h2>
           <p className="text-sm text-muted-foreground">Check out the latest releases.</p>
         </div>
       </div>
@@ -207,7 +208,7 @@ function HomePage({ onCardClick }: HomePageProps) {
 
       <div className="flex items-center  justify-between text-left">
         <div className="space-y-1 w-full">
-          <h2 className="text-2xl font-semibold tracking-tight">Stories</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">Stories</h2>
           <div className="flex justify-between ">
             <p className="text-sm text-muted-foreground">Top picks for you. </p>
             <SortedMenu onSortOrderChange={handleSortOrderChange} />
@@ -247,11 +248,11 @@ function HomePage({ onCardClick }: HomePageProps) {
         </div>
       </div>
       <div className="relative">
-        <div className="my-4" />
+        <div className="my-4 " />
       </div>
-      <section className="mb-4 h-auto flex flex-wrap gap-4 custom-scrollbar scroll-padding">
+      <section className="h-auto flex flex-wrap gap-2 sm:gap-4 custom-scrollbar scroll-padding">
         {sortedScriptList?.map((script: Story) => (
-          <div key={script.id} className="flex flex-grow justify-start sm:w-1/2 lg:w-1/3 xl:w-1/4 mb-4">
+          <div key={script.id} className="flex flex-grow justify-start sm:w-1/2 lg:w-1/3 xl:w-1/4 ">
             <ScriptCard
               onClick={() => handleContentClick(script.id, "script")}
               key={script.id}
@@ -268,6 +269,9 @@ function HomePage({ onCardClick }: HomePageProps) {
           </div>
         ))}
       </section>
+      <div className="relative">
+        <div className="my-4 h-20" />
+      </div>
     </>
   );
 }

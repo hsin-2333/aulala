@@ -55,7 +55,7 @@
 }
 
 .custom-scrollbar {
-  overflow-x: auto;
+  /* overflow-x: auto; */
   position: relative;
 }
 
@@ -90,6 +90,12 @@
 /* 增加滾動條和容器内元素之间的距离 */
 .scroll-padding {
   padding-bottom: 16px;
+}
+
+@media (max-width: 640px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* button {

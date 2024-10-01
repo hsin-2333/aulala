@@ -154,26 +154,26 @@ export const ScriptCard = ({
   };
 
   return (
-    <Card className="w-full border border-default-200 mb-2 " isPressable onPress={onClick} shadow="none">
+    <Card className="w-full border border-default-200 mb-1 sm:mb-8 " isPressable onPress={onClick} shadow="none">
       <CardHeader className="flex flex-col items-start">
         <div className="flex gap-2 align-middle items-center">
           <Image alt="story cover image" height={40} radius="sm" width={40} src={image} />
           <div>
-            <h2 className="font-bold text-xl break-words whitespace-normal text-left">{title}</h2>
+            <h2 className="font-bold text-l sm:text-xl break-words whitespace-normal text-left">{title}</h2>
             <p className="text-small text-default-500 text-left">{date}</p>
           </div>
         </div>
       </CardHeader>
 
-      <CardBody className="px-4">
+      <CardBody className="px-4 py-2 sm:py-4">
         <p className="text-gray-700 break-words whitespace-normal">{summary}</p>
       </CardBody>
       <Divider className="bg-slate-100" />
 
-      <CardFooter className="flex flex-wrap items-center w-full justify-between py-4 gap-2">
+      <CardFooter className="flex flex-wrap items-center w-full justify-between py-2 sm:py-4 gap-2">
         <div className="flex flex-wrap space-x-2 flex-grow">
           {tags.map((tag, index) => (
-            <Chip key={index} color="primary">
+            <Chip key={index} color="primary" className="text-xs sm:text-sm">
               {tag}
             </Chip>
           ))}
@@ -315,9 +315,12 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
   return (
     <Card isPressable onPress={onClick} className="flex-shrink-0 bg-transparent " shadow="none" radius="none">
       <CardBody className="overflow-visible py-2 p-0">
-        <div className="z-3  relative group w-[240px]">
-          <Image src={image} alt="Card background" className="z-0 object-cover rounded-xl" width={240} height={240} />
-
+        <div className="z-3  relative group w-36 sm:w-60">
+          <Image
+            src={image}
+            alt="Card background"
+            className="z-0 object-cover rounded-xl w-36 h-36 sm:w-48 sm:h-48 md:w-60 md:h-60"
+          />
           <div className="z-2 absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
           <Button
             isIconOnly
