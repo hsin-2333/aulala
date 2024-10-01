@@ -85,14 +85,18 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
         isOuterPage ? "grid-cols-1 lg:grid-cols-5" : "lg:grid-cols-5"
       }`}
     >
-      {!isOuterPage && <Sidebar />}
+      {!isOuterPage && (
+        <div className="hidden sm:block">
+          <Sidebar />
+        </div>
+      )}
       <div
         style={{ height: "calc(100vh - 80px)" }}
         className={`${
           isDetailVisible || !isOuterPage ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
         } lg:border-l  sm:overflow-y-auto p-0 custom-scrollbar scroll-padding space-y-8`}
       >
-        <div className="px-4 md:px-4 lg:px-8">
+        <div className=" md:px-4 lg:px-8">
           <div className="space-y-6">
             <div className="border-none p-0 outline-none">
               {/* {children} */}

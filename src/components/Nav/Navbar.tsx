@@ -20,13 +20,14 @@ import { VscAccount } from "react-icons/vsc";
 import { IoMdNotificationsOutline } from "react-icons/io";
 
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 export function NavbarComponent() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { Logout } = useContext(AuthContext);
   const { user } = useContext(AuthContext);
 
@@ -119,42 +120,44 @@ export function NavbarComponent() {
       </div>
 
       {/* 手機板 */}
-      <div className="z-50 block sm:hidden fixed bottom-0 left-0 right-0 bg-slate-300 h-[50px]">
-        <div className="flex justify-around p-1 ">
-          <Link href="/" className="text-center flex items-center justify-end flex-col gap-[2px]">
-            <GiSpellBook size={22} color="var(--color-primary)" />
-            <span className="text-xs text-end text-default-600 ">Explore</span>
-          </Link>
+      {location.pathname !== "/upload/story" && (
+        <div className="z-50 block sm:hidden fixed bottom-0 left-0 right-0 bg-slate-300 h-[50px]">
+          <div className="flex justify-around p-1 ">
+            <Link href="/" className="text-center flex items-center justify-end flex-col gap-[2px]">
+              <GiSpellBook size={22} color="var(--color-primary)" />
+              <span className="text-xs text-end text-default-600 ">Explore</span>
+            </Link>
 
-          <Link href="/upload/story" className="text-center items-center justify-end flex flex-col gap-[2px]">
-            <IoAdd size={22} color="var(--color-primary)" />
-            <span className="text-xs  text-end text-default-600">Upload</span>
-          </Link>
-          {user && (
-            <Link
-              href={`/account/${user.userName}/notification`}
-              className="text-center items-center justify-end flex flex-col gap-[0px]"
-            >
-              <IoMdNotificationsOutline size={21} color="var(--color-primary)" />
-              <span className="text-xs text-end text-default-600"> InBox</span>
+            <Link href="/upload/story" className="text-center items-center justify-end flex flex-col gap-[2px]">
+              <IoAdd size={22} color="var(--color-primary)" />
+              <span className="text-xs  text-end text-default-600">Upload</span>
             </Link>
-          )}
-          {user ? (
-            <Link
-              href={`/user/${user.userName}`}
-              className="text-center items-center justify-end flex flex-col gap-[2px]"
-            >
-              <VscAccount size={18} color="var(--color-primary)" />
-              <span className="text-xs text-end text-default-600"> Profile</span>
-            </Link>
-          ) : (
-            <Link href="/login" className="text-center items-center justify-end flex flex-col gap-[2px]">
-              <VscAccount size={18} color="var(--color-primary)" />
-              <span className="text-xs text-end text-default-600"> Profile</span>
-            </Link>
-          )}
+            {user && (
+              <Link
+                href={`/account/${user.userName}/notification`}
+                className="text-center items-center justify-end flex flex-col gap-[0px]"
+              >
+                <IoMdNotificationsOutline size={21} color="var(--color-primary)" />
+                <span className="text-xs text-end text-default-600"> InBox</span>
+              </Link>
+            )}
+            {user ? (
+              <Link
+                href={`/user/${user.userName}`}
+                className="text-center items-center justify-end flex flex-col gap-[2px]"
+              >
+                <VscAccount size={18} color="var(--color-primary)" />
+                <span className="text-xs text-end text-default-600"> Profile</span>
+              </Link>
+            ) : (
+              <Link href="/login" className="text-center items-center justify-end flex flex-col gap-[2px]">
+                <VscAccount size={18} color="var(--color-primary)" />
+                <span className="text-xs text-end text-default-600"> Profile</span>
+              </Link>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

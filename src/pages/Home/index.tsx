@@ -132,7 +132,7 @@ function HomePage({ onCardClick }: HomePageProps) {
   };
 
   return (
-    <>
+    <div className="px-4 sm:px-0">
       <div className="flex items-center justify-between text-left">
         <div className="space-y-1 w-full ">
           <h2 className="text-xl sm:text-2xl font-semibold tracking-tight py-2 sm:py-6">Explore</h2>
@@ -272,7 +272,7 @@ function HomePage({ onCardClick }: HomePageProps) {
       <div className="relative">
         <div className="my-4 h-20" />
       </div>
-    </>
+    </div>
   );
 }
 
