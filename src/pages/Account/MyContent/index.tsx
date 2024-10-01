@@ -68,6 +68,9 @@ const MyContent = () => {
           tags={script.tags || []}
           created_at={script.created_at as Timestamp}
           date={script.created_at ? convertTimestampToDate(script.created_at as Timestamp).toLocaleDateString() : ""}
+          onClick={() => {
+            navigate(`/script/${script.id}`);
+          }}
         />
       ));
     }

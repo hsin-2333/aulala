@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
 import dbApi from "../../../utils/firebaseService";
 import { CategoryOptions } from "../../../constants/categoryOptions";
-import { Select, SelectItem, Input, Button, Chip, Progress } from "@nextui-org/react";
+import { Select, SelectItem, Input, Button, Chip, Progress, Link } from "@nextui-org/react";
 import { IoIosArrowBack } from "react-icons/io";
 
 interface FormData {
@@ -230,7 +230,9 @@ const UploadStory = () => {
           />
           <div className=" flex items-center justify-center mt-2 mx-2">
             <div className="absolute left-2 top-3 gap-2 self-center flex justify-center">
-              <IoIosArrowBack size={20} className="self-center" />
+              <Link href="/" color="foreground">
+                <IoIosArrowBack size={20} className="self-center" />
+              </Link>
               <span className="text-medium text-default-800 font-bold"> Upload Story</span>
             </div>
 

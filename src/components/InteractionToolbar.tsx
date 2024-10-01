@@ -55,13 +55,18 @@ export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionT
       {/* <button onClick={() => likeMutation.mutate()} className="flex items-center"> */}
       <Button
         isIconOnly
-        className="text-default-900/60 data-[hover]:bg-foreground/10  "
+        className=" text-default-900/60 data-[hover]:bg-foreground/10  "
         radius="full"
         variant="light"
         onPress={() => likeMutation.mutate()}
         // onClick={togglePlayPause}
       >
-        <Icon name="like" filled={liked} className="h-6 w-6" color={liked ? "#fca5a5cc" : "currentColor"} />
+        <Icon
+          name="like"
+          filled={liked}
+          className="h-5 w-5 sm:h-6 sm:w-6"
+          color={liked ? "#fca5a5cc" : "currentColor"}
+        />
       </Button>
       {/* </button> */}
       {storyId ? (
@@ -101,7 +106,7 @@ export const BookmarkButton = ({ userName, scriptId }: BookmarkButtonProps) => {
   return (
     <Button
       isIconOnly
-      className="text-default-900/60 data-[hover]:bg-foreground/10  "
+      className=" text-default-900/60 data-[hover]:bg-foreground/10  "
       radius="full"
       variant="light"
       onPress={() => saveMutation.mutate()}
@@ -110,7 +115,7 @@ export const BookmarkButton = ({ userName, scriptId }: BookmarkButtonProps) => {
       <Icon
         name="bookmarked"
         filled={bookmarked}
-        className=" h-6 w-6"
+        className="h-5 w-5 sm:h-6 sm:w-6"
         color={bookmarked ? "#82ca9e90" : "currentColor"}
       />
     </Button>
@@ -145,7 +150,7 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
   return (
     <Button
       isIconOnly
-      className="text-default-900/60 data-[hover]:bg-foreground/10  "
+      className="h-5 w-5 sm:h-6 sm:w-6 text-default-900/60 data-[hover]:bg-foreground/10  "
       radius="full"
       variant="light"
       onPress={() => playlistMutation.mutate()}
@@ -154,7 +159,7 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
       <Icon
         name={inPlaylist ? "added-to-playlist" : "add-to-playlist"}
         filled={inPlaylist}
-        className="h-6 w-6"
+        className="h-5 w-5 sm:h-6 sm:w-6"
         color={inPlaylist ? "#82ca9e90" : "currentColor"}
       />
     </Button>

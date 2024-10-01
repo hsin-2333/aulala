@@ -43,7 +43,7 @@ export const ScriptLayout = ({ children }: LayoutProps) => {
         <NavbarComponent />
         <Divider />
         <div className="bg-gradient-to-tr from-blue-200 to-cyan-200 w-full h-60"></div>
-        <main className=" flex-1 px-6 max-w-[1024px] m-auto  -mt-32">{children}</main>
+        <main className=" flex-1 px-2 sm:px-6 max-w-[1024px] m-auto -mt-44 sm:-mt-32">{children}</main>
       </div>
     </div>
   );
