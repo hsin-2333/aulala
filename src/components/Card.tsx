@@ -236,7 +236,7 @@ export const AudioCard: React.FC<PlaylistCardProps> = ({
   // const isCurrentStory = id === storyInfo?.id;
   const storyDuration = duration ? `${Math.round((duration / 60) * 2) / 2} min` : "";
   return (
-    <Card className="min-w-72 max-w-[300px] group" shadow="none" isPressable onPress={onClick}>
+    <Card className="min-w-72 w-full group" shadow="none" isPressable onPress={onClick}>
       <CardHeader className="flex gap-3  justify-between items-center">
         <div className="flex  gap-3">
           <Image alt="story cover image" height={40} radius="sm" src={image} width={40} />

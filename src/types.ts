@@ -9,7 +9,10 @@ export interface User {
   about?: string;
   role: string[];
   avatar?: string;
-  social_links?: string[];
+  social_links?: {
+    website?: string;
+    twitter?: string;
+  };
   followers?: string[];
   following?: string[];
   saved_stories?: string[];
@@ -17,6 +20,7 @@ export interface User {
   created_at?: Date;
   playback_history?: { story_id: string; last_playback_timestamp: Date }[];
   UserCollections?: string[];
+  selfIntro?: string;
 }
 
 export interface AuthUser {

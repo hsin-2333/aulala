@@ -20,15 +20,19 @@ import {
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { QueryConditions, Story, InteractionType } from "../types";
-
+import { User } from "../types";
 interface IUserData {
-  id: string;
+  id?: string;
   uid: string;
   avatar: string | null;
   email: string | null;
   userName: string;
   gender: string;
   age: number;
+  social_links?: {
+    website?: string;
+    twitter?: string;
+  };
 }
 
 type Interactions = InteractionType[];
@@ -52,7 +56,7 @@ const dbApi = {
     }
   },
 
-  async updateUser(userData: IUserData) {
+  async updateUser(userData: User) {
     try {
       const userDocRef = doc(db, "users", userData.uid);
       await updateDoc(userDocRef, {

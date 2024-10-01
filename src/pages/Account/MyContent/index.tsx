@@ -39,7 +39,7 @@ const MyContent = () => {
   const renderContent = () => {
     if (selectedTab === "story") {
       return storyList?.map((story) => (
-        <div key={story.id} className="border border-default-300 rounded-xl">
+        <div key={story.id} className="border border-default-300 rounded-xl w-full">
           <AudioCard
             key={story.id}
             image={story.img_url?.[0] || "default_image_url"}
@@ -60,7 +60,7 @@ const MyContent = () => {
         <ScriptCard
           key={script.id}
           scriptId={script.id}
-          // image={script.img_url?.[0]}
+          image={script.img_url?.[0]}
           language={script.language || ""}
           title={script.title}
           author={script.author}
@@ -82,7 +82,7 @@ const MyContent = () => {
       <div className="relative">
         <div className="my-4" />
       </div>
-      <div className="border-b border-gray-200 mb-4 text-left py-4">
+      <div className="border-b border-gray-200 mb-4 text-left py-4 min-w-72">
         <Select
           label="Sort by"
           labelPlacement="outside-left"
