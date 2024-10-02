@@ -87,7 +87,7 @@ const MyContent = () => {
       </div>
       <div className="border-b border-gray-200 mb-4 text-left py-4 min-w-52 sm:min-w-72">
         <Select
-          label="Sort by"
+          label="Browse by"
           labelPlacement="outside-left"
           placeholder="Select a tab"
           className="max-w-xs"

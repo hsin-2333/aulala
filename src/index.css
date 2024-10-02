@@ -61,8 +61,10 @@
 
 /* 自定義滾動條 */
 .custom-scrollbar::-webkit-scrollbar {
-  height: 8px;
+  width: 4px;
+  height: 4px;
   transition: visibility 0.3s, opacity 0.3s;
+  visibility: hidden;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -74,22 +76,25 @@
   opacity: 0;
 }
 .custom-scrollbar:hover::-webkit-scrollbar-track {
-  background: #f1f1f1; /* 滾動條的背景色 */
+  /* 滾動條的背景色 */
+  /* background: #f1f1f1; */
   border-radius: 10px;
 }
 
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-  background: #c5c5c5; /* 滾動條的顏色  */
-  border-radius: 10px;
+  background: #2e3e4a00; /* 滾動條的顏色  */
+  border-radius: 4px;
+  height: 4px;
+  width: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #c5c5c5; /* 滾動條 hover 的顏色 */
+  background: #3a434945; /* 滾動條 hover 的顏色 */
 }
 
 /* 增加滾動條和容器内元素之间的距离 */
 .scroll-padding {
-  padding-bottom: 16px;
+  padding-bottom: 4px;
 }
 
 @media (max-width: 640px) {

@@ -106,7 +106,7 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
         </div>
       </div>
       {isDetailVisible && (
-        <div className="hidden sm:block">
+        <div className="hidden lg:block">
           <ContentInfoSideBar setIsDetailVisible={setIsDetailVisible} />
         </div>
       )}
