@@ -10,6 +10,8 @@ interface Story {
   title?: string;
   author?: string;
   created_at?: { seconds: number; nanoseconds: number };
+  intro?: string;
+  duration?: number;
 }
 
 const SearchResultsPage = () => {
@@ -80,11 +82,14 @@ const SearchResultsPage = () => {
                 tags={story.tags}
                 author={story.author || "Unknown"}
                 onClick={() => handleContentClick(story.id, "story")}
+                intro={story.intro}
+                duration={story.duration}
               />
             )
           );
         })}
       </section>
+      <div className="h-32 w-full"></div>
     </div>
   );
 };

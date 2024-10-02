@@ -247,19 +247,20 @@ const UploadStory = () => {
 
         {!isAudioUploaded ? (
           <div className="flex gap-4 flex-col items-center">
-            <label className="block text-sm font-medium text-gray-700">Only accept audio below 8 MB</label>
+            <label className="block text-sm font-medium text-gray-700 h-1/5">Only accept audio below 8 MB</label>
             <input type="file" accept="audio/*" onChange={handleAudioUpload} ref={AudioInputRef} className="hidden" />
-            <button
-              className="flex items-center size-default bg-primary text-white"
+            <Button
+              className=" bg-primary text-white"
               type="button"
               onClick={() => {
                 if (AudioInputRef.current) {
                   AudioInputRef.current.click();
                 }
               }}
+              radius="full"
             >
               Select Audio File
-            </button>
+            </Button>
           </div>
         ) : (
           <>

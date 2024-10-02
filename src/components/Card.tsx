@@ -349,7 +349,16 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
   );
 };
 
-export const SearchResultCard = ({ id, image, title, author, onClick, onCardClick }: PlaylistCardProps) => {
+export const SearchResultCard = ({
+  id,
+  image,
+  intro,
+  duration,
+  title,
+  author,
+  onClick,
+  onCardClick,
+}: PlaylistCardProps) => {
   const { user } = useContext(AuthContext);
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
@@ -377,6 +386,7 @@ export const SearchResultCard = ({ id, image, title, author, onClick, onCardClic
       setIsPlaying(!isPlaying);
     }
   };
+  const storyDuration = duration ? `${Math.round((duration / 60) * 2) / 2} min` : "";
 
   return (
     <Card
@@ -407,13 +417,11 @@ export const SearchResultCard = ({ id, image, title, author, onClick, onCardClic
                   <div className="flex gap-1">
                     <h3 className="text-small tracking-tight text-default-400">{author}</h3>
                     <h3 className="text-small tracking-tight text-default-400">•</h3>
-                    <h3 className="text-small tracking-tight text-default-400">bookmarked:{author}</h3>
-                    <h3 className="text-small tracking-tight text-default-400">•</h3>
-                    <h3 className="text-small tracking-tight text-default-400">時間:{author}</h3>
+                    {/* <h3 className="text-small tracking-tight text-default-400">bookmarked:{author}</h3> */}
+                    {/* <h3 className="text-small tracking-tight text-default-400">•</h3> */}
+                    <h3 className="text-small tracking-tight text-default-400">{storyDuration}</h3>
                   </div>
-                  <p className="text-small pt-2 overflow-hidden">
-                    這邊要放 Intro!! Frontend developer and UI/UX enthusiast. Join me on this coding adventure!
-                  </p>
+                  <p className="text-small pt-2 overflow-hidden">{intro}</p>
                 </div>
               </div>
 
