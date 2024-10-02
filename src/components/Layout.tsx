@@ -43,7 +43,7 @@ export const ScriptLayout = ({ children }: LayoutProps) => {
         <NavbarComponent />
         <Divider />
         <div className="bg-gradient-to-tr from-blue-200 to-cyan-200 w-full h-60"></div>
-        <main className=" flex-1 px-6 max-w-[1024px] m-auto  -mt-32">{children}</main>
+        <main className=" flex-1 px-2 sm:px-6 max-w-[1024px] m-auto -mt-44 sm:-mt-32">{children}</main>
       </div>
     </div>
   );
@@ -81,17 +81,22 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
   return (
     <div
       style={{ height: "calc(100vh-80px)" }}
-      className={`grid overflow-y-hidden ${isOuterPage ? "lg:grid-cols-5" : "lg:grid-cols-5"}`}
+      className={`grid overflow-y-scroll custom-scrollbar sm:overflow-y-hidden ${
+        isOuterPage ? "grid-cols-1 lg:grid-cols-5" : "lg:grid-cols-5"
+      }`}
     >
-      {!isOuterPage && <Sidebar />}
-
+      {!isOuterPage && (
+        <div className="hidden sm:block">
+          <Sidebar />
+        </div>
+      )}
       <div
         style={{ height: "calc(100vh - 80px)" }}
         className={`${
           isDetailVisible || !isOuterPage ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
-        } lg:border-l overflow-y-scroll custom-scrollbar scroll-padding space-y-8`}
+        } lg:border-l  sm:overflow-y-auto p-0 custom-scrollbar scroll-padding space-y-8`}
       >
-        <div className=" lg:px-8">
+        <div className=" md:px-4 lg:px-8">
           <div className="space-y-6">
             <div className="border-none p-0 outline-none">
               {/* {children} */}
@@ -100,7 +105,11 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
           </div>
         </div>
       </div>
-      {isDetailVisible && <ContentInfoSideBar setIsDetailVisible={setIsDetailVisible} />}
+      {isDetailVisible && (
+        <div className="hidden lg:block">
+          <ContentInfoSideBar setIsDetailVisible={setIsDetailVisible} />
+        </div>
+      )}
     </div>
   );
 };

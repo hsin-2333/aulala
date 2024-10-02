@@ -6,9 +6,10 @@ import { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Story } from "../../types";
 import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
-import { Card, Chip, CardBody, Image, Tabs, Tab } from "@nextui-org/react";
+import { Card, Chip, CardBody, Image, Tabs, Tab, Link } from "@nextui-org/react";
 import { MdLanguage } from "react-icons/md";
 import { FaHashtag } from "react-icons/fa6";
+import { IoIosArrowBack } from "react-icons/io";
 
 function ScriptContent() {
   const { user } = useContext(AuthContext);
@@ -67,33 +68,49 @@ function ScriptContent() {
 
   return (
     <>
+      <div className="absolute left-2 top-3 sm:hidden">
+        <Link href="/" color="foreground">
+          <IoIosArrowBack />
+        </Link>
+      </div>
       {script && script.img_url && (
         <div className="text-left">
+          {/* 手機版 書名在上面 */}
+
+          <div className="flex gap-2 mb-2 sm:hidden ">
+            <Image className="w-32 h-auto flex rounded-lg" src={script.img_url[0]} alt={script.title} />
+            <div className="flex flex-col gap-1">
+              <h2 className="text-xl font-semibold">{script.title}</h2>
+              <p className="text-gray-700 text-sm before:content-none">{script.summary}</p>
+            </div>
+          </div>
+          {/* 電腦版 書名在卡片裡*/}
           <Card
             isBlurred
             shadow="md"
             radius="lg"
             className="p-2 bg-white bg-opacity-85 border-6 border-white border-opacity-50"
           >
-            <CardBody className="flex flex-row gap-8 m-auto">
-              <Image className="w-32 h-auto rounded-lg" src={script.img_url[0]} alt={script.title} />
-              <div className="flex flex-col gap-4">
-                <h2 className="text-2xl font-semibold">{script.title}</h2>
-                <p className="text-gray-700 mb-4 before:content-none">{script.summary}</p>
+            <CardBody className="flex flex-row gap-8 m-auto justify-between">
+              <div className="hidden sm:flex gap-4 ">
+                <Image className="w-32 h-auto rounded-lg" src={script.img_url[0]} alt={script.title} />
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-2xl font-semibold">{script.title}</h2>
+                  <p className="text-gray-700 text-medium ml-1 mb-4 before:content-none">{script.summary}</p>
+                </div>
               </div>
-
               <div className="text-sm flex flex-col gap-4">
                 <div className="gap-1 flex flex-col">
                   <div>Tag</div>
                   <div>
                     {tags.map((tag) => (
                       <Chip
-                        startContent={<FaHashtag size={14} />}
+                        startContent={<FaHashtag size={12} />}
                         key={tag}
                         color="default"
                         size="md"
-                        className="mb-1"
-                        radius="none"
+                        className="mb-1 pl-2"
+                        radius="lg"
                         variant="flat"
                       >
                         {tag}
@@ -105,11 +122,11 @@ function ScriptContent() {
                   <div>Language</div>
                   <div>
                     <Chip
-                      className="mr-1"
+                      className="mr-1 pl-2"
                       startContent={<MdLanguage size={14} />}
                       color="default"
                       size="md"
-                      radius="none"
+                      radius="lg"
                       variant="flat"
                     >
                       <p className="text-gray-600 hover:text-gray-800">{script?.language}</p>
@@ -123,7 +140,7 @@ function ScriptContent() {
             </CardBody>
           </Card>
 
-          <p className="text-gray-700 my-8 before:content-none">{script.content}</p>
+          <p className="text-gray-700 text-small sm:text-medium my-8 before:content-none">{script.content}</p>
 
           <div ref={tabsRef}>
             <Tabs
@@ -134,7 +151,7 @@ function ScriptContent() {
               classNames={{
                 tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider",
                 cursor: "w-full bg-primary-200",
-                tab: "max-w-fit px-0 h-12",
+                tab: "text-small sm:text-medium max-w-fit px-0 h-10 sm:h-12",
                 tabContent: "group-data-[selected=true]:text-primary-600",
               }}
               className="sticky top-16 bg-white z-10"

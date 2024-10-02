@@ -51,7 +51,10 @@ const ContentInfoSideBar = ({ setIsDetailVisible }: ClickHandler) => {
   return (
     <>
       {storyInfo && (
-        <div className="pb-12 overflow-y-auto bg-primary-100 m-4 rounded-lg" style={{ height: "calc(100vh - 190px)" }}>
+        <div
+          className="pb-12 overflow-y-auto bg-default-100 m-4 rounded-lg custom-scrollbar"
+          style={{ height: "calc(100vh - 190px)" }}
+        >
           <div className="space-y-4 py-4">
             <div className="px-4 py-2">
               <div className="flex justify-between">
@@ -77,7 +80,11 @@ const ContentInfoSideBar = ({ setIsDetailVisible }: ClickHandler) => {
                 </div>
               </div>
               <div className="flex m-2 bg-white-200  h-[8px] w-full"></div>
-              <Card shadow="none" radius="lg" className="space-y-1 py-2 border-4 border-primary-200 border-opacity-30">
+              <Card
+                shadow="none"
+                radius="lg"
+                className="space-y-1 py-2 border-4 bg-white border-slate-200 border-opacity-30"
+              >
                 <CardHeader>
                   <h2 className="text-left text-lg font-semibold tracking-tight">Summary</h2>
                 </CardHeader>
@@ -88,7 +95,11 @@ const ContentInfoSideBar = ({ setIsDetailVisible }: ClickHandler) => {
                 </CardBody>
               </Card>
               <div className="flex m-2 bg-white-200  h-[8px] w-full"></div>
-              <Card shadow="none" radius="lg" className="space-y-1 py-2  border-4 border-primary-200 border-opacity-30">
+              <Card
+                shadow="none"
+                radius="lg"
+                className="space-y-1 py-2  border-4  bg-white border-slate-200  border-opacity-30"
+              >
                 <CardHeader>
                   <h2 className="text-left text-lg font-semibold tracking-tight">Attendees</h2>
                 </CardHeader>

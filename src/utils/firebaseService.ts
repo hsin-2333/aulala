@@ -345,7 +345,10 @@ const dbApi = {
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
         tags: data.tags,
+        collections: data.collections || [],
       };
+
+      console.log("資料庫存取: ", storyData, "data.collections: ", data.collections);
 
       const storyRef = await addDoc(collection(db, "stories"), storyData);
       const storyId = storyRef.id;
