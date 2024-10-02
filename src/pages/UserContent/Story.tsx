@@ -49,17 +49,23 @@ function StoryContent() {
             {story && (
               <div className="flex-1">
                 {/* <h2 className="text-2xl text-center font-semibold mb-2">{story.title}</h2> */}
-                <div className="relative p-4 my-12 m-auto flex justify-center">
+                <div className="relative p-4 my-16 m-auto flex justify-center">
                   <img
-                    className="object-cover w-60 h-60 rounded-full border-8 border-black border-opacity-20 z-10"
+                    className="object-cover w-56 h-56 rounded-full border-8 border-[black] border-opacity-70 z-10"
                     src={story.img_url[0]}
                     alt={story.title}
                   />
 
                   <div className="absolute inset-0 flex justify-center items-center ">
-                    <div className="w-72 h-72 rounded-full border-3 bg-black border-white border-opacity-30 bg-opacity-10 absolute z-0"></div>
+                    <div className="w-[22rem] h-[22rem] rounded-full border-3 bg-[#27272A] border-[#575757] border-opacity-80  absolute z-3 "></div>
+                    <div className="w-[20rem] h-[20rem] rounded-full border-2 bg-[#27272A] border-[#575757] border-opacity-30  absolute z-3 "></div>
+                    <div className="w-[18rem] h-[18rem] rounded-full border-2 bg-[#27272A] border-[#575757] border-opacity-30  absolute z-4 "></div>
+                    <div className="w-[16rem] h-[16rem] rounded-full border-2 bg-[#27272A] border-[#575757] border-opacity-30 absolute z-5 "></div>
+
+                    {/* <div className="w-72 h-72 rounded-full border-3 bg-black border-white border-opacity-30 bg-opacity-10 absolute z-0"></div>
                     <div className="w-80 h-80 rounded-full border-3 bg-black border-white border-opacity-10 bg-opacity-15 absolute z-0"></div>
                     <div className="w-[21rem] h-[21rem] rounded-full border-5 bg-black border-black border-opacity-20 bg-opacity-45 absolute z-0"></div>
+                     */}
                   </div>
                 </div>
               </div>

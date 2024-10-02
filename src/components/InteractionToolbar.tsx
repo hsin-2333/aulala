@@ -150,7 +150,7 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
   return (
     <Button
       isIconOnly
-      className="h-5 w-5 sm:h-6 sm:w-6 text-default-900/60 data-[hover]:bg-foreground/10  "
+      className=" text-default-900/60 data-[hover]:bg-foreground/10  "
       radius="full"
       variant="light"
       onPress={() => playlistMutation.mutate()}
