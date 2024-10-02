@@ -7,8 +7,15 @@ import { Story } from "../../types";
 import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
 import { Tabs, Tab, Card, CardBody, ScrollShadow, Chip } from "@nextui-org/react";
 import SubtitlesComponent from "../UserContent/Segments";
+import { RecentPlayContext } from "../../context/RecentPlayContext";
 
 function StoryContent() {
+  const context = useContext(RecentPlayContext);
+  if (context === undefined) {
+    throw new Error("SomeComponent must be used within a RecentPlayProvider");
+  }
+  const { isPlaying } = context;
+
   const { user } = useContext(AuthContext);
   const { storyId } = useParams();
   const {
@@ -51,7 +58,9 @@ function StoryContent() {
                 {/* <h2 className="text-2xl text-center font-semibold mb-2">{story.title}</h2> */}
                 <div className="relative p-4 my-16 m-auto flex justify-center">
                   <img
-                    className="object-cover w-56 h-56 rounded-full border-8 border-[black] border-opacity-70 z-10"
+                    className={`object-cover w-56 h-56 rounded-full border-8 border-[black] border-opacity-70 z-10 ${
+                      isPlaying ? "animate-[spin_8s_linear_infinite]" : ""
+                    }`}
                     src={story.img_url[0]}
                     alt={story.title}
                   />
