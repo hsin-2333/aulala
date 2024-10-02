@@ -118,7 +118,7 @@ const UploadStory = () => {
           tags: data.tags.map((tag) => tag.value),
           voice_actor: [user?.userName || ""], //之後要增加多位聲優
           status: "Processing",
-          collections: data.collections,
+          collections: data.collections ? data.collections.map((collection) => collection) : [],
         };
 
         navigate(`/user/${user?.userName}/uploads`);
@@ -128,8 +128,10 @@ const UploadStory = () => {
           await dbApi.addOrUpdateTag(tag.value, storyId, null);
         }
 
-        for (const collection of data.collections) {
-          await dbApi.addStoryToCollection(storyId, collection, user?.userName || "Unknown");
+        if (data.collections) {
+          for (const collection of data.collections) {
+            await dbApi.addStoryToCollection(storyId, collection, user?.userName || "Unknown");
+          }
         }
 
         await dbApi.updateStoryStatus(storyId, "Done");

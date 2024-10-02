@@ -78,6 +78,7 @@ export interface Story {
   segments?: { text: string; start: number; end: number }[];
   duration?: number;
   intro?: string;
+  collections?: string[];
 }
 
 export interface InteractionType {
