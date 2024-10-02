@@ -39,8 +39,10 @@ const RecentPlayBar = () => {
     if (storyInfo?.audio_url) {
       const wavesurfer = WaveSurfer.create({
         container: "#waveform_bottom",
-        waveColor: "rgba(130, 202, 158, 0.531)",
-        progressColor: "rgb(76, 117, 92)",
+        // waveColor: "rgba(130, 202, 158, 0.531)",
+        waveColor: "#CCE3FD",
+        // progressColor: "rgb(76, 117, 92)",
+        progressColor: "#66AAF9",
         url: storyInfo.audio_url,
         barWidth: 4,
         barGap: 3,
@@ -160,20 +162,20 @@ const RecentPlayBar = () => {
               </div>
             </div>
             <div className="flex justify-end w-fit sm:w-2/6 md:flex-grow flex-row sm:justify-center gap-4">
-              <button onClick={togglePlayPause} className="w-20">
+              <button onClick={togglePlayPause} className="w-20 ">
                 <Icon
                   name="play"
                   filled={isPlaying}
-                  className="mx-10 h-8 w-8 fill-[none] sm:text-gray-500 sm:mx-auto sm:fill-[#82ca9eaf]"
+                  className="mx-10 h-8 w-8 fill-[none] sm:text-gray-500 sm:mx-auto sm:fill-[hsl(var(--nextui-primary)/0.3)]"
                 />{" "}
               </button>
-              <div className="hidden sm:flex justify-between text-sm text-gray-400 mt-2">
+              <div className="hidden sm:flex justify-between text-xs text-gray-400 mt-2">
                 <span className="leading-6">{new Date(currentTime * 1000).toISOString().substr(14, 5)}</span>
               </div>
               <div className="hidden sm:block w-3/6">
                 <div id="waveform_bottom" className="w-full"></div>
               </div>
-              <div className="hidden sm:flex justify-between text-sm text-gray-400 mt-2">
+              <div className="hidden sm:flex justify-between text-xs text-gray-400 mt-2">
                 <span className="leading-6">{new Date(duration * 1000).toISOString().substr(14, 5)}</span>
               </div>
             </div>
@@ -190,7 +192,7 @@ const RecentPlayBar = () => {
                 className="w-24"
                 style={{
                   background:
-                    "linear-gradient(to right, #82ca9e 0%, #82ca9e " +
+                    "linear-gradient(to right, #cccccc 0%, #cccccc " +
                     volume +
                     "%, #cccccc4e " +
                     volume +

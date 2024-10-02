@@ -49,7 +49,7 @@ export function NavbarComponent() {
       <div className="hidden sm:block">
         <Navbar maxWidth="full">
           <NavbarBrand as={Link} className="cursor-pointer" href="/">
-            <p className="font-bold text-inherit">StoryBook LOGO</p>
+            <p className="font-bold text-[var(--color-primary)]">StoryBook LOGO</p>
           </NavbarBrand>
 
           <NavbarContent className="flex flex-grow gap-4" justify="center"></NavbarContent>
