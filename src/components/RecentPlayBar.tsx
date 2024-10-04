@@ -9,7 +9,7 @@ import dbApi from "../utils/firebaseService";
 const RecentPlayBar = () => {
   const { user } = useContext(AuthContext);
   const audioRef = useRef<WaveSurfer | null>(null);
-  const currentTimeRef = useRef<number>(0);
+  // const currentTimeRef = useRef<number>(0);
   const volumeRef = useRef<number>(100);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(100);
@@ -19,7 +19,7 @@ const RecentPlayBar = () => {
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
-  const { isPlaying, setIsPlaying, recentPlay, storyInfo, fetchRecentPlay } = context;
+  const { currentTimeRef, isPlaying, setIsPlaying, recentPlay, storyInfo, fetchRecentPlay } = context;
 
   const setLastPlayTimestamp = useCallback(() => {
     if (recentPlay) {
@@ -27,7 +27,7 @@ const RecentPlayBar = () => {
       currentTimeRef.current = recentPlay.played_at;
       console.log("setLastPlayTimestamp", recentPlay.played_at);
     }
-  }, [recentPlay, setCurrentTime]);
+  }, [recentPlay, setCurrentTime, currentTimeRef]);
 
   useEffect(() => {
     setLastPlayTimestamp();
@@ -69,7 +69,8 @@ const RecentPlayBar = () => {
         if (currentTime - lastUpdateTime > 0.8) {
           lastUpdateTime = currentTime;
           updateRecentPlay(currentTime);
-          console.log("更新現在時間", currentTime);
+          currentTimeRef.current = currentTime;
+          console.log("更新現在時間", currentTime, lastUpdateTime);
         }
         animationFrameId = requestAnimationFrame(updateCurrentTime);
       };
