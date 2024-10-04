@@ -51,7 +51,7 @@ const RecentPlayBar = () => {
 
       // 設置播放時間更新與字幕更新邏輯
       let lastUpdateTime = 0;
-      let animationFrameId: number;
+      // let animationFrameId: number;
 
       const updateRecentPlay = debounce((currentTime: number) => {
         if (user && storyInfo?.id) {
@@ -62,31 +62,51 @@ const RecentPlayBar = () => {
         }
       }, 1000);
 
-      const updateCurrentTime = () => {
-        const currentTime = wavesurfer.getCurrentTime();
+      // const updateCurrentTime = () => {
+      //   const currentTime = wavesurfer.getCurrentTime();
+      //   setCurrentTime(currentTime);
+
+      //   if (currentTime - lastUpdateTime > 0.8) {
+      //     lastUpdateTime = currentTime;
+      //     updateRecentPlay(currentTime);
+      //     currentTimeRef.current = currentTime;
+      //     console.log("更新現在時間", currentTime, lastUpdateTime);
+      //   }
+      //   animationFrameId = requestAnimationFrame(updateCurrentTime);
+      // };
+
+      // animationFrameId = requestAnimationFrame(updateCurrentTime);
+
+      // 使用 timeupdate 事件來更新 currentTimeRef
+      wavesurfer.on("timeupdate", (currentTime) => {
         setCurrentTime(currentTime);
+        currentTimeRef.current = currentTime;
 
         if (currentTime - lastUpdateTime > 0.8) {
           lastUpdateTime = currentTime;
           updateRecentPlay(currentTime);
-          currentTimeRef.current = currentTime;
-          console.log("更新現在時間", currentTime, lastUpdateTime);
+          console.log("timeupdate event時間更新", currentTime);
         }
-        animationFrameId = requestAnimationFrame(updateCurrentTime);
-      };
-
-      animationFrameId = requestAnimationFrame(updateCurrentTime);
+      });
 
       wavesurfer.on("ready", () => {
         setDuration(wavesurfer.getDuration());
       });
 
+      // 時間軸跳轉
+      wavesurfer.on("seeking", (progress) => {
+        const newTime = progress;
+        setCurrentTime(newTime);
+        currentTimeRef.current = newTime;
+        updateRecentPlay(newTime);
+      });
+
       return () => {
-        cancelAnimationFrame(animationFrameId);
+        // cancelAnimationFrame(animationFrameId);
         wavesurfer.destroy();
       };
     }
-  }, [storyInfo?.audio_url, user, storyInfo?.id, fetchRecentPlay, setCurrentTime]);
+  }, [storyInfo?.audio_url, user, storyInfo?.id, fetchRecentPlay, setCurrentTime, currentTimeRef]);
 
   const togglePlayPause = () => {
     const wavesurfer = audioRef.current;
