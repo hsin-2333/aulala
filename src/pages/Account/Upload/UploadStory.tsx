@@ -20,6 +20,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useQueryClient } from "@tanstack/react-query";
 import { FaCheck } from "react-icons/fa";
 import { SlCloudUpload } from "react-icons/sl";
+import Toast from "../../../components/Toast";
 
 interface FormData {
   title: string;
@@ -49,6 +50,8 @@ const UploadStory = () => {
   const [audioName, setAudioName] = useState<string | null>(null);
   const [audioDuration, setAudioDuration] = useState<number | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   const filteredCategoryOptions = CategoryOptions.filter((option) => option.label !== "All");
   const AudioInputRef = useRef<HTMLInputElement>(null);
@@ -184,7 +187,9 @@ const UploadStory = () => {
     } else if (step < currentStep) {
       setCurrentStep(step);
     } else {
-      window.alert("請填寫所有必填字段");
+      // window.alert("請填寫所有必填字段");
+      setToastMessage("請填寫所有必填字段");
+      setShowToast(true);
     }
   };
 
@@ -196,7 +201,9 @@ const UploadStory = () => {
       setNewTag("");
       setIsDropdownVisible(false);
     } else if (selectedTags.length >= 8) {
-      window.alert("最多只能選擇8個標籤");
+      // window.alert("最多只能選擇8個標籤");
+      setToastMessage("最多只能選擇8個標籤");
+      setShowToast(true);
     }
   };
 
@@ -240,6 +247,10 @@ const UploadStory = () => {
   //       return "";
   //   }
   // };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
+  };
 
   return (
     <>
@@ -295,6 +306,10 @@ const UploadStory = () => {
         ) : (
           <>
             <div>
+              <div>
+                {/* 你的其他組件和邏輯 */}
+                {showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}
+              </div>
               <h6>
                 Audio Name: {audioName} <br />
                 Audio Duration: {audioDuration ? `${audioDuration.toFixed(2)} seconds` : "Loading..."}
