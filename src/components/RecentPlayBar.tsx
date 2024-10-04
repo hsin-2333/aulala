@@ -5,15 +5,16 @@ import { AuthContext } from "../context/AuthContext";
 import Icon from "./Icon";
 import { debounce } from "lodash";
 import dbApi from "../utils/firebaseService";
+import { useParams } from "react-router-dom";
 
 const RecentPlayBar = () => {
   const { user } = useContext(AuthContext);
   const audioRef = useRef<WaveSurfer | null>(null);
-  // const currentTimeRef = useRef<number>(0);
   const volumeRef = useRef<number>(100);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(100);
   const [currentTime, setCurrentTime] = useState(0);
+  const { storyId } = useParams();
 
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
@@ -30,12 +31,19 @@ const RecentPlayBar = () => {
   }, [recentPlay, setCurrentTime, currentTimeRef]);
 
   useEffect(() => {
-    setLastPlayTimestamp();
-    console.log("setLastPlayTimestamp useEffect");
-  }, [setLastPlayTimestamp]);
+    if (storyId && storyInfo?.id !== storyId) {
+      fetchRecentPlay();
+      setCurrentTime(0);
+      currentTimeRef.current = 0;
+      console.log("新故事!");
+    } else {
+      setLastPlayTimestamp();
+    }
+  }, [storyId, storyInfo?.id, fetchRecentPlay, setLastPlayTimestamp, setCurrentTime, currentTimeRef]);
 
   useEffect(() => {
-    if (storyInfo?.audio_url) {
+    //如果是主頁(aka沒有storyId) 或是 storyId和storyInfo.id一樣，且有audio_url
+    if ((storyId === storyInfo?.id && storyInfo?.audio_url) || (!storyId && storyInfo?.audio_url)) {
       const wavesurfer = WaveSurfer.create({
         container: "#waveform_bottom",
         waveColor: "#CCE3FD",
@@ -62,25 +70,11 @@ const RecentPlayBar = () => {
         }
       }, 1000);
 
-      // const updateCurrentTime = () => {
-      //   const currentTime = wavesurfer.getCurrentTime();
-      //   setCurrentTime(currentTime);
-
-      //   if (currentTime - lastUpdateTime > 0.8) {
-      //     lastUpdateTime = currentTime;
-      //     updateRecentPlay(currentTime);
-      //     currentTimeRef.current = currentTime;
-      //     console.log("更新現在時間", currentTime, lastUpdateTime);
-      //   }
-      //   animationFrameId = requestAnimationFrame(updateCurrentTime);
-      // };
-
-      // animationFrameId = requestAnimationFrame(updateCurrentTime);
-
       // 使用 timeupdate 事件來更新 currentTimeRef
       wavesurfer.on("timeupdate", (currentTime) => {
         setCurrentTime(currentTime);
         currentTimeRef.current = currentTime;
+        // console.log("更新時間", currentTime, lastUpdateTime);
 
         if (currentTime - lastUpdateTime > 0.8) {
           lastUpdateTime = currentTime;
@@ -91,6 +85,12 @@ const RecentPlayBar = () => {
 
       wavesurfer.on("ready", () => {
         setDuration(wavesurfer.getDuration());
+        if (recentPlay && recentPlay.story_id === storyInfo.id) {
+          wavesurfer.seekTo(recentPlay.played_at / wavesurfer.getDuration());
+          setCurrentTime(recentPlay.played_at);
+          currentTimeRef.current = recentPlay.played_at;
+          console.log("音頻準備好，設置當前時間", recentPlay.played_at);
+        }
       });
 
       // 時間軸跳轉
@@ -98,6 +98,7 @@ const RecentPlayBar = () => {
         const newTime = progress;
         setCurrentTime(newTime);
         currentTimeRef.current = newTime;
+        lastUpdateTime = newTime;
         updateRecentPlay(newTime);
       });
 
@@ -106,10 +107,11 @@ const RecentPlayBar = () => {
         wavesurfer.destroy();
       };
     }
-  }, [storyInfo?.audio_url, user, storyInfo?.id, fetchRecentPlay, setCurrentTime, currentTimeRef]);
+  }, [storyInfo?.audio_url, user, storyInfo?.id, fetchRecentPlay, setCurrentTime, currentTimeRef, storyId]);
 
   const togglePlayPause = () => {
     const wavesurfer = audioRef.current;
+    console.log("togglePlayPause", wavesurfer);
     if (wavesurfer) {
       if (isPlaying) {
         wavesurfer.pause();
