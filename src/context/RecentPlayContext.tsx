@@ -18,8 +18,8 @@ type RecentPlayContextType = {
   isPlaying: boolean;
   setIsPlaying: (isPlaying: boolean) => void;
   fetchRecentPlay: () => Promise<void>;
-  currentTime: number;
-  setCurrentTime: (currentTime: number) => void;
+  // currentTime: number;
+  // setCurrentTime: (currentTime: number) => void;
 };
 
 export const RecentPlayContext = createContext<RecentPlayContextType | undefined>(undefined);
@@ -28,7 +28,7 @@ export const RecentPlayProvider = ({ children }: { children: ReactNode }) => {
   const [recentPlay, setRecentPlay] = useState<RecentPlay | null>(null);
   const [storyInfo, setStoryInfo] = useState<Story | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
+  // const [currentTime, setCurrentTime] = useState(0);
 
   const fetchRecentPlay = useCallback(async () => {
     if (user) {
@@ -57,9 +57,7 @@ export const RecentPlayProvider = ({ children }: { children: ReactNode }) => {
   }, [user, fetchRecentPlay]);
 
   return (
-    <RecentPlayContext.Provider
-      value={{ currentTime, setCurrentTime, recentPlay, storyInfo, isPlaying, setIsPlaying, fetchRecentPlay }}
-    >
+    <RecentPlayContext.Provider value={{ recentPlay, storyInfo, isPlaying, setIsPlaying, fetchRecentPlay }}>
       {children}
     </RecentPlayContext.Provider>
   );
