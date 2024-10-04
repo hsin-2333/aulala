@@ -27,7 +27,7 @@ export const OuterLayout = ({ children }: LayoutProps) => {
     <div className="flex h-screen overflow-hidden  flex-col">
       <div className="flex-1">
         <NavbarComponent />
-        <main className=" flex-1 pb-24">
+        <main className=" flex-1 pb-14 md:pb-24">
           <MainContent isOuterPage={true}>{children}</MainContent>
         </main>
         {user && <RecentPlayBar key={key} />}
@@ -107,7 +107,7 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
           isDetailVisible || !isOuterPage ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
         } lg:border-l  sm:overflow-y-auto p-0 custom-scrollbar scroll-padding space-y-8`}
       >
-        <div className=" md:px-4 lg:px-8">
+        <div className=" md:px-4 lg:px-8 h-full">
           <div className="space-y-6">
             <div className="border-none p-0 outline-none">
               {/* {children} */}
