@@ -37,11 +37,7 @@ const StoryTable = () => {
     undefined: "default",
   };
 
-  const {
-    data: storyData,
-    error,
-    isLoading,
-  } = useQuery({
+  const { data: storyData, error } = useQuery({
     queryKey: ["stories", user?.userName],
     queryFn: async () => {
       const story = await dbApi.queryCollection("stories", { author: user?.userName }, 10, "created_at", "desc");
@@ -49,7 +45,6 @@ const StoryTable = () => {
     },
   });
 
-  if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading story data: {error.message}</div>;
   console.log(storyData);
 

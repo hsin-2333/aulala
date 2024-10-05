@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
 import dbApi from "../../../utils/firebaseService";
 import { CategoryOptions } from "../../../constants/categoryOptions";
-import { Select, SelectItem, Input, Button, Chip, Progress, Link } from "@nextui-org/react";
+import { Select, SelectItem, Input, Button, Chip, Progress, Link, Divider } from "@nextui-org/react";
 import { IoIosArrowBack } from "react-icons/io";
+import { useQueryClient } from "@tanstack/react-query";
+import { FaCheck } from "react-icons/fa";
 
 interface FormData {
   title: string;
@@ -24,6 +26,8 @@ interface FormData {
 }
 
 const UploadStory = () => {
+  const queryClient = useQueryClient();
+
   const [isAudioUploaded, setIsAudioUploaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -43,8 +47,8 @@ const UploadStory = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
   const [collectionsOptions, setCollectionsOptions] = useState<string[] | null>();
+  const [currentDateTime, setCurrentDateTime] = useState("");
 
-  console.log("collectionsOptions", collectionsOptions);
   const {
     register,
     handleSubmit,
@@ -122,6 +126,9 @@ const UploadStory = () => {
         };
 
         navigate(`/user/${user?.userName}/uploads`);
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ["stories", user?.userName] });
+        }, 1400);
 
         storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
         for (const tag of data.tags) {
@@ -133,9 +140,6 @@ const UploadStory = () => {
             await dbApi.addStoryToCollection(storyId, collection, user?.userName || "Unknown");
           }
         }
-
-        await dbApi.updateStoryStatus(storyId, "Done");
-        window.alert("成功上傳");
       } catch (error) {
         console.error("Error uploading story and audio:", error);
         if (storyId) {
@@ -204,6 +208,13 @@ const UploadStory = () => {
       window.alert("最多只能選擇8個標籤");
     }
   };
+  useEffect(() => {
+    const now = new Date();
+    const gmt8Time = new Date(now.getTime() + 8 * 60 * 60 * 1000); //GMT+8
+    const formattedDateTime = gmt8Time.toISOString().slice(0, 16);
+    setCurrentDateTime(formattedDateTime);
+    setValue("scheduled_release_date", formattedDateTime);
+  }, [setValue]);
 
   // const getStepLabel = (step: number) => {
   //   switch (step) {
@@ -270,31 +281,74 @@ const UploadStory = () => {
                 Audio Duration: {audioDuration ? `${audioDuration.toFixed(2)} seconds` : "Loading..."}
               </h6>
             </div>
-            <div className="hidden sm:flex justify-around m-8">
-              <button
-                onClick={() => handleStepClick(1)}
-                className={`px-4 py-2  ${currentStep === 1 ? "bg-slate-500 text-white" : "bg-gray-200"}`}
-              >
-                Audio Info
-              </button>
-              <button
-                onClick={() => handleStepClick(2)}
-                className={`px-4 py-2 ${currentStep === 2 ? "bg-slate-500 text-white" : "bg-gray-200"}`}
-              >
-                More Info
-              </button>
-              <button
-                onClick={() => handleStepClick(3)}
-                className={`px-4 py-2 ${currentStep === 3 ? "bg-slate-500 text-white" : "bg-gray-200"}`}
-              >
-                Add Cover Image
-              </button>
+            <div className="hidden sm:flex items-center justify-evenly m-8">
+              <div className="flex flex-col items-center gap-1">
+                {currentStep === 1 ? (
+                  <Chip
+                    color="primary"
+                    className={`text-sm font-bold ${
+                      currentStep === 1
+                        ? "bg-primary-300 "
+                        : "bg-white border border-slate-300 text-default-500 shadow-sky-300/20"
+                    }`}
+                  >
+                    1
+                  </Chip>
+                ) : (
+                  <div className="text-xs bg-primary-300 rounded-full w-6 h-6 flex items-center justify-center">
+                    <FaCheck className="text-white" />
+                  </div>
+                )}
+
+                <span className="text-xs text-default-500">Story Info</span>
+              </div>
+              <Divider className="w-1/4" />
+              <div className="flex flex-col items-center gap-1">
+                {currentStep <= 2 ? (
+                  <Chip
+                    color="primary"
+                    className={`text-sm font-bold ${
+                      currentStep === 2
+                        ? "bg-primary-300 "
+                        : "bg-white border border-slate-300 text-default-500 shadow-sky-300/20"
+                    }`}
+                  >
+                    2
+                  </Chip>
+                ) : (
+                  <div className="text-xs bg-primary-300 rounded-full w-6 h-6 flex items-center justify-center">
+                    <FaCheck className="text-white" />
+                  </div>
+                )}
+
+                <span className="text-xs text-default-500">Story Setting</span>
+              </div>
+              <Divider className="w-1/4" />
+              <div className="flex flex-col items-center gap-1">
+                {currentStep <= 3 ? (
+                  <Chip
+                    color="primary"
+                    className={`text-sm font-bold ${
+                      currentStep === 3
+                        ? "bg-primary-300 "
+                        : "bg-white border border-slate-300 text-default-500 shadow-sky-300/20"
+                    }`}
+                  >
+                    3
+                  </Chip>
+                ) : (
+                  <div className="text-xs bg-primary-300 rounded-full w-6 h-6 flex items-center justify-center">
+                    <FaCheck className="text-white" />
+                  </div>
+                )}
+
+                <span className="text-xs text-default-500">Add Cover Image</span>
+              </div>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left ">
               {currentStep === 1 && (
                 <div className="h-full">
-                  <h3 className="text-xl font-semibold">Audio Info</h3>
                   <div className="mt-4 border border-transparent">
                     <Input
                       label="Title"
@@ -345,7 +399,6 @@ const UploadStory = () => {
               )}
               {currentStep === 2 && (
                 <div>
-                  <h3 className="text-xl font-semibold mb-3">More Info</h3>
                   <div className="mt-4 border border-transparent">
                     <Select
                       placeholder="Select a category"
@@ -438,6 +491,7 @@ const UploadStory = () => {
                       labelPlacement="outside"
                       radius="sm"
                       variant="bordered"
+                      defaultValue={currentDateTime}
                       {...register("scheduled_release_date", { required: true })}
                     />
                     {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
@@ -466,7 +520,6 @@ const UploadStory = () => {
               )}
               {currentStep === 3 && (
                 <div>
-                  <h3 className="text-xl font-semibold mb-3">Add Cover Image</h3>
                   <div className="mt-4 border border-transparent">
                     <Input
                       label="Cover Image"

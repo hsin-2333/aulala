@@ -6,7 +6,17 @@ import * as path from "path";
 import OpenAI from "openai";
 import { v4 as uuidv4 } from "uuid";
 import * as cors from "cors";
+interface Segment {
+  text: string;
+  start: number;
+  end: number;
+}
 
+interface TranscriptionResponse {
+  language: string;
+  text: string;
+  segments: Segment[];
+}
 admin.initializeApp();
 // const db = admin.firestore();
 const openai = new OpenAI({
@@ -42,24 +52,24 @@ exports.transcribeAudio = functions.https.onRequest((req, res) => {
       });
 
       // Now, pass the downloaded file to OpenAI's transcription API
-      const transcriptionResponse = await openai.audio.transcriptions.create({
+      const transcriptionResponse = (await openai.audio.transcriptions.create({
         file: fs.createReadStream(audioFilePath), // Send the file stream
         model: "whisper-1",
         response_format: "verbose_json", // Use JSON to get word-level timestamps
         timestamp_granularities: ["segment"],
-      });
+      })) as TranscriptionResponse;
 
       console.log(`Received transcription response: ${JSON.stringify(transcriptionResponse)}`);
 
       const transcription = transcriptionResponse.text;
-      //@ts-expect-error(123)
       const segments = transcriptionResponse.segments.map((segment) => ({
         text: segment.text,
         start: segment.start,
         end: segment.end,
       }));
+      const language = transcriptionResponse.language;
       const storyRef = admin.firestore().collection("stories").doc(storyId);
-      await storyRef.update({ transcription, segments });
+      await storyRef.update({ transcription, segments, status: "Done", language });
       console.log(`Updated Firestore document for storyId: ${storyId} with transcription`);
 
       // Clean up the temporary file after processing
