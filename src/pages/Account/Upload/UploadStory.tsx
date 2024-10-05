@@ -6,6 +6,7 @@ import dbApi from "../../../utils/firebaseService";
 import { CategoryOptions } from "../../../constants/categoryOptions";
 import { Select, SelectItem, Input, Button, Chip, Progress, Link } from "@nextui-org/react";
 import { IoIosArrowBack } from "react-icons/io";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface FormData {
   title: string;
@@ -24,6 +25,8 @@ interface FormData {
 }
 
 const UploadStory = () => {
+  const queryClient = useQueryClient();
+
   const [isAudioUploaded, setIsAudioUploaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -122,6 +125,9 @@ const UploadStory = () => {
         };
 
         navigate(`/user/${user?.userName}/uploads`);
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ["stories", user?.userName] });
+        }, 1000);
 
         storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
         for (const tag of data.tags) {
@@ -133,9 +139,6 @@ const UploadStory = () => {
             await dbApi.addStoryToCollection(storyId, collection, user?.userName || "Unknown");
           }
         }
-
-        await dbApi.updateStoryStatus(storyId, "Done");
-        window.alert("成功上傳");
       } catch (error) {
         console.error("Error uploading story and audio:", error);
         if (storyId) {
