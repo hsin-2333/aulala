@@ -18,7 +18,6 @@ import { GiSpellBook } from "react-icons/gi";
 import { IoAdd } from "react-icons/io5";
 import { VscAccount } from "react-icons/vsc";
 import { IoMdNotificationsOutline } from "react-icons/io";
-
 import { useContext, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
@@ -73,6 +72,7 @@ export function NavbarComponent() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </form>
+                {/* <SearchComponent /> */}
                 <Button as={Link} color="primary" variant="flat" radius="sm" href="/upload/story">
                   Upload
                 </Button>
