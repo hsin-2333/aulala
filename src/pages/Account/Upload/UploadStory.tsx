@@ -349,7 +349,6 @@ const UploadStory = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left ">
               {currentStep === 1 && (
                 <div className="h-full">
-                  <h3 className="text-xl font-semibold">Audio Info</h3>
                   <div className="mt-4 border border-transparent">
                     <Input
                       label="Title"
@@ -400,7 +399,6 @@ const UploadStory = () => {
               )}
               {currentStep === 2 && (
                 <div>
-                  <h3 className="text-xl font-semibold mb-3">More Info</h3>
                   <div className="mt-4 border border-transparent">
                     <Select
                       placeholder="Select a category"
@@ -522,7 +520,6 @@ const UploadStory = () => {
               )}
               {currentStep === 3 && (
                 <div>
-                  <h3 className="text-xl font-semibold mb-3">Add Cover Image</h3>
                   <div className="mt-4 border border-transparent">
                     <Input
                       label="Cover Image"
