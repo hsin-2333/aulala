@@ -270,7 +270,7 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
                     : comment.created_at}
                 </h6>
               </div>
-              <p className="text-default-900">{comment.comment}</p> <Divider className="my-2 " />
+              <p className="text-default-900 whitespace-pre-wrap ">{comment.comment}</p> <Divider className="my-2 " />
             </div>
           ))
         ) : (
