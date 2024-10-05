@@ -187,11 +187,7 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
     setComment("");
   };
 
-  const {
-    data: commentsData,
-    error: commentsError,
-    isLoading: commentsLoading,
-  } = useQuery({
+  const { data: commentsData, error: commentsError } = useQuery({
     queryKey: ["comments", storyId || scriptId],
     queryFn: async () => {
       const comments = await dbApi.queryCollection(
@@ -215,10 +211,6 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
       setCommentCount(commentsData.length); // 更新評論數量
     }
   }, [commentsData, setCommentCount]);
-
-  if (commentsLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (commentsError) {
     return <div>Error: {commentsError.message}</div>;

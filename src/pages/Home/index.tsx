@@ -35,11 +35,7 @@ function HomePage({ onCardClick }: HomePageProps) {
 
   const navigate = useNavigate();
 
-  const {
-    data: storyList,
-    error: storyError,
-    isLoading: isStoryLoading,
-  } = useQuery<Story[], Error>({
+  const { data: storyList, error: storyError } = useQuery<Story[], Error>({
     queryKey: ["stories", selectedCategory],
     queryFn: async () => {
       const conditions: QueryConditions = {};
@@ -51,11 +47,7 @@ function HomePage({ onCardClick }: HomePageProps) {
     },
   });
 
-  const {
-    data: scriptList,
-    error: scriptError,
-    isLoading: isScriptLoading,
-  } = useQuery<Story[], Error>({
+  const { data: scriptList, error: scriptError } = useQuery<Story[], Error>({
     queryKey: ["scripts", selectedCategory],
     queryFn: async () => {
       const conditions: QueryConditions = {};
@@ -112,9 +104,6 @@ function HomePage({ onCardClick }: HomePageProps) {
       .slice(0, 5);
   }, [storyList, scriptList]);
 
-  if (isScriptLoading || isStoryLoading) {
-    return <div>Loading...</div>;
-  }
   if (storyError || scriptError) {
     return <div>Error fetching data: {storyError?.message || scriptError?.message}</div>;
   }
