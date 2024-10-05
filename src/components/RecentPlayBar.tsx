@@ -61,7 +61,6 @@ const RecentPlayBar = () => {
 
       // 設置播放時間更新與字幕更新邏輯
       let lastUpdateTime = 0;
-      // let animationFrameId: number;
 
       const updateRecentPlay = debounce((currentTime: number) => {
         if (user && storyInfo?.id) {
@@ -72,11 +71,9 @@ const RecentPlayBar = () => {
         }
       }, 1000);
 
-      // 使用 timeupdate 事件來更新 currentTimeRef
       wavesurfer.on("timeupdate", (currentTime) => {
         setCurrentTime(currentTime);
         currentTimeRef.current = currentTime;
-        // console.log("更新時間", currentTime, lastUpdateTime);
 
         if (currentTime - lastUpdateTime > 0.8) {
           lastUpdateTime = currentTime;
@@ -104,8 +101,11 @@ const RecentPlayBar = () => {
         updateRecentPlay(newTime);
       });
 
+      wavesurfer.on("finish", () => {
+        setIsPlaying(false);
+      });
+
       return () => {
-        // cancelAnimationFrame(animationFrameId);
         wavesurfer.destroy();
       };
     }
@@ -263,11 +263,16 @@ export const PlayBar = () => {
         lastUpdateTime = newTime;
       });
 
+      // 音頻播放完畢
+      wavesurfer.on("finish", () => {
+        setIsPlaying(false);
+      });
+
       return () => {
         wavesurfer.destroy();
       };
     }
-  }, [story, currentTimeRef]);
+  }, [story, currentTimeRef, setIsPlaying]);
 
   const togglePlayPause = () => {
     const wavesurfer = audioRef.current;
