@@ -108,8 +108,8 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
         } lg:border-l  sm:overflow-y-auto p-0 custom-scrollbar scroll-padding space-y-8`}
       >
         <div className=" md:px-4 lg:px-8 h-full">
-          <div className="space-y-6">
-            <div className="border-none p-0 outline-none">
+          <div className="space-y-6 h-full">
+            <div className="border-none p-0 outline-none h-full">
               {/* {children} */}
               {React.cloneElement(children as React.ReactElement, { onCardClick: handleCardClick })}
             </div>
