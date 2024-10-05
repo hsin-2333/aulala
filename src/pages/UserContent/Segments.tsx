@@ -1,5 +1,9 @@
 import { useContext, useEffect, useRef, useMemo, useState } from "react";
 import { RecentPlayContext } from "../../context/RecentPlayContext";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { Story } from "../../types";
+import dbApi from "../../utils/firebaseService";
 
 const SubtitlesComponent = () => {
   const subtitlesRef = useRef<HTMLDivElement>(null);
@@ -10,6 +14,19 @@ const SubtitlesComponent = () => {
   const { currentTimeRef } = context;
   const [currentTime, setCurrentTime] = useState(0);
 
+  const { storyId } = useParams();
+
+  const { data: storyData } = useQuery({
+    queryKey: ["story", storyId],
+    queryFn: async () => {
+      const story = await dbApi.queryCollection("stories", { id: storyId }, 1);
+      return story as Story[];
+    },
+    enabled: !!storyId,
+  });
+
+  const story = storyData ? storyData[0] : null;
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(currentTimeRef.current);
@@ -18,7 +35,8 @@ const SubtitlesComponent = () => {
     return () => clearInterval(interval);
   }, [currentTimeRef]);
 
-  const segments = useMemo(() => context?.storyInfo?.segments || [], [context?.storyInfo?.segments]);
+  // const segments = useMemo(() => context?.storyInfo?.segments || [], [context?.storyInfo?.segments]);
+  const segments = useMemo(() => story?.segments || [], [story?.segments]);
 
   useEffect(() => {
     if (subtitlesRef.current) {

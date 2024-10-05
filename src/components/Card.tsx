@@ -22,6 +22,7 @@ import {
 } from "@nextui-org/react";
 import { LiaComment } from "react-icons/lia";
 import { SlOptionsVertical } from "react-icons/sl";
+import { useNavigate } from "react-router-dom";
 
 interface PlaylistCardProps {
   id?: string;
@@ -300,6 +301,7 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
   onClick,
   onCardClick,
 }) => {
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
@@ -317,10 +319,12 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
       } catch (error) {
         console.error("Error updating recent play: ", error);
       }
-    }
-    if (onCardClick) {
-      onCardClick(); //打開主頁側邊選單
-      setIsPlaying(!isPlaying);
+      if (onCardClick) {
+        onCardClick(); //打開主頁側邊選單
+        setIsPlaying(!isPlaying);
+      }
+    } else {
+      navigate(`/story/${id}`);
     }
   };
 

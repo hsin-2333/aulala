@@ -100,7 +100,13 @@ function StoryContent() {
                 </Tab>
                 <Tab key="comments" title="Comments">
                   <Card shadow="none" className="max-h-[400px] bg-white ">
-                    <CardBody>{user && <CommentToolbar userName={user.userName} storyId={story?.id} />}</CardBody>
+                    <CardBody>
+                      {user ? (
+                        <CommentToolbar userName={user.userName} storyId={story?.id} />
+                      ) : (
+                        <p className="w-full text-medium">Login to comment !</p>
+                      )}
+                    </CardBody>{" "}
                   </Card>
                 </Tab>
               </Tabs>

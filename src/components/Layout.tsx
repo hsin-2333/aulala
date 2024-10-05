@@ -2,7 +2,7 @@ import { useContext, useEffect, useState, ReactNode } from "react";
 import * as React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import RecentPlayBar from "./RecentPlayBar";
+import RecentPlayBar, { PlayBar } from "./RecentPlayBar";
 import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
 import { NavbarComponent } from "../components/Nav/Navbar";
 import { FaBarsProgress } from "react-icons/fa6";
@@ -30,7 +30,7 @@ export const OuterLayout = ({ children }: LayoutProps) => {
         <main className=" flex-1 pb-14 md:pb-24">
           <MainContent isOuterPage={true}>{children}</MainContent>
         </main>
-        {user && <RecentPlayBar key={key} />}
+        {user ? <RecentPlayBar key={key} /> : <PlayBar />}
       </div>
     </div>
   );
