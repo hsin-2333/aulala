@@ -313,15 +313,16 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
     event.stopPropagation(); // 防止事件冒泡
     if (user && id) {
       try {
-        await dbApi.updateRecentPlay(user.uid, id, 0);
-        fetchRecentPlay();
-        setIsPlaying(true);
+        // await dbApi.updateRecentPlay(user.uid, id, 0);
+        // fetchRecentPlay();
+        // setIsPlaying(true);
       } catch (error) {
         console.error("Error updating recent play: ", error);
       }
       if (onCardClick) {
         onCardClick(); //打開主頁側邊選單
-        setIsPlaying(!isPlaying);
+        // setIsPlaying(!isPlaying);
+        navigate(`/story/${id}`);
       }
     } else {
       navigate(`/story/${id}`);
