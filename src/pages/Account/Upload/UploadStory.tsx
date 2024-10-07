@@ -94,7 +94,9 @@ const UploadStory = () => {
     if (selectedFile) {
       const fileSizeInMB = selectedFile.size / (1024 * 1024); // 將文件大小轉換為MB
       if (fileSizeInMB > 8) {
-        window.alert("文件大小超過8MB，請選擇較小的文件。");
+        console.log("File size is greater than 8MB, please select a smaller file");
+        setToastMessage("文件大小超過8MB，請選擇較小的文件");
+        setShowToast(true);
         if (AudioInputRef.current) {
           AudioInputRef.current.value = ""; // 清空文件輸入框
         }
@@ -187,7 +189,6 @@ const UploadStory = () => {
     } else if (step < currentStep) {
       setCurrentStep(step);
     } else {
-      // window.alert("請填寫所有必填字段");
       setToastMessage("請填寫所有必填字段");
       setShowToast(true);
     }
@@ -201,7 +202,6 @@ const UploadStory = () => {
       setNewTag("");
       setIsDropdownVisible(false);
     } else if (selectedTags.length >= 8) {
-      // window.alert("最多只能選擇8個標籤");
       setToastMessage("最多只能選擇8個標籤");
       setShowToast(true);
     }
@@ -254,6 +254,7 @@ const UploadStory = () => {
 
   return (
     <>
+      <div>{showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}</div>
       {isAudioUploaded && (
         <div className="mb-8 sm:hidden">
           <Progress
@@ -306,10 +307,6 @@ const UploadStory = () => {
         ) : (
           <>
             <div>
-              <div>
-                {/* 你的其他組件和邏輯 */}
-                {showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}
-              </div>
               <h6>
                 Audio Name: {audioName} <br />
                 Audio Duration: {audioDuration ? `${audioDuration.toFixed(2)} seconds` : "Loading..."}
@@ -444,6 +441,7 @@ const UploadStory = () => {
                       label="Category"
                       isRequired
                       variant="bordered"
+                      {...register("category", { required: true })}
                     >
                       {filteredCategoryOptions.map((option) => (
                         <SelectItem key={option.label}>{option.label}</SelectItem>

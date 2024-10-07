@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { IoWarningOutline } from "react-icons/io5";
 
 type ToastProps = {
   message: string;
@@ -11,11 +12,17 @@ const Toast = ({ message, onClose }: ToastProps) => {
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  console.log("Toast render");
   return (
-    <div className="fixed bottom-4 text-medium right-4 border border-slate-400 bg-gray-800 text-white px-8 py-4 rounded-lg shadow-lg flex items-center justify-center min-w-[300px]">
-      <span>{message}</span>
-      <button onClick={onClose} className="ml-4 bg-none border-none text-white">
+    <div className="fixed bottom-4 left-3 text-medium border bg-white border-default-200 py-3 px-4 rounded-xl flex items-center justify-between w-1/3 group">
+      <div className="flex gap-4 justify-center items-center">
+        <IoWarningOutline className="text-red-400" size={20} />
+        <div className="flex flex-col items-start gap-1">
+          <span className="font-bold text-sm">{message}</span>
+          {/* <span className="text-xs">{message}</span> */}
+        </div>
+      </div>
+
+      <button onClick={onClose} className="bg-none border-none hidden group-hover:block">
         ✖
       </button>
     </div>
