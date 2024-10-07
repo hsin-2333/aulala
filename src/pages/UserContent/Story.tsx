@@ -19,11 +19,7 @@ function StoryContent() {
 
   const { user } = useContext(AuthContext);
   const { storyId } = useParams();
-  const {
-    data: storyData,
-    error,
-    isLoading,
-  } = useQuery({
+  const { data: storyData, error } = useQuery({
     queryKey: ["story", storyId],
     queryFn: async () => {
       const story = await dbApi.queryCollection("stories", { id: storyId }, 1);
@@ -31,10 +27,6 @@ function StoryContent() {
     },
     enabled: !!storyId,
   });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (error) {
     return <div>Error: {error.message}</div>;

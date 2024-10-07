@@ -19,8 +19,10 @@ import {
   Input,
   useDisclosure,
   Textarea,
+  Link,
 } from "@nextui-org/react";
 import { SlOptionsVertical } from "react-icons/sl";
+import { IoAddCircleOutline } from "react-icons/io5";
 
 const StoryTable = () => {
   const { user } = useContext(AuthContext);
@@ -72,9 +74,22 @@ const StoryTable = () => {
 
   return (
     <div className="space-y-4 text-left">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <Button
+        className=" text-default-700 border-dashed "
+        variant="bordered"
+        type="button"
+        radius="sm"
+        size="md"
+        startContent={<IoAddCircleOutline size={20} />}
+        as={Link}
+        href="/upload/story"
+      >
+        Upload
+      </Button>
+
+      <div className="overflow-x-auto overflow-y-hidden">
+        <table className="min-w-full divide-y divide-gray-200 ">
+          <thead className="bg-gray-50 ">
             <tr>
               <th
                 scope="col"

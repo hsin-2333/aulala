@@ -4,10 +4,22 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
 import dbApi from "../../../utils/firebaseService";
 import { CategoryOptions } from "../../../constants/categoryOptions";
-import { Select, SelectItem, Input, Button, Chip, Progress, Link, Divider } from "@nextui-org/react";
+import {
+  Select,
+  SelectItem,
+  Input,
+  Button,
+  Chip,
+  Progress,
+  Link,
+  Divider,
+  Breadcrumbs,
+  BreadcrumbItem,
+} from "@nextui-org/react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useQueryClient } from "@tanstack/react-query";
 import { FaCheck } from "react-icons/fa";
+import { SlCloudUpload } from "react-icons/sl";
 
 interface FormData {
   title: string;
@@ -255,22 +267,29 @@ const UploadStory = () => {
       )}
       <div className="container mx-auto w-full p-2 relative">
         {/* <h2 className="text-2xl font-bold mb-4">Upload Section</h2> */}
-
+        <Breadcrumbs>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem href={`/user/${user?.userName}/uploads`}>Uploaded Content</BreadcrumbItem>
+          <BreadcrumbItem>Upload</BreadcrumbItem>
+        </Breadcrumbs>
         {!isAudioUploaded ? (
-          <div className="flex gap-4 flex-col items-center">
-            <label className="block text-sm font-medium text-gray-700 h-1/5">Only accept audio below 8 MB</label>
+          <div className="flex gap-4 flex-col items-center mt-20">
+            {/* <label className="block text-sm font-medium text-gray-700 h-1/5">Only accept audio below 8 MB</label> */}
             <input type="file" accept="audio/*" onChange={handleAudioUpload} ref={AudioInputRef} className="hidden" />
             <Button
-              className=" bg-primary text-white"
+              className=" text-primary flex-col items-center border-dashed h-32 w-64 border-2 "
+              variant="bordered"
               type="button"
+              startContent={<SlCloudUpload size={32} />}
               onClick={() => {
                 if (AudioInputRef.current) {
                   AudioInputRef.current.click();
                 }
               }}
-              radius="full"
+              radius="sm"
             >
-              Select Audio File
+              Upload Audio File
+              <label className="block text-xs font-medium text-gray-400 h-1/5">Only accept audio below 8 MB</label>
             </Button>
           </div>
         ) : (
