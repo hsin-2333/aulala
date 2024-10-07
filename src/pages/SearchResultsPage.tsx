@@ -4,7 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import lunr from "lunr";
 import { SearchResultCard } from "../components/Card";
 import { index } from "../../algoliaClient"; // Import Algolia index
-
+import { Input } from "@nextui-org/react";
+import { FiSearch } from "react-icons/fi";
 const SearchResultsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,30 +29,59 @@ const SearchResultsPage = () => {
   };
 
   console.log("searchResults", searchResults);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+    }
+  };
   return (
-    <div className="mx-auto flex flex-col align-middle">
-      <h1>Search Results for "{query}"</h1>
-      <section className="grid grid-cols-1 gap-6 align-middle mx-auto mt-5">
-        {searchResults.map((result) => {
-          return (
-            result && (
-              <SearchResultCard
-                key={result.id}
-                id={result.id}
-                image={result.img_url?.[0]}
-                title={result.title || "Untitled"}
-                tags={result.tags}
-                author={result.author || "Unknown"}
-                onClick={() => handleContentClick(result.id, "story")}
-                intro={result.intro}
-                duration={result.duration}
-              />
-            )
-          );
-        })}
-      </section>
-      <div className="h-32 w-full"></div>
-    </div>
+    <>
+      <div className="mx-auto flex flex-col align-middle ">
+        <form onSubmit={handleSearchSubmit} className="flex justify-center  items-center ">
+          <Input
+            classNames={{
+              base: " max-w-[848px] shadow-xl shadow-indigo-200/20",
+              mainWrapper: "h-full",
+              input: "text-small",
+              inputWrapper: "h-full font-normal text-default-500 bg-white ",
+            }}
+            placeholder="Search for stories, author, and tags..."
+            size="lg"
+            startContent={<FiSearch size={18} />}
+            type="search"
+            radius="sm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </form>
+        <p className="font-bold text-2xl mt-4">{query}</p>
+        <p className="text-default-400 text-md mt-1">Search Results for "{query}"</p>
+
+        <section className="grid grid-cols-1 align-middle mx-auto mt-8">
+          {searchResults.map((result) => {
+            return (
+              result && (
+                <SearchResultCard
+                  key={result.objectID}
+                  id={result.objectID}
+                  image={result.img_url?.[0]}
+                  title={result.title || "Untitled"}
+                  tags={result.tags}
+                  author={result.author || "Unknown"}
+                  onClick={() => handleContentClick(result.objectID, "story")}
+                  intro={result.intro}
+                  duration={result.duration}
+                />
+              )
+            );
+          })}
+        </section>
+        <div className="h-32 w-full"></div>
+      </div>
+    </>
   );
 };
 

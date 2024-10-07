@@ -50,9 +50,9 @@ function App() {
               <Route
                 path="/search"
                 element={
-                  <OuterLayout>
+                  <ScriptLayout>
                     <SearchResultsPage />
-                  </OuterLayout>
+                  </ScriptLayout>
                 }
               />
               <Route

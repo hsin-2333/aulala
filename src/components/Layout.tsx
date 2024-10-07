@@ -7,7 +7,7 @@ import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
 import { NavbarComponent } from "../components/Nav/Navbar";
 import { FaBarsProgress } from "react-icons/fa6";
 import { Divider } from "@nextui-org/react";
-
+import { useParams } from "react-router-dom";
 interface LayoutProps {
   children: ReactNode;
   isOuterPage?: boolean;
@@ -37,13 +37,24 @@ export const OuterLayout = ({ children }: LayoutProps) => {
 };
 
 export const ScriptLayout = ({ children }: LayoutProps) => {
+  const { scriptId } = useParams();
+
   return (
     <div className="flex flex-col">
       <div className="flex-1">
         <NavbarComponent />
         <Divider />
-        <div className="bg-gradient-to-tr from-blue-200 to-cyan-200 w-full h-60"></div>
-        <main className=" flex-1 px-2 sm:px-6 max-w-[1024px] m-auto -mt-44 sm:-mt-32">{children}</main>
+        {/* <div className="bg-gradient-to-tr from-blue-200 to-cyan-200 w-full h-60"></div> */}
+        <div
+          className={`bg-gradient-to-tr  w-full ${
+            scriptId ? "h-60 from-blue-200 to-cyan-200" : "h-28  bg-gradient-to-tr from-indigo-200  to-sky-100"
+          }`}
+        ></div>
+        <main
+          className={`flex-1 px-2 sm:px-6 max-w-[1024px] m-auto  ${scriptId ? "-mt-44 sm:-mt-32" : "-mt-9 sm:-mt-9"}`}
+        >
+          {children}
+        </main>
       </div>
     </div>
   );
