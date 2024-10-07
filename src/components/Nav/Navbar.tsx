@@ -22,7 +22,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { useContext, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-
+import Logo from "../../assets/logo";
 export function NavbarComponent() {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -47,9 +47,10 @@ export function NavbarComponent() {
     <>
       {/*電腦版*/}
       <div className="hidden sm:block">
-        <Navbar maxWidth="full">
+        <Navbar maxWidth="full" className="px-2">
           <NavbarBrand as={Link} className="cursor-pointer" href="/">
-            <p className="font-bold text-[var(--color-primary)]">StoryBook LOGO</p>
+            {/* <p className="font-bold text-[var(--color-primary)]">StoryBook LOGO</p> */}
+            <Logo />
           </NavbarBrand>
 
           <NavbarContent className="flex flex-grow gap-4" justify="center"></NavbarContent>
