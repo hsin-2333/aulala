@@ -173,13 +173,11 @@ function Account() {
                   label="About Me"
                   placeholder="Enter a shot bio"
                   variant="bordered"
-                  labelPlacement="outside"
                 />
                 <Input
                   {...register("website")}
                   label="Website"
                   placeholder="your website URL"
-                  labelPlacement="outside"
                   startContent={
                     <div className="pointer-events-none flex items-center">
                       <span className="text-default-400 text-small">https://</span>
@@ -190,7 +188,6 @@ function Account() {
                   {...register("twitter")}
                   label="Twitter"
                   placeholder="your Twitter username"
-                  labelPlacement="outside"
                   startContent={
                     <div className="pointer-events-none flex items-center">
                       <span className="text-default-400 text-small">https://twitter.com/</span>

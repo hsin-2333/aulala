@@ -11,6 +11,7 @@ import {
   Link,
   DropdownSection,
   Input,
+  Divider,
 } from "@nextui-org/react";
 import { FiSearch } from "react-icons/fi";
 import { GiSpellBook } from "react-icons/gi";
@@ -64,7 +65,7 @@ export function NavbarComponent() {
                       input: "text-small",
                       inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
                     }}
-                    placeholder="Title, Author, ..."
+                    placeholder="Search..."
                     size="sm"
                     startContent={<FiSearch size={18} />}
                     type="search"
@@ -76,16 +77,20 @@ export function NavbarComponent() {
                 <Button as={Link} color="primary" variant="flat" radius="sm" href="/upload/story">
                   Upload
                 </Button>
+                <Link href={`/account/${user.userName}/notification`} color="foreground">
+                  <IoMdNotificationsOutline size={24} />
+                </Link>
+                <Divider orientation="vertical" className="h-10" />
                 <Dropdown placement="bottom-end">
                   <DropdownTrigger>
                     <Avatar
                       isBordered
                       as="button"
                       className="transition-transform w-8 h-8 flex-shrink-0"
-                      color="secondary"
                       name={user.userName}
                       size="sm"
                       src={user.avatar}
+                      color="primary"
                     />
                   </DropdownTrigger>
                   <DropdownMenu aria-label="Profile Actions" variant="flat">

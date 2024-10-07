@@ -104,9 +104,7 @@ const StoryTable = () => {
               <th
                 scope="col"
                 className="px-2 py-3 text-left text-xs font-medium text-default-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
+              ></th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">

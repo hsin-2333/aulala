@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import dbApi from "../../utils/firebaseService";
 import { AuthContext } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
+import { Divider } from "@nextui-org/divider";
 
 type Notification = {
   id: string;
@@ -35,8 +36,8 @@ const Notifications = () => {
     <div>
       {notifications ? (
         notifications.map((notification, index) => (
-          <div key={index} className="flex flex-1 flex-col">
-            <div className="flex items-start p-4">
+          <div key={index} className="flex flex-1 flex-col p-4">
+            <div className="flex items-start">
               <div className="flex items-start gap-4 text-sm">
                 {/* <Avatar>
                 <AvatarImage alt={mail.name} />
@@ -63,6 +64,7 @@ const Notifications = () => {
                 </div>
               )}
             </div>
+            <Divider className="my-6 pl-4 bg-default-200" />
           </div>
         ))
       ) : (
