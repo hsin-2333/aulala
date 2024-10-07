@@ -1,5 +1,11 @@
 // AuthContext.jsx
-import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { createContext, useCallback, useEffect, useState, ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { auth } from "../../firebaseConfig";
@@ -17,6 +23,7 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   authUser: null,
   Login: () => {},
+  LoginWithEmail: () => {},
   Logout: () => {},
   userExists: undefined,
 });
@@ -97,9 +104,25 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       });
   }, [navigate, queryClient]);
 
+  const LoginWithEmail = useCallback(
+    (email: string, password: string) => {
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          queryClient.invalidateQueries({ queryKey: ["auth"] });
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.error("Error during email login:", errorCode, errorMessage);
+          navigate("/error", { state: { errorMessage } });
+        });
+    },
+    [navigate, queryClient]
+  );
+
   return (
     //@ts-expect-error(123)
-    <AuthContext.Provider value={{ isLogin, loading, user, authUser, userExists, Login, Logout }}>
+    <AuthContext.Provider value={{ isLogin, loading, user, authUser, userExists, Login, LoginWithEmail, Logout }}>
       {children}
     </AuthContext.Provider>
   );

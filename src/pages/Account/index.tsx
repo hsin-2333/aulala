@@ -14,6 +14,7 @@ import {
   ModalFooter,
   useDisclosure,
   Input,
+  Avatar,
 } from "@nextui-org/react";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { useQuery } from "@tanstack/react-query";
@@ -102,10 +103,15 @@ function Account() {
               <BiSolidEditAlt />
             </Button>
             <div className=" absolute top-2 left-10 sm:top-12 sm:left-20 transform -translate-x-1/2 flex justify-center items-center h-full flex-col">
-              <img
+              <Avatar
                 src={user.avatar}
                 alt="User Avatar"
-                className="w-14 h-14 sm:w-24 sm:h-24 rounded-full border-2 sm:border-4 border-white"
+                isBordered
+                as="button"
+                className="transition-transform w-14 h-14 flex-shrink-0"
+                name={user.userName}
+                size="sm"
+                color="primary"
               />
             </div>
           </div>

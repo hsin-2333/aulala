@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import debounce from "../../utils/debounce";
+import { Input, Button, Select, SelectItem } from "@nextui-org/react";
 
 enum GenderEnum {
   female = "female",
@@ -71,10 +72,21 @@ const UserSignUpForm = () => {
   return (
     <div className="flex align-middle flex-col mx-auto mt-32">
       <h2 className="text-2xl font-bold mb-10">User Sign Up</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left w-96">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left w-96 flex flex-col gap-4 ">
         <div>
-          <label className="block text-sm font-medium text-gray-700">User Name</label>
-          <input className="border border-input w-full" {...register("userName", { required: true, maxLength: 20 })} />
+          {/* <label className="block text-sm font-medium text-gray-700">User Name</label> */}
+          {/* <input className="border border-input w-full" {...register("userName", { required: true, maxLength: 20 })} /> */}
+          <Input
+            type="text"
+            label="User Name"
+            labelPlacement="outside"
+            size="md"
+            radius="sm"
+            variant="bordered"
+            className="w-full text-left"
+            placeholder="A Unique User Name"
+            {...register("userName", { required: true, maxLength: 20 })}
+          />
           {errors?.userName?.type === "required" && <p className="text-red-500 text-sm">This field is required</p>}
           {errors?.userName?.type === "maxLength" && (
             <p className="text-red-500 text-sm">First name cannot exceed 20 characters</p>
@@ -82,10 +94,21 @@ const UserSignUpForm = () => {
           {!isUSerNameAvailable && <p className="text-red-500 text-sm">Username is already taken</p>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Age</label>
-          <input
+          {/* <label className="block text-sm font-medium text-gray-700">Age</label> */}
+          {/* <input
             type="number"
             className="border border-input w-full"
+            {...register("age", { min: 12, max: 99, required: true })}
+          /> */}
+          <Input
+            type="number"
+            label="Age"
+            labelPlacement="outside"
+            size="md"
+            radius="sm"
+            variant="bordered"
+            className="w-full text-left"
+            placeholder="Your Age"
             {...register("age", { min: 12, max: 99, required: true })}
           />
           {errors.age && (
@@ -93,21 +116,39 @@ const UserSignUpForm = () => {
           )}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Gender</label>
-          <select className="border border-input w-full" {...register("gender", { required: true })}>
+          {/* <label className="block text-sm font-medium text-gray-700">Gender</label> */}
+          {/* <select className="border border-input w-full" {...register("gender", { required: true })}>
+            
             <option value="female">female</option>
             <option value="male">male</option>
             <option value="other">non-binary</option>
-          </select>
+          </select> */}
+          <Select
+            className="w-full"
+            label="Gender"
+            labelPlacement="outside"
+            variant="bordered"
+            size="md"
+            radius="sm"
+            placeholder="Your gender"
+            {...register("gender", { required: true })}
+          >
+            <SelectItem key="female">female</SelectItem>
+            <SelectItem key="male">male</SelectItem>
+            <SelectItem key="other">non-binary</SelectItem>
+          </Select>
           {errors.gender && <p className="text-red-500 text-sm">Gender is required</p>}
         </div>
-        <button
+        {/* <button
           className=" rounded-md flex items-center size-default bg-primary text-white"
           type="submit"
           disabled={!isValid || !isUSerNameAvailable}
         >
           Submit
-        </button>
+        </button> */}
+        <Button size="md" radius="sm" color="primary" type="submit" isDisabled={!isValid || !isUSerNameAvailable}>
+          Submit
+        </Button>
       </form>
     </div>
   );

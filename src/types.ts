@@ -39,6 +39,7 @@ export interface AuthContextType {
   user: User | null;
   authUser: AuthUser | null;
   Login: () => void;
+  LoginWithEmail: (email: string, password: string) => void;
   Logout: () => void;
   userExists: boolean | undefined;
 }
