@@ -21,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { FaCheck } from "react-icons/fa";
 import { SlCloudUpload } from "react-icons/sl";
 import Toast from "../../../components/Toast";
+import { useLocation } from "react-router-dom";
 
 interface FormData {
   title: string;
@@ -41,12 +42,15 @@ interface FormData {
 const UploadStory = () => {
   const queryClient = useQueryClient();
 
-  const [isAudioUploaded, setIsAudioUploaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { script_audioName, script_audioUrl } = location.state || {};
+  const [isAudioUploaded, setIsAudioUploaded] = useState(!!script_audioUrl);
+
   const [audioName, setAudioName] = useState<string | null>(null);
   const [audioDuration, setAudioDuration] = useState<number | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
@@ -89,8 +93,19 @@ const UploadStory = () => {
     fetchCollections();
   }, [user?.userName]);
 
-  const handleAudioUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
+  useEffect(() => {
+    if (script_audioUrl) {
+      const fileName = script_audioName || "uploaded_audio.mp3";
+      fetch(script_audioUrl)
+        .then((res) => res.blob())
+        .then((blob) => {
+          const file = new File([blob], fileName, { type: blob.type });
+          handleAudioUpload(file);
+        });
+    }
+  }, [script_audioUrl, script_audioName]);
+
+  const handleAudioUpload = async (selectedFile: File) => {
     if (selectedFile) {
       const fileSizeInMB = selectedFile.size / (1024 * 1024); // 將文件大小轉換為MB
       if (fileSizeInMB > 8) {
@@ -117,6 +132,13 @@ const UploadStory = () => {
     }
   };
 
+  const handleAudioInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      handleAudioUpload(selectedFile);
+    }
+  };
+
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
@@ -129,6 +151,7 @@ const UploadStory = () => {
   const onSubmit = async (data: FormData) => {
     console.log(data);
     if (file) {
+      console.log("有file");
       let storyId: string | null = null;
 
       try {
@@ -196,6 +219,7 @@ const UploadStory = () => {
 
   const handleTagCreation = () => {
     if (newTag.trim() !== "" && selectedTags.length < 8) {
+      console.log("newTag", newTag);
       const newTagOption = { value: newTag, label: newTag };
       setTagsOptions((prev) => [...prev, newTagOption]);
       setSelectedTags((prev) => [...prev, newTagOption]);
@@ -287,7 +311,13 @@ const UploadStory = () => {
         {!isAudioUploaded ? (
           <div className="flex gap-4 flex-col items-center mt-20">
             {/* <label className="block text-sm font-medium text-gray-700 h-1/5">Only accept audio below 8 MB</label> */}
-            <input type="file" accept="audio/*" onChange={handleAudioUpload} ref={AudioInputRef} className="hidden" />
+            <input
+              type="file"
+              accept="audio/*"
+              onChange={handleAudioInputChange}
+              ref={AudioInputRef}
+              className="hidden"
+            />
             <Button
               className=" text-primary flex-col items-center border-dashed h-32 w-64 border-2 "
               variant="bordered"
@@ -307,8 +337,9 @@ const UploadStory = () => {
         ) : (
           <>
             <div>
-              <h6>
-                Audio Name: {audioName} <br />
+              <h6 className="mt-10">
+                Audio Name: {audioName || script_audioName}
+                <br />
                 Audio Duration: {audioDuration ? `${audioDuration.toFixed(2)} seconds` : "Loading..."}
               </h6>
             </div>

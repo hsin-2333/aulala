@@ -5,16 +5,21 @@ import { AuthContext } from "../../context/AuthContext";
 import { useContext, useRef, useState } from "react";
 import { Story, User as VoiceActor } from "../../types";
 import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
-import { Card, Chip, CardBody, Image, Tabs, Tab, Link, User, Divider, Button } from "@nextui-org/react";
+import { Card, Chip, CardBody, Image, Tabs, Tab, Link, User, Divider, Button, Tooltip } from "@nextui-org/react";
 import { MdLanguage } from "react-icons/md";
 import { FaHashtag } from "react-icons/fa6";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+import { SlCloudUpload } from "react-icons/sl";
+
 function ScriptContent() {
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const { scriptId } = useParams();
   const tabsRef = useRef<HTMLDivElement>(null);
   const [commentCount, setCommentCount] = useState(0);
+  const AudioInputRef = useRef<HTMLInputElement>(null);
 
   const { data: scriptData, error: scriptError } = useQuery({
     queryKey: ["script", scriptId],
@@ -74,6 +79,21 @@ function ScriptContent() {
   const handleTabClick = () => {
     if (tabsRef.current) {
       tabsRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleAudioUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      const audioUrl = URL.createObjectURL(selectedFile);
+
+      // 將音檔信息傳遞給 UploadStory 頁面
+      navigate("/upload/story", {
+        state: {
+          script_audioName: selectedFile.name,
+          script_audioUrl: audioUrl,
+        },
+      });
     }
   };
 
@@ -210,7 +230,40 @@ function ScriptContent() {
                 }
               >
                 <section className="flex items-start justify-center flex-col min-h-[300px]">
-                  <h4 className="text-2xl font-semibold mb-2">Voice Actors</h4>
+                  {/* <h4 className="text-2xl font-semibold mb-2">Voice Actors</h4> */}
+                  {/* <input
+                    className=" text-default-700 border-dashed "
+                    type="file"
+                    accept="audio/*"
+                    onChange={handleAudioUpload}
+                  /> */}
+                  <div className="flex gap-4 w-full justify-end">
+                    {/* <label className="block text-sm font-medium text-gray-700 h-1/5">Only accept audio below 8 MB</label> */}
+                    <input
+                      type="file"
+                      accept="audio/*"
+                      onChange={handleAudioUpload}
+                      ref={AudioInputRef}
+                      className="hidden"
+                    />
+                    <Tooltip color="default" content="create your unique story">
+                      <Button
+                        className="text-primary items-center border-dashed border-1 "
+                        variant="bordered"
+                        type="button"
+                        startContent={<SlCloudUpload size={18} />}
+                        onClick={() => {
+                          if (AudioInputRef.current) {
+                            AudioInputRef.current.click();
+                          }
+                        }}
+                        radius="sm"
+                      >
+                        Upload
+                      </Button>
+                    </Tooltip>
+                  </div>
+
                   {relatedStories &&
                     relatedStories.map((story) => {
                       return (
