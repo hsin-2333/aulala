@@ -92,7 +92,7 @@ function ScriptContent() {
             <Image className="w-32 h-auto flex rounded-lg" src={script.img_url[0]} alt={script.title} />
             <div className="flex flex-col gap-1">
               <h2 className="text-xl font-semibold">{script.title}</h2>
-              <p className="text-gray-700 text-sm before:content-none">{script.summary}</p>
+              <p className="text-gray-700 text-sm before:content-none whitespace-pre-wrap">{script.summary}</p>
             </div>
           </div>
           {/* 電腦版 書名在卡片裡*/}
@@ -151,7 +151,9 @@ function ScriptContent() {
             </CardBody>
           </Card>
 
-          <p className="text-gray-700 text-small sm:text-medium my-8 before:content-none">{script.content}</p>
+          <p className="text-gray-700 text-small sm:text-medium my-8 before:content-none whitespace-pre-wrap text-justify">
+            {script.content}
+          </p>
 
           <div ref={tabsRef}>
             <Tabs

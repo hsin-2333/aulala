@@ -94,7 +94,7 @@ function HomePage({ onCardClick }: HomePageProps) {
   }, [scriptList, sortOrder]);
 
   const latestReleases = useMemo(() => {
-    const combinedList = [...(storyList || []), ...(scriptList || [])];
+    const combinedList = [...(storyList || [])];
     return combinedList
       .sort((a, b) => {
         const dateA = convertTimestampToDate(a.created_at!).getTime();
@@ -102,7 +102,7 @@ function HomePage({ onCardClick }: HomePageProps) {
         return dateB - dateA;
       })
       .slice(0, 5);
-  }, [storyList, scriptList]);
+  }, [storyList]);
 
   if (storyError || scriptError) {
     return <div>Error fetching data: {storyError?.message || scriptError?.message}</div>;

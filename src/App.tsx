@@ -137,7 +137,6 @@ function App() {
                 element={
                   <PrivateRoute>
                     <Layout>
-                      {" "}
                       <UploadScript />
                     </Layout>
                   </PrivateRoute>
