@@ -26,7 +26,7 @@ interface PlaylistButtonProps {
 export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionToolbarProps) => {
   const [liked, setLiked] = useState(false);
   const queryClient = useQueryClient();
-  console.log("storyId", storyId, "scriptId", scriptId);
+  // console.log("storyId", storyId, "scriptId", scriptId);
   useEffect(() => {
     const fetchLikeStatus = async () => {
       const likeStatus = await dbApi.getInteractionStatus(userName, storyId || null, scriptId || null, "like");

@@ -43,7 +43,7 @@ function StoryContent() {
         <span className="text-medium text-default-800 font-bold"> Upload Story</span>
       </div>
       {story && story.img_url && (
-        <div className="text-left mt-16 sm:mt-0 ">
+        <div className="text-left mt-16 sm:mt-0 h-full">
           {story && (
             <div className="flex justify-between mb-4 px-4">
               <h2 className="text-2xl font-semibold mb-2">{story.title}</h2>
@@ -78,7 +78,7 @@ function StoryContent() {
                 <Tab key="script" title="Script">
                   <ScrollShadow hideScrollBar size={100} className="h-[400px]">
                     <Card shadow="none" className="max-h-[700px]  ">
-                      <CardBody className="custom-scrollbar scroll-padding">
+                      <CardBody className="custom-scrollbar scroll-padding p-2">
                         <SubtitlesComponent />
                       </CardBody>
                     </Card>
@@ -100,7 +100,13 @@ function StoryContent() {
                 </Tab>
                 <Tab key="comments" title="Comments">
                   <Card shadow="none" className="max-h-[400px] bg-white ">
-                    <CardBody>{user && <CommentToolbar userName={user.userName} storyId={story?.id} />}</CardBody>
+                    <CardBody>
+                      {user ? (
+                        <CommentToolbar userName={user.userName} storyId={story?.id} />
+                      ) : (
+                        <p className="w-full text-medium">Login to comment !</p>
+                      )}
+                    </CardBody>{" "}
                   </Card>
                 </Tab>
               </Tabs>

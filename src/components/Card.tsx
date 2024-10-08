@@ -22,6 +22,7 @@ import {
 } from "@nextui-org/react";
 import { LiaComment } from "react-icons/lia";
 import { SlOptionsVertical } from "react-icons/sl";
+import { useNavigate } from "react-router-dom";
 
 interface PlaylistCardProps {
   id?: string;
@@ -300,27 +301,32 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
   onClick,
   onCardClick,
 }) => {
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
-  const { storyInfo, isPlaying, setIsPlaying, fetchRecentPlay } = context;
+  // const { storyInfo, isPlaying, setIsPlaying, fetchRecentPlay } = context;
+  const { storyInfo, isPlaying } = context;
 
   const togglePlayPause = async (event: React.MouseEvent) => {
     event.stopPropagation(); // 防止事件冒泡
     if (user && id) {
       try {
-        await dbApi.updateRecentPlay(user.uid, id, 0);
-        fetchRecentPlay();
-        setIsPlaying(true);
+        // await dbApi.updateRecentPlay(user.uid, id, 0);
+        // fetchRecentPlay();
+        // setIsPlaying(true);
       } catch (error) {
         console.error("Error updating recent play: ", error);
       }
-    }
-    if (onCardClick) {
-      onCardClick(); //打開主頁側邊選單
-      setIsPlaying(!isPlaying);
+      if (onCardClick) {
+        onCardClick(); //打開主頁側邊選單
+        // setIsPlaying(!isPlaying);
+        navigate(`/story/${id}`);
+      }
+    } else {
+      navigate(`/story/${id}`);
     }
   };
 
@@ -363,7 +369,7 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
   );
 };
 
-export const SearchResultCard = ({ id, image, intro, duration, title, author, onClick }: PlaylistCardProps) => {
+export const SearchResultCard = ({ id, image, intro, duration, title, tags, author, onClick }: PlaylistCardProps) => {
   // const { user } = useContext(AuthContext);
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
@@ -411,6 +417,19 @@ export const SearchResultCard = ({ id, image, intro, duration, title, author, on
                       <h3 className="text-small tracking-tight text-default-400">{storyDuration}</h3>
                     </div>
                     <p className="text-small pt-2 overflow-hidden">{intro}</p>
+                    {tags.map((tag, index) => (
+                      <Chip
+                        key={index}
+                        variant="flat"
+                        color="primary"
+                        isDisabled
+                        size="sm"
+                        radius="sm"
+                        className="mt-1 mr-1"
+                      >
+                        # {tag}
+                      </Chip>
+                    ))}
                   </div>
                 </div>
 

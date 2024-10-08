@@ -2,7 +2,7 @@ import { useContext, useEffect, useState, ReactNode } from "react";
 import * as React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import RecentPlayBar from "./RecentPlayBar";
+import RecentPlayBar, { PlayBar } from "./RecentPlayBar";
 import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
 import { NavbarComponent } from "../components/Nav/Navbar";
 import { FaBarsProgress } from "react-icons/fa6";
@@ -27,10 +27,10 @@ export const OuterLayout = ({ children }: LayoutProps) => {
     <div className="flex h-screen overflow-hidden  flex-col">
       <div className="flex-1">
         <NavbarComponent />
-        <main className=" flex-1 pb-24">
+        <main className=" flex-1 pb-14 md:pb-24">
           <MainContent isOuterPage={true}>{children}</MainContent>
         </main>
-        {user && <RecentPlayBar key={key} />}
+        {user ? <RecentPlayBar key={key} /> : <PlayBar />}
       </div>
     </div>
   );
@@ -107,9 +107,9 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
           isDetailVisible || !isOuterPage ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
         } lg:border-l  sm:overflow-y-auto p-0 custom-scrollbar scroll-padding space-y-8`}
       >
-        <div className=" md:px-4 lg:px-8">
-          <div className="space-y-6">
-            <div className="border-none p-0 outline-none">
+        <div className=" md:px-4 lg:px-8 h-full">
+          <div className="space-y-6 h-full">
+            <div className="border-none p-0 outline-none h-full">
               {/* {children} */}
               {React.cloneElement(children as React.ReactElement, { onCardClick: handleCardClick })}
             </div>
