@@ -268,8 +268,8 @@ const Sidebar = () => {
               to={`/account/${user?.userName}`}
               end
               className={({ isActive }) =>
-                `w-full justify-start flex items-center size-default hover:bg-primary/50 ${
-                  isActive ? "bg-primary/50" : "none"
+                `w-full justify-start flex items-center size-default hover:text-primary-400 rounded  ${
+                  isActive ? "bg-primary-100" : "none"
                 }`
               }
             >
@@ -293,8 +293,8 @@ const Sidebar = () => {
             <NavLink
               to={`/user/${user?.userName}/uploads`}
               className={({ isActive }) =>
-                `w-full justify-start flex items-center size-default hover:bg-primary/50 ${
-                  isActive ? "bg-primary/50" : "none"
+                `w-full justify-start flex items-center size-default hover:text-primary-400 rounded  ${
+                  isActive ? "bg-primary-100" : "none"
                 }`
               }
             >
@@ -304,8 +304,8 @@ const Sidebar = () => {
             <NavLink
               to={`/account/${user?.userName}/notification`}
               className={({ isActive }) =>
-                `w-full justify-start flex items-center size-default hover:bg-primary/50 ${
-                  isActive ? "bg-primary/50" : "none"
+                `w-full justify-start flex items-center size-default hover:text-primary-400 rounded ${
+                  isActive ? "bg-primary-100" : "none"
                 }`
               }
             >

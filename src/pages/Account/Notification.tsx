@@ -3,6 +3,7 @@ import dbApi from "../../utils/firebaseService";
 import { AuthContext } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 import { Divider } from "@nextui-org/divider";
+import empty_notification from "../../assets/empty_notification.png";
 
 type Notification = {
   id: string;
@@ -34,7 +35,7 @@ const Notifications = () => {
 
   return (
     <div>
-      {notifications ? (
+      {notifications.length > 0 ? (
         notifications.map((notification, index) => (
           <div key={index} className="flex flex-1 flex-col p-4">
             <div className="flex items-start">
@@ -68,7 +69,10 @@ const Notifications = () => {
           </div>
         ))
       ) : (
-        <div className="p-8 text-center text-muted-foreground">No message selected</div>
+        <div className="h-3/4 w-full p-8 text-center ">
+          <img src={empty_notification} alt="No notifications" className="mx-auto mt-8  mb-1 h-40" />
+          <span className="text-default-400">No Notifications Yet</span>
+        </div>
       )}
     </div>
   );
