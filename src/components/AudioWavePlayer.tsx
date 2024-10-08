@@ -77,7 +77,7 @@ function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioW
       };
 
       const debouncedUpdateRecentPlay = debounce((currentTime: number) => {
-        if (user) {
+        if (user && user.uid) {
           dbApi.updateRecentPlay(user.uid, storyId, currentTime);
           fetchRecentPlay();
         }
@@ -125,7 +125,7 @@ function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioW
       } else {
         wavesurfer.play();
       }
-      if (user) {
+      if (user && user.uid) {
         const currentTime = wavesurfer.getCurrentTime();
         console.log("更新時間");
         await dbApi.updateRecentPlay(user.uid, storyId, currentTime);

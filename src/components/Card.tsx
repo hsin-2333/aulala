@@ -171,7 +171,12 @@ export const ScriptCard = ({
   };
 
   return (
-    <Card className="w-full border border-default-200 mb-1 sm:mb-8 " isPressable onPress={onClick} shadow="none">
+    <Card
+      className="w-full border border-default-200 mb-1 sm:mb-8 hover:bg-default-50"
+      isPressable
+      onPress={onClick}
+      shadow="none"
+    >
       <CardHeader className="flex flex-col items-start">
         <div className="flex gap-2 align-middle items-center">
           <Image alt="story cover image" height={40} radius="sm" width={40} src={image} />

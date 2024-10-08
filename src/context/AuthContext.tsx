@@ -69,7 +69,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       if (!user) {
         return Promise.resolve(false);
       }
-      return dbApi.checkUserExists((user as User)?.uid);
+      return dbApi.checkUserExists((user as User)?.uid as string);
     },
     enabled: !!user,
   });
