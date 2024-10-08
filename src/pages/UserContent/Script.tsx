@@ -3,26 +3,20 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Story } from "../../types";
+import { Story, User as VoiceActor } from "../../types";
 import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
-import { Card, Chip, CardBody, Image, Tabs, Tab, Link } from "@nextui-org/react";
+import { Card, Chip, CardBody, Image, Tabs, Tab, Link, User, Divider, Button } from "@nextui-org/react";
 import { MdLanguage } from "react-icons/md";
 import { FaHashtag } from "react-icons/fa6";
 import { IoIosArrowBack } from "react-icons/io";
-
+import { IoIosArrowForward } from "react-icons/io";
 function ScriptContent() {
   const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
   const { scriptId } = useParams();
   const tabsRef = useRef<HTMLDivElement>(null);
   const [commentCount, setCommentCount] = useState(0);
 
-  const {
-    data: scriptData,
-    error: scriptError,
-    isLoading: scriptLoading,
-  } = useQuery({
+  const { data: scriptData, error: scriptError } = useQuery({
     queryKey: ["script", scriptId],
     queryFn: async () => {
       const script = await dbApi.queryCollection("scripts", { id: scriptId }, 1);
@@ -31,11 +25,7 @@ function ScriptContent() {
     enabled: !!scriptId,
   });
 
-  const {
-    data: storiesData,
-    error: storiesError,
-    isLoading: storiesLoading,
-  } = useQuery({
+  const { data: storiesData, error: storiesError } = useQuery({
     queryKey: ["stories", scriptId],
     queryFn: async () => {
       const stories = await dbApi.queryCollection("stories", { script_id: scriptId }, 10);
@@ -44,9 +34,30 @@ function ScriptContent() {
     enabled: !!scriptId,
   });
 
-  if (scriptLoading || storiesLoading) {
-    return <div>Loading...</div>;
-  }
+  const { data: VAData } = useQuery({
+    queryKey: ["users", storiesData?.map((story) => story.voice_actor)],
+    queryFn: async () => {
+      if (!storiesData) return [];
+      const voiceActors = storiesData.map((story) => story.voice_actor).flat();
+      const users = await Promise.all(
+        voiceActors.map(async (voiceActor) => {
+          const user = await dbApi.queryCollection("users", { userName: voiceActor });
+          return user;
+        })
+      );
+      return users as VoiceActor[];
+    },
+    enabled: !!storiesData,
+  });
+  const flattenedVAData = VAData?.flat() || [];
+
+  const userLookup =
+    flattenedVAData.reduce((acc, user) => {
+      if (user && user.userName) {
+        acc[user.userName] = user;
+      }
+      return acc;
+    }, {} as Record<string, VoiceActor>) || {};
 
   if (scriptError) {
     return <div>Error: {scriptError.message}</div>;
@@ -135,7 +146,7 @@ function ScriptContent() {
                 </div>
               </div>
               <div className="gap-1 flex flex-col w-fit items-end">
-                {user && <InteractionToolbar userName={user.userName} scriptId={script?.id} />}
+                {user && user.userName && <InteractionToolbar userName={user.userName} scriptId={script?.id} />}
               </div>
             </CardBody>
           </Card>
@@ -172,8 +183,13 @@ function ScriptContent() {
                   </div>
                 }
               >
-                {user && (
-                  <CommentToolbar userName={user.userName} scriptId={script?.id} setCommentCount={setCommentCount} />
+                {user && user.userName && (
+                  <CommentToolbar
+                    userName={user.userName}
+                    avatar={user.avatar}
+                    scriptId={script?.id}
+                    setCommentCount={setCommentCount}
+                  />
                 )}
               </Tab>
               <Tab
@@ -194,22 +210,44 @@ function ScriptContent() {
                 <section className="flex items-start justify-center flex-col min-h-[300px]">
                   <h4 className="text-2xl font-semibold mb-2">Voice Actors</h4>
                   {relatedStories &&
-                    relatedStories.map((story) => (
-                      <div key={story.id} className="flex w-full h-fit justify-between">
-                        <div>
-                          <img src="" />
-                          <h4>{story.voice_actor}</h4>
-                        </div>
-                        <button
-                          className="text-gray-600 hover:text-gray-800"
-                          onClick={() => {
-                            navigate(`/story/${story.id}`);
-                          }}
+                    relatedStories.map((story) => {
+                      return (
+                        <Link
+                          href={`/story/${story.id}`}
+                          className=" flex flex-col w-full hover:bg-gray-100 gap-2 px-2 pt-2"
+                          color="foreground"
+                          key={story.id}
                         >
-                          Link
-                        </button>
-                      </div>
-                    ))}
+                          <div key={story.id} className="flex w-full h-fit justify-between ">
+                            <div>
+                              {story.voice_actor?.map((voiceActor) => {
+                                const VAUser = userLookup[voiceActor];
+                                return (
+                                  <User
+                                    key={voiceActor}
+                                    name={voiceActor}
+                                    description="Voice Actor"
+                                    avatarProps={{
+                                      src: VAUser?.avatar,
+                                      size: "md",
+                                    }}
+                                  />
+                                );
+                              })}
+                            </div>
+
+                            <Button
+                              variant="light"
+                              className="text-default-400"
+                              href={`/story/${story.id}`}
+                              startContent={<IoIosArrowForward size={20} />}
+                            />
+                          </div>
+                          <Divider className="bg-slate-200 " />
+                        </Link>
+                      );
+                    })}
+
                   <div className="w-full flex flex-grow"></div>
                 </section>
               </Tab>

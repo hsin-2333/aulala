@@ -58,6 +58,9 @@ const dbApi = {
 
   async updateUser(userData: User) {
     try {
+      if (!userData.uid) {
+        throw new Error("User ID is undefined");
+      }
       const userDocRef = doc(db, "users", userData.uid);
       await updateDoc(userDocRef, {
         ...userData,
@@ -132,9 +135,9 @@ const dbApi = {
       }
     });
   },
-  // async getUserData(uid: string) {
+  // async getUserData(userName: string) {
   //   try {
-  //     const userDocRef = doc(db, "users", uid);
+  //     const userDocRef = doc(db, "users", userName);
   //     const docSnap = await getDoc(userDocRef);
   //     if (docSnap.exists()) {
   //       return { id: docSnap.id, ...docSnap.data() };

@@ -44,8 +44,8 @@ function Account() {
     queryKey: ["user", user?.uid],
 
     queryFn: () => {
-      if (user) {
-        return dbApi.getUser(user?.uid);
+      if (user && user.uid) {
+        return dbApi.getUser(user.uid);
       }
     },
     enabled: !!user?.uid,

@@ -3,10 +3,11 @@ import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import dbApi from "../utils/firebaseService";
 import { Comment } from "../types";
 import Icon from "./Icon";
-import { Textarea, Button, Divider } from "@nextui-org/react";
+import { Textarea, Button, Divider, User } from "@nextui-org/react";
 
 interface InteractionToolbarProps {
   userName: string;
+  avatar?: string;
   storyId?: string;
   scriptId?: string;
   setCommentCount?: (count: number) => void;
@@ -166,7 +167,7 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
   );
 };
 
-export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }: InteractionToolbarProps) => {
+export const CommentToolbar = ({ userName, avatar, storyId, scriptId, setCommentCount }: InteractionToolbarProps) => {
   const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
 
@@ -254,13 +255,25 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
         {comments.length > 0 ? (
           comments.map((comment) => (
             <div key={comment.id} className="mb-4 pb-3 w-full">
-              <div className="flex  gap-3 justify-between">
-                <h6 className="text-small text-default-400">{comment.userName}</h6>
+              <div className="flex mb-2 gap-3 justify-between">
+                <User
+                  name={userName}
+                  description={
+                    comment.created_at && typeof comment.created_at !== "string"
+                      ? new Date(comment.created_at.seconds * 1000).toLocaleString()
+                      : comment.created_at
+                  }
+                  avatarProps={{
+                    src: avatar,
+                    size: "sm",
+                  }}
+                />
+                {/* <h6 className="text-small text-default-400">{comment.userName}</h6>
                 <h6 className="text-small text-default-400">
                   {comment.created_at && typeof comment.created_at !== "string"
                     ? new Date(comment.created_at.seconds * 1000).toLocaleString()
                     : comment.created_at}
-                </h6>
+                </h6> */}
               </div>
               <p className="text-default-900 whitespace-pre-wrap ">{comment.comment}</p> <Divider className="my-2 " />
             </div>

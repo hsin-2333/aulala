@@ -1,13 +1,13 @@
 import { Timestamp, FieldValue } from "firebase/firestore";
 
 export interface User {
-  uid: string;
-  userName: string;
+  uid?: string;
+  userName?: string;
   gender?: "female" | "male" | "non-binary";
   age?: number;
   email?: string;
   about?: string;
-  role: string[];
+  role?: string[];
   avatar?: string;
   social_links?: {
     website?: string;

@@ -47,7 +47,7 @@ function StoryContent() {
           {story && (
             <div className="flex justify-between mb-4 px-4">
               <h2 className="text-2xl font-semibold mb-2">{story.title}</h2>
-              {user && <InteractionToolbar userName={user.userName} storyId={story?.id} />}
+              {user && user.userName && <InteractionToolbar userName={user.userName} storyId={story?.id} />}
             </div>
           )}
 
@@ -101,8 +101,8 @@ function StoryContent() {
                 <Tab key="comments" title="Comments">
                   <Card shadow="none" className="max-h-[400px] bg-white ">
                     <CardBody>
-                      {user ? (
-                        <CommentToolbar userName={user.userName} storyId={story?.id} />
+                      {user && user.userName ? (
+                        <CommentToolbar avatar={user.avatar} userName={user.userName} storyId={story?.id} />
                       ) : (
                         <p className="w-full text-medium">Login to comment !</p>
                       )}

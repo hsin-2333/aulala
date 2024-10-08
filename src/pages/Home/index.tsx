@@ -111,7 +111,7 @@ function HomePage({ onCardClick }: HomePageProps) {
   const handleContentClick = (id: string, type: "script" | "story") => {
     if (type === "script") navigate(`/script/${id}`);
     if (type === "story") {
-      if (user) {
+      if (user && user.uid) {
         dbApi.updateRecentPlay(user.uid, id, 0).then(() => {
           fetchRecentPlay();
         });
