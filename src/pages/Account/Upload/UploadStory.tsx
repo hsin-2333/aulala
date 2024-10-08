@@ -475,7 +475,7 @@ const UploadStory = () => {
                       {...register("category", { required: true })}
                     >
                       {filteredCategoryOptions.map((option) => (
-                        <SelectItem key={option.label}>{option.label}</SelectItem>
+                        <SelectItem key={`${option.value}`}>{option.label}</SelectItem>
                       ))}
                     </Select>
                     {errors.category && <span className="text-red-500 text-sm">This field is required</span>}
