@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import lunr from "lunr";
 import { SearchResultCard } from "../components/Card";
 import { index } from "../../algoliaClient"; // Import Algolia index
-import { Input } from "@nextui-org/react";
+import { Input, Link, Button } from "@nextui-org/react";
 import { FiSearch } from "react-icons/fi";
 const SearchResultsPage = () => {
   const location = useLocation();
@@ -37,6 +37,10 @@ const SearchResultsPage = () => {
       navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
     }
   };
+
+  const allTags = searchResults
+    .flatMap((result) => result.tags || [])
+    .filter((tag, index, self) => self.indexOf(tag) === index);
   return (
     <>
       <div className="mx-auto flex flex-col align-middle ">
@@ -59,7 +63,22 @@ const SearchResultsPage = () => {
         </form>
         <p className="font-bold text-2xl mt-4">{query}</p>
         <p className="text-default-400 text-md mt-1">Search Results for "{query}"</p>
-
+        <div className="flex flex-wrap mt-2 mx-auto">
+          {allTags.map((tag, index) => (
+            <Button
+              as={Link}
+              href={`/search?q=${tag}`}
+              key={index}
+              color="default"
+              size="sm"
+              radius="sm"
+              className="mt-1 mr-2"
+              variant="flat"
+            >
+              {tag}
+            </Button>
+          ))}
+        </div>
         <section className="grid grid-cols-1 align-middle mx-auto mt-8">
           {searchResults.map((result) => {
             return (

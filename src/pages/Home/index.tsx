@@ -178,21 +178,25 @@ function HomePage({ onCardClick }: HomePageProps) {
       </div>
 
       <section className="mb-4 h-auto whitespace-nowrap flex overflow-x-auto space-x-8 custom-scrollbar scroll-padding ">
-        {latestReleases.map((release: Story) => (
-          <ImageCard
-            onCardClick={onCardClick}
-            onClick={() => handleContentClick(release.id, "story")}
-            key={release.id}
-            id={release.id}
-            //@ts-expect-error(123)
-            image={release.img_url?.[0]}
-            title={release.title || "Untitled"}
-            //@ts-expect-error(123)
-            tags={release.tags}
-            author={release.author || "Unknown"}
-            duration={release.duration}
-          />
-        ))}
+        {latestReleases.map((release: Story) => {
+          const date = release.created_at ? convertTimestampToDate(release.created_at).toLocaleDateString() : "";
+          return (
+            <ImageCard
+              onCardClick={onCardClick}
+              onClick={() => handleContentClick(release.id, "story")}
+              key={release.id}
+              id={release.id}
+              //@ts-expect-error(123)
+              image={release.img_url?.[0]}
+              title={release.title || "Untitled"}
+              //@ts-expect-error(123)
+              tags={release.tags}
+              author={release.author || "Unknown"}
+              duration={release.duration}
+              date={date}
+            />
+          );
+        })}
       </section>
 
       <div className="flex items-center  justify-between text-left">
