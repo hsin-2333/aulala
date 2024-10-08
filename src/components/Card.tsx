@@ -6,6 +6,8 @@ import Icon from "./Icon";
 import { AuthContext } from "../context/AuthContext";
 import { RecentPlayContext } from "../context/RecentPlayContext";
 import { Button } from "@nextui-org/react";
+import { motion } from "framer-motion";
+
 import {
   Card,
   CardHeader,
@@ -333,7 +335,13 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
   const isCurrentStory = id === storyInfo?.id;
   const storyDuration = duration ? `${Math.round((duration / 60) * 2) / 2} min` : "";
   return (
-    <Card isPressable onPress={onClick} className="flex-shrink-0 bg-transparent " shadow="none" radius="none">
+    <Card
+      isPressable
+      onPress={onClick}
+      className="flex-shrink-0 bg-transparent max-w-[240px] "
+      shadow="none"
+      radius="none"
+    >
       <CardBody className="overflow-visible py-2 p-0">
         <div className="z-3  relative group w-36 sm:w-60">
           <Image
@@ -358,9 +366,14 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
           </Button>
         </div>
       </CardBody>
-      <CardHeader className="p-0  mt-1 flex-col items-start">
-        {/* <p className="text-tiny uppercase font-bold">Daily Mix</p> */}
-        <h4 className="font-bold text-large">{title}</h4>
+      <CardHeader className="p-0 mt-1 flex-col items-start w-full">
+        <motion.p
+          className="font-bold text-large text-left items-start overflow-hidden whitespace-nowrap"
+          whileHover={{ x: ["0", "-100%"] }}
+          transition={{ duration: 4, ease: "linear", repeat: Infinity }}
+        >
+          {title}
+        </motion.p>
         <small className="text-default-500">
           {date} • {author} • {storyDuration}
         </small>
