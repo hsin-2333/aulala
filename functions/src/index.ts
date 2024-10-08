@@ -28,7 +28,7 @@ const corsHandler = cors({ origin: true });
 exports.transcribeAudio = functions.https.onRequest((req, res) => {
   corsHandler(req, res, async () => {
     try {
-      const { audioUrl, storyId } = req.body;
+      const { audioUrl, storyId, author } = req.body;
       console.log(`Received request to transcribe audio: ${audioUrl} for storyId: ${storyId}`);
 
       if (!audioUrl) {
@@ -71,6 +71,17 @@ exports.transcribeAudio = functions.https.onRequest((req, res) => {
       const storyRef = admin.firestore().collection("stories").doc(storyId);
       await storyRef.update({ transcription, segments, status: "Done", language });
       console.log(`Updated Firestore document for storyId: ${storyId} with transcription`);
+
+      // Add a new notification to the notifications collection
+      const notificationRef = admin.firestore().collection("notifications").doc();
+      await notificationRef.set({
+        story_id: storyId,
+        recipient: author,
+        title: "Your story has been uploaded! Transcription complete",
+        created_at: admin.firestore.FieldValue.serverTimestamp(),
+        status: "unread",
+      });
+      console.log(`Added notification for storyId: ${storyId}`);
 
       // Clean up the temporary file after processing
       fs.unlinkSync(audioFilePath);

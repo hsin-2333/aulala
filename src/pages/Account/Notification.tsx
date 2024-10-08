@@ -9,6 +9,8 @@ type Notification = {
   id: string;
   message: string;
   link: string;
+  status?: string;
+  title?: string;
   created_at: { seconds: number; nanoseconds: number };
 };
 
@@ -50,11 +52,11 @@ const Notifications = () => {
                 </AvatarFallback>
               </Avatar> */}
                 <div className="grid gap-1 text-left">
-                  <div className="font-semibold">🥰 A script invitation</div>
+                  <div className="font-semibold">🥰 {notification.title || "A script invitation"}</div>
                   <div className="line-clamp-1 text-xs">{notification.message}</div>
                   <div className="line-clamp-1 text-xs">
                     <Link to={notification.link} className="text-xs text-blue-500">
-                      View Script
+                      View
                     </Link>
                   </div>
                 </div>

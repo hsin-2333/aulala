@@ -168,7 +168,7 @@ const UploadStory = () => {
         navigate(`/user/${user?.userName}/uploads`);
         setTimeout(() => {
           queryClient.invalidateQueries({ queryKey: ["stories", user?.userName] });
-        }, 1400);
+        }, 2000);
 
         storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
         for (const tag of data.tags) {

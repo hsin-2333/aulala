@@ -370,7 +370,7 @@ const dbApi = {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ audioUrl: newAudioUrl, storyId: storyId }),
+        body: JSON.stringify({ audioUrl: newAudioUrl, storyId: storyId, author: data.author }),
       });
       if (!transcriptionResponse.ok) throw new Error("Transcription failed");
 
@@ -510,6 +510,19 @@ const dbApi = {
         interactionsData.push({ id: doc.id, ...doc.data() } as InteractionType);
       });
       callback(interactionsData);
+    });
+
+    return unsubscribe;
+  },
+
+  async subscribeToNotifications(userName: string, callback: (data: Interactions) => void) {
+    const q = query(collection(db, "notifications"), where("author", "==", userName), where("status", "==", "unread"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const notificationsData: InteractionType[] = [];
+      querySnapshot.forEach((doc) => {
+        notificationsData.push({ id: doc.id, ...doc.data() } as InteractionType);
+      });
+      callback(notificationsData);
     });
 
     return unsubscribe;

@@ -19,10 +19,12 @@ import { GiSpellBook } from "react-icons/gi";
 import { IoAdd } from "react-icons/io5";
 import { VscAccount } from "react-icons/vsc";
 import { IoMdNotificationsOutline } from "react-icons/io";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import Logo from "../../assets/logo";
+import dbApi from "../../utils/firebaseService";
+
 export function NavbarComponent() {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -30,6 +32,7 @@ export function NavbarComponent() {
   const location = useLocation();
   const { Logout } = useContext(AuthContext);
   const { user } = useContext(AuthContext);
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
 
   const handleLogout = () => {
     Logout();
@@ -42,6 +45,26 @@ export function NavbarComponent() {
       navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
     }
   };
+
+  useEffect(() => {
+    if (user && user.userName) {
+      const unsubscribePromise = dbApi.subscribeToNotifications(user.userName, (notifications) => {
+        if (notifications.length > 0) {
+          setHasUnreadNotifications(true);
+        } else {
+          setHasUnreadNotifications(false);
+        }
+      });
+
+      unsubscribePromise
+        .then((unsubscribe) => {
+          return () => unsubscribe();
+        })
+        .catch((error) => {
+          console.error("Failed to subscribe to notifications:", error);
+        });
+    }
+  }, [user]);
 
   return (
     <>
@@ -79,7 +102,12 @@ export function NavbarComponent() {
                   Upload
                 </Button>
                 <Link href={`/account/${user.userName}/notification`} color="foreground">
-                  <IoMdNotificationsOutline size={24} />
+                  <div className="relative">
+                    <IoMdNotificationsOutline size={21} color="var(--color-primary)" />
+                    {hasUnreadNotifications && (
+                      <span className="absolute top-0 right-0 h-2 w-2 bg-[#E0756D] rounded-full"></span>
+                    )}
+                  </div>
                 </Link>
                 <Divider orientation="vertical" className="h-10" />
                 <Dropdown placement="bottom-end">
