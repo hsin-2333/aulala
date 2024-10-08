@@ -116,6 +116,7 @@ const ContentInfoSideBar = ({ setIsDetailVisible }: ClickHandler) => {
                           description="voice actor"
                           avatarProps={{
                             src: attendee.avatar,
+                            isBordered: true,
                           }}
                         />
                       </div>

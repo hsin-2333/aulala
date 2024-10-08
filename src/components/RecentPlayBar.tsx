@@ -63,7 +63,7 @@ const RecentPlayBar = () => {
       let lastUpdateTime = 0;
 
       const updateRecentPlay = debounce((currentTime: number) => {
-        if (user && storyInfo?.id) {
+        if (user && user.uid && storyInfo?.id) {
           // 更新最近播放到後端
           dbApi.updateRecentPlay(user.uid, storyInfo?.id, currentTime);
           fetchRecentPlay();

@@ -78,7 +78,7 @@ function StoryContent() {
                 <Tab key="script" title="Script">
                   <ScrollShadow hideScrollBar size={100} className="h-[400px]">
                     <Card shadow="none" className="max-h-[700px]  ">
-                      <CardBody className="custom-scrollbar scroll-padding p-2">
+                      <CardBody className="p-2">
                         <SubtitlesComponent />
                       </CardBody>
                     </Card>

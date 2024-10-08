@@ -59,7 +59,7 @@ const SubtitlesComponent = () => {
   }, [currentTime, segments]);
 
   return (
-    <div className="relative overflow-y-auto h-80" ref={subtitlesRef}>
+    <div className="relative overflow-y-auto h-80 custom-scrollbar" ref={subtitlesRef}>
       {segments.map((segment, index) => (
         <div
           key={index}
