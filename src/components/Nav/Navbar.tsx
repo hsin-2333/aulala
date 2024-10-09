@@ -66,6 +66,21 @@ export function NavbarComponent() {
     }
   }, [user]);
 
+  const handleNotificationClick = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    event.preventDefault(); // 防止默認的跳轉行為
+    console.log("改變通知狀態");
+    setHasUnreadNotifications(false);
+    if (user && user.userName) {
+      try {
+        await dbApi.markNotificationsAsRead(user.userName);
+        console.log("Marked notifications as read");
+        navigate(`/account/${user.userName}/notification`);
+      } catch (error) {
+        console.error("Failed to mark notifications as read:", error);
+      }
+    }
+  };
+
   return (
     <>
       {/*電腦版*/}
@@ -101,7 +116,11 @@ export function NavbarComponent() {
                 <Button as={Link} color="primary" variant="flat" radius="sm" href="/upload/story">
                   Upload
                 </Button>
-                <Link href={`/account/${user.userName}/notification`} color="foreground">
+                <Link
+                  href={`/account/${user.userName}/notification`}
+                  color="foreground"
+                  onClick={handleNotificationClick}
+                >
                   <div className="relative">
                     <IoMdNotificationsOutline size={21} color="var(--color-primary)" />
                     {hasUnreadNotifications && (
