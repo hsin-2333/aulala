@@ -141,7 +141,11 @@ export function NavbarComponent() {
                       color="primary"
                     />
                   </DropdownTrigger>
-                  <DropdownMenu aria-label="Profile Actions" variant="flat">
+                  <DropdownMenu
+                    aria-label="Profile Actions"
+                    variant="flat"
+                    disabledKeys={["user_settings", "analytics"]}
+                  >
                     <DropdownSection showDivider>
                       <DropdownItem key="profile" className="h-14 gap-2">
                         <p className="font-semibold">{user.role}</p>
