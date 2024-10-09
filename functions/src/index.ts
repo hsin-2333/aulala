@@ -80,6 +80,7 @@ exports.transcribeAudio = functions.https.onRequest((req, res) => {
         title: "Your story has been uploaded! Transcription complete",
         created_at: admin.firestore.FieldValue.serverTimestamp(),
         status: "unread",
+        link: `/story/${storyId}`,
       });
       console.log(`Added notification for storyId: ${storyId}`);
 

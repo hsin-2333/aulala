@@ -122,7 +122,7 @@ const StoryTable = () => {
               ></th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-gray-200 hover:bg-gray-100">
             {storyData?.map((story) => (
               <tr key={story.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{story.title}</td>
@@ -147,7 +147,7 @@ const StoryTable = () => {
                     <Dropdown>
                       <DropdownTrigger>
                         <Button isIconOnly size="sm" variant="light">
-                          <SlOptionsVertical className="text-default-300" />
+                          <SlOptionsVertical className="text-default-400" />
                         </Button>
                       </DropdownTrigger>
                       <DropdownMenu>
