@@ -26,7 +26,9 @@ export const OuterLayout = ({ children }: LayoutProps) => {
   return (
     <div className="flex h-screen overflow-hidden  flex-col">
       <div className="flex-1">
-        <NavbarComponent />
+        <div className="fixed z-10 w-full">
+          <NavbarComponent />
+        </div>
         <main className=" flex-1 pb-14 md:pb-24">
           <MainContent isOuterPage={true}>{children}</MainContent>
         </main>
@@ -42,12 +44,14 @@ export const ScriptLayout = ({ children }: LayoutProps) => {
   return (
     <div className="flex flex-col">
       <div className="flex-1">
-        <NavbarComponent />
+        <div className="fixed z-10 w-full">
+          <NavbarComponent />
+        </div>
         <Divider />
         {/* <div className="bg-gradient-to-tr from-blue-200 to-cyan-200 w-full h-60"></div> */}
         <div
           className={`bg-gradient-to-tr  w-full ${
-            scriptId ? "h-60 from-blue-200 to-cyan-200" : "h-28  bg-gradient-to-tr from-indigo-200  to-sky-100"
+            scriptId ? "h-60 from-blue-200 to-cyan-200" : "h-28 sm:h-40  bg-gradient-to-tr from-indigo-200  to-sky-100"
           }`}
         ></div>
         <main
