@@ -516,7 +516,11 @@ const dbApi = {
   },
 
   async subscribeToNotifications(userName: string, callback: (data: Interactions) => void) {
-    const q = query(collection(db, "notifications"), where("author", "==", userName), where("status", "==", "unread"));
+    const q = query(
+      collection(db, "notifications"),
+      where("recipient", "==", userName),
+      where("status", "==", "unread")
+    );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const notificationsData: InteractionType[] = [];
       querySnapshot.forEach((doc) => {
