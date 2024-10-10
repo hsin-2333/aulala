@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthContextProvider } from "./context/AuthContext";
 import { RecentPlayProvider } from "./context/RecentPlayContext";
 import PrivateRoute from "./utils/PrivateRoute";
@@ -152,6 +152,7 @@ function App() {
                   </PrivateRoute>
                 }
               />
+              <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </RecentPlayProvider>
         </AuthContextProvider>
