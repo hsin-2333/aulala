@@ -428,7 +428,7 @@ const UploadStory = () => {
                       labelPlacement="outside"
                       radius="sm"
                       variant="bordered"
-                      {...register("title", { required: true })}
+                      {...register("title", { required: true, setValueAs: (value: string) => value.trim() })}
                     />
                     {errors.title && <span className="text-red-500 text-sm">This field is required</span>}
                   </div>
@@ -440,7 +440,7 @@ const UploadStory = () => {
                       labelPlacement="outside"
                       radius="sm"
                       variant="bordered"
-                      {...register("intro", { required: true })}
+                      {...register("intro", { required: true, setValueAs: (value: string) => value.trim() })}
                     />
                     {errors.intro && <span className="text-red-500 text-sm">This field is required</span>}
                   </div>
@@ -452,7 +452,7 @@ const UploadStory = () => {
                       labelPlacement="outside"
                       radius="sm"
                       variant="bordered"
-                      {...register("summary", { required: true })}
+                      {...register("summary", { required: true, setValueAs: (value: string) => value.trim() })}
                     />
                     {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
                   </div>
