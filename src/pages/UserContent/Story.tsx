@@ -45,7 +45,7 @@ function StoryContent() {
       {story && story.img_url && (
         <div className="text-left mt-16 sm:mt-0 h-full">
           {story && (
-            <div className="flex justify-between mb-4 px-4">
+            <div className="flex justify-between mb-4 px-4 lg:px-0">
               <h2 className="text-2xl font-semibold mb-2">{story.title}</h2>
               {user && user.userName && <InteractionToolbar userName={user.userName} storyId={story?.id} />}
             </div>
