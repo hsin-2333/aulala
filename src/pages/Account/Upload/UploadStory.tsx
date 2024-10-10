@@ -248,7 +248,8 @@ const UploadStory = () => {
       setIsDropdownVisible(false);
       setValue("tags", [...selectedTags, tag]);
     } else {
-      window.alert("最多只能選擇8個標籤");
+      setToastMessage("最多只能選擇8個標籤");
+      setShowToast(true);
     }
   };
   useEffect(() => {
