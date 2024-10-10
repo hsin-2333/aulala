@@ -171,7 +171,7 @@ function ScriptContent() {
             </CardBody>
           </Card>
 
-          <p className="text-gray-700 text-small sm:text-medium my-8 before:content-none whitespace-pre-wrap text-justify">
+          <p className="text-gray-700 text-small sm:text-medium my-8 before:content-none whitespace-pre-wrap break-words text-justify">
             {script.content}
           </p>
 
