@@ -205,9 +205,11 @@ function ScriptContent() {
                   </div>
                 }
               >
-                {user && user.userName && (
-                  <CommentToolbar userName={user.userName} scriptId={script?.id} setCommentCount={setCommentCount} />
-                )}
+                <CommentToolbar
+                  userName={user?.userName ?? ""}
+                  scriptId={script?.id}
+                  setCommentCount={setCommentCount}
+                />
               </Tab>
               <Tab
                 key="voiceActors"
