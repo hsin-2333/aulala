@@ -292,31 +292,6 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
         <h2 className="text-lg mb-4"> Comments</h2>
         {comments.length > 0 ? (
           comments.map((comment) => (
-            // <div key={comment.id} className="mb-4 pb-3 w-full">
-            //   <div className="flex mb-2 gap-3 justify-between">
-            //     <User
-            //       name={comment.userName}
-            //       description={
-            //         comment.created_at && typeof comment.created_at !== "string"
-            //           ? new Date(comment.created_at.seconds * 1000).toLocaleString()
-            //           : comment.created_at
-            //       }
-            //       avatarProps={{
-            //         src: userAvatars[comment.userName],
-            //         size: "sm",
-            //         name: comment.userName,
-            //       }}
-            //     />
-            //     {/* <h6 className="text-small text-default-400">{comment.userName}</h6>
-            //     <h6 className="text-small text-default-400">
-            //       {comment.created_at && typeof comment.created_at !== "string"
-            //         ? new Date(comment.created_at.seconds * 1000).toLocaleString()
-            //         : comment.created_at}
-            //     </h6> */}
-            //   </div>
-            //   <p className="text-default-900 whitespace-pre-wrap break-words">{comment.comment}</p>{" "}
-            //   <Divider className="my-2 " />
-            // </div>
             <CommentItem key={comment.id} comment={comment} avatar={userAvatars[comment.userName]} />
           ))
         ) : (
