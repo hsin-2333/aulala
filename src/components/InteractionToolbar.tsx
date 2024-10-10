@@ -4,7 +4,7 @@ import dbApi from "../utils/firebaseService";
 import { Comment } from "../types";
 import Icon from "./Icon";
 import { Textarea, Button, Divider, User } from "@nextui-org/react";
-
+import { User as UserType } from "../types";
 interface InteractionToolbarProps {
   userName: string;
   avatar?: string;
@@ -167,9 +167,10 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
   );
 };
 
-export const CommentToolbar = ({ userName, avatar, storyId, scriptId, setCommentCount }: InteractionToolbarProps) => {
+export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }: InteractionToolbarProps) => {
   const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
+  const [userAvatars, setUserAvatars] = useState<{ [key: string]: string }>({});
 
   const addCommentMutation = useMutation({
     mutationFn: (newComment: string) =>
@@ -205,6 +206,26 @@ export const CommentToolbar = ({ userName, avatar, storyId, scriptId, setComment
     },
     enabled: !!scriptId || !!storyId,
   });
+
+  useEffect(() => {
+    if (commentsData) {
+      const fetchUserAvatars = async () => {
+        const avatars: { [key: string]: string } = {};
+        for (const comment of commentsData) {
+          if (!avatars[comment.userName]) {
+            const condition = { userName: comment.userName };
+            const user = (await dbApi.queryCollection("users", condition, 1)) as UserType[];
+            if (user.length > 0) {
+              avatars[comment.userName] = user[0].avatar || "";
+            }
+          }
+        }
+        setUserAvatars(avatars);
+      };
+
+      fetchUserAvatars();
+    }
+  }, [commentsData]);
 
   // 使用 useEffect 來監聽 commentsData 的變化
   useEffect(() => {
@@ -257,15 +278,16 @@ export const CommentToolbar = ({ userName, avatar, storyId, scriptId, setComment
             <div key={comment.id} className="mb-4 pb-3 w-full">
               <div className="flex mb-2 gap-3 justify-between">
                 <User
-                  name={userName}
+                  name={comment.userName}
                   description={
                     comment.created_at && typeof comment.created_at !== "string"
                       ? new Date(comment.created_at.seconds * 1000).toLocaleString()
                       : comment.created_at
                   }
                   avatarProps={{
-                    src: avatar,
+                    src: userAvatars[comment.userName],
                     size: "sm",
+                    name: comment.userName,
                   }}
                 />
                 {/* <h6 className="text-small text-default-400">{comment.userName}</h6>

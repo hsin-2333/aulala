@@ -206,12 +206,7 @@ function ScriptContent() {
                 }
               >
                 {user && user.userName && (
-                  <CommentToolbar
-                    userName={user.userName}
-                    avatar={user.avatar}
-                    scriptId={script?.id}
-                    setCommentCount={setCommentCount}
-                  />
+                  <CommentToolbar userName={user.userName} scriptId={script?.id} setCommentCount={setCommentCount} />
                 )}
               </Tab>
               <Tab
