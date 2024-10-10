@@ -209,8 +209,16 @@ const UploadStory = () => {
 
     if (isValid) {
       setCurrentStep(step);
-    } else if (step < currentStep) {
-      setCurrentStep(step);
+      if (step < currentStep) {
+        setCurrentStep(step);
+        //退回上一步時，清空已選擇的文件
+        setImageFile(null);
+        setImageUrl(null);
+        const inputElement = document.querySelector('input[type="file"]') as HTMLInputElement;
+        if (inputElement) {
+          inputElement.value = "";
+        }
+      }
     } else {
       setToastMessage("請填寫所有必填字段");
       setShowToast(true);
@@ -482,9 +490,7 @@ const UploadStory = () => {
                     {errors.category && <span className="text-red-500 text-sm">This field is required</span>}
                   </div>
                   <div className="mt-4 border border-transparent">
-                    <label className="block text-sm font-medium text-gray-700  mb-1">
-                      Tags<span className="text-red-500 text-sm ">*</span>
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700  mb-1">Tags</label>
                     <div className="relative">
                       <Input
                         placeholder="Select or Create new tag | max 8 tags"
@@ -594,9 +600,12 @@ const UploadStory = () => {
                       variant="bordered"
                       accept="image/*"
                       type="file"
+                      {...register("img_url", { required: true })}
                       onChange={handleImageUpload}
                     />
-                    {imageUrl && <img src={imageUrl} alt="Uploaded" className="mt-2" />}
+                    {imageUrl && (
+                      <img src={imageUrl} alt="Uploaded" className="mt-2 h-48 border-2 border-default-200 rounded-sm" />
+                    )}
                     {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
                   </div>
                   <div className="fixed bottom-0 left-4 right-4 w-[calc(100%-2rem)] sm:w-full sm:static flex justify-end sm:mt-4">
