@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Icon from "../../components/Icon"; // 確保路徑正確
 
 interface SortedMenuProps {
@@ -9,7 +9,7 @@ const SortedMenu = ({ onSortOrderChange }: SortedMenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("Descending");
   const [iconColor, setIconColor] = useState("currentColor");
-
+  const menuRef = useRef<HTMLDivElement>(null);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -21,8 +21,26 @@ const SortedMenu = ({ onSortOrderChange }: SortedMenuProps) => {
     onSortOrderChange(order);
   };
 
+  const handleClickOutside = (e: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      setIsMenuOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      console.log("add event listener");
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   return (
-    <div className="relative w-40 flex justify-end items-center  text-left ">
+    <div ref={menuRef} className="relative w-40 flex justify-end items-center  text-left ">
       <button onClick={toggleMenu} className="flex align-top justify-between ">
         <Icon name="sorted" className="mr-2 h-6 w-6" color={iconColor} />
         <span style={{ color: iconColor }}>{sortOrder}</span>
