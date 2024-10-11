@@ -400,7 +400,7 @@ export const SearchResultCard = ({ id, image, intro, duration, title, tags, auth
     <>
       <Card
         isBlurred
-        className="dark:bg-default-100/50 max-w-[860px] cursor-pointer hover:bg-primary-50"
+        className="max-w-[860px] cursor-pointer hover:bg-primary-50"
         shadow="none"
         isPressable
         onPress={onClick}
