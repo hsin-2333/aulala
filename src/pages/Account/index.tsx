@@ -19,12 +19,26 @@ import { BiSolidEditAlt } from "react-icons/bi";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import dbApi from "../../utils/firebaseService";
 import { User } from "../../types";
-
+import Toast from "../../components/Toast";
 interface FormData {
   selfIntro: string;
   website?: string;
   twitter?: string;
 }
+
+const isValidUrl = (url: string) => {
+  const urlPattern = new RegExp(
+    "^(https?:\\/\\/)?" + // protocol
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" + // domain name
+      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+      "(\\#[-a-z\\d_]*)?$",
+    "i" // fragment locator
+  );
+  return !!urlPattern.test(url);
+};
+
 function Account() {
   const { user } = useContext(AuthContext);
   const { userName } = useParams();
@@ -34,6 +48,9 @@ function Account() {
   const [selfIntro, setSelfIntro] = useState("");
   const [website, setWebsite] = useState("");
   const [twitter, setTwitter] = useState("");
+
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   const { data: userData, isLoading } = useQuery({
     queryKey: ["user", user?.uid],
@@ -65,14 +82,24 @@ function Account() {
   };
 
   const handleSave = async (data: FormData) => {
+    const website = data.website?.trim();
+    const twitter = data.twitter?.trim();
+
+    if (website && !isValidUrl(website)) {
+      setToastMessage("網站連結非有效網址，請重新檢查網址");
+      setShowToast(true);
+      return;
+    }
+
     const updatedUser: User = {
       ...user,
       selfIntro: data.selfIntro.trim(),
       social_links: {
-        website: data.website?.trim(),
-        twitter: data.twitter ? `https://twitter.com/${data.twitter.trim()}` : "",
+        website: website,
+        twitter: twitter ? `https://twitter.com/${twitter}` : "",
       },
     };
+
     await dbApi.updateUser(updatedUser);
     queryClient.invalidateQueries({ queryKey: ["user", user?.uid] });
     onOpenChange();
@@ -87,8 +114,16 @@ function Account() {
     };
     handleSave(formData);
   };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
+  };
+
   return (
     <>
+      <div className="fixed z-[60] z-1 bg-white">
+        {showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}
+      </div>
       {user && (
         <div>
           <div className="relative ">
