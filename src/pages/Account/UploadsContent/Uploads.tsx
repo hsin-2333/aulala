@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import dbApi from "../../../utils/firebaseService";
 import { Story } from "../../../types";
 import { AuthContext } from "../../../context/AuthContext";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Timestamp } from "firebase/firestore";
 import {
   Chip,
@@ -38,6 +38,25 @@ const StoryTable = () => {
     Processing: "warning",
     undefined: "default",
   };
+
+  useEffect(() => {
+    if (!user?.userName) return;
+    console.log("進入useEffect -----------------");
+
+    const fetchData = async () => {
+      console.log("進入Subscribing to story data");
+      const unsubscribe = await dbApi.subscribeToStory(user?.userName as string, (storyData) => {
+        queryClient.setQueryData(["stories", user?.userName], storyData);
+      });
+      return unsubscribe;
+    };
+
+    const unsubscribePromise = fetchData();
+
+    return () => {
+      unsubscribePromise.then((unsubscribe) => unsubscribe());
+    };
+  }, [user?.userName, queryClient]);
 
   const { data: storyData, error } = useQuery({
     queryKey: ["stories", user?.userName],
