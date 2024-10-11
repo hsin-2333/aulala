@@ -348,7 +348,7 @@ const dbApi = {
         img_url: imageUrl ? [imageUrl] : [],
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
-        tags: data.tags,
+        tags: data.tags || [],
         collections: data.collections || [],
       };
 

@@ -159,7 +159,7 @@ const UploadStory = () => {
           ...data,
           duration: audioDuration || 0,
           author: user?.userName || "Unknown",
-          tags: data.tags.map((tag) => tag.value),
+          tags: data.tags ? data.tags.map((tag) => tag.value) : [],
           voice_actor: [user?.userName || ""], //之後要增加多位聲優
           status: "Processing",
           collections: data.collections ? data.collections.map((collection) => collection) : [],
@@ -171,8 +171,10 @@ const UploadStory = () => {
         }, 2000);
 
         storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
-        for (const tag of data.tags) {
-          await dbApi.addOrUpdateTag(tag.value, storyId, null);
+        if (data.tags) {
+          for (const tag of data.tags) {
+            await dbApi.addOrUpdateTag(tag.value, storyId, null);
+          }
         }
 
         if (data.collections) {
@@ -183,7 +185,6 @@ const UploadStory = () => {
       } catch (error) {
         console.error("Error uploading story and audio:", error);
         if (storyId) {
-          // 如果上傳失敗，回滾狀態
           await dbApi.updateStoryStatus(storyId, "Failed");
           setFile(null);
           setImageFile(null);
@@ -197,7 +198,6 @@ const UploadStory = () => {
   };
 
   const handleStepClick = async (step: number) => {
-    // 檢查當前步驟的必填字段
     let isValid = true;
     if (step > currentStep) {
       if (currentStep === 1) {
@@ -267,19 +267,6 @@ const UploadStory = () => {
     setCurrentDateTime(formattedDateTime);
     setValue("scheduled_release_date", formattedDateTime);
   }, [setValue]);
-
-  // const getStepLabel = (step: number) => {
-  //   switch (step) {
-  //     case 1:
-  //       return "Step 1: Audio Info";
-  //     case 2:
-  //       return "Step 2: More Info";
-  //     case 3:
-  //       return "Step 3: Add Cover Image";
-  //     default:
-  //       return "";
-  //   }
-  // };
 
   const handleCloseToast = () => {
     setShowToast(false);
