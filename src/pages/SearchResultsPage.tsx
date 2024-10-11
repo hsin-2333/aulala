@@ -80,23 +80,31 @@ const SearchResultsPage = () => {
           ))}
         </div>
         <section className="grid grid-cols-1 align-middle mx-auto mt-8">
-          {searchResults.map((result) => {
-            return (
-              result && (
-                <SearchResultCard
-                  key={result.objectID}
-                  id={result.objectID}
-                  image={result.img_url?.[0]}
-                  title={result.title || "Untitled"}
-                  tags={result.tags}
-                  author={result.author || "Unknown"}
-                  onClick={() => handleContentClick(result.objectID, "story")}
-                  intro={result.intro}
-                  duration={result.duration}
-                />
-              )
-            );
-          })}
+          {searchResults.length > 0 ? (
+            searchResults.map((result) => {
+              console.log("result", result);
+              return (
+                result && (
+                  <SearchResultCard
+                    key={result.objectID}
+                    id={result.objectID}
+                    image={result.img_url?.[0]}
+                    title={result.title || "Untitled"}
+                    tags={result.tags}
+                    author={result.author || "Unknown"}
+                    onClick={() => handleContentClick(result.objectID, "story")}
+                    intro={result.intro}
+                    duration={result.duration}
+                  />
+                )
+              );
+            })
+          ) : (
+            <p>
+              No results found. <br />
+              Double-check your spelling or try different keywords
+            </p>
+          )}
         </section>
         <div className="h-32 w-full"></div>
       </div>

@@ -38,10 +38,10 @@ const RecentPlayBar = () => {
       setCurrentTime(0);
       currentTimeRef.current = 0;
       console.log("新故事!");
-    } else {
+    } else if (recentPlay && recentPlay.story_id === storyInfo?.id) {
       setLastPlayTimestamp();
     }
-  }, [storyId, storyInfo?.id, fetchRecentPlay, setLastPlayTimestamp, setCurrentTime, currentTimeRef]);
+  }, [storyId, storyInfo?.id, fetchRecentPlay, setLastPlayTimestamp, setCurrentTime, currentTimeRef, recentPlay]);
 
   useEffect(() => {
     //如果是主頁(aka沒有storyId) 或是 storyId和storyInfo.id一樣，且有audio_url

@@ -39,8 +39,8 @@ const Notifications = () => {
     <div>
       {notifications.length > 0 ? (
         notifications.map((notification, index) => (
-          <div key={index} className="flex flex-1 flex-col p-4">
-            <div className="flex items-start">
+          <div key={index} className="flex flex-1 flex-col p-4 ">
+            <div className="flex items-start ">
               <div className="flex items-start gap-4 text-sm">
                 {/* <Avatar>
                 <AvatarImage alt={mail.name} />

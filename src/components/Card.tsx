@@ -400,7 +400,7 @@ export const SearchResultCard = ({ id, image, intro, duration, title, tags, auth
     <>
       <Card
         isBlurred
-        className="dark:bg-default-100/50 max-w-[860px] cursor-pointer hover:bg-primary-50"
+        className="max-w-[860px] cursor-pointer hover:bg-primary-50"
         shadow="none"
         isPressable
         onPress={onClick}
@@ -411,7 +411,7 @@ export const SearchResultCard = ({ id, image, intro, duration, title, tags, auth
             <div className="relative sm:col-span-2 col-span-2 md:col-span-2 md:h-full w-fit ">
               <img
                 alt={title}
-                className="ml-6 object-cover rounded-lg w-full h-full md:max-w-32 md:max-h-32 "
+                className="ml-0 sm:ml-6 object-cover rounded-lg w-full h-full md:max-w-32 md:max-h-32 "
                 src={image}
                 width="100%"
                 style={{ height: "100px", width: "100px", borderRadius: "0.5rem" }}
@@ -427,12 +427,12 @@ export const SearchResultCard = ({ id, image, intro, duration, title, tags, auth
                       <Link
                         href={`/user/${author}`}
                         color="foreground"
-                        className="text-sm tracking-tight text-default-400 hover:text-default-600"
+                        className="text-xs sm:text-sm tracking-tight text-default-400 hover:text-default-600"
                       >
                         {author}
                       </Link>
-                      <h3 className="text-small tracking-tight text-default-400">•</h3>
-                      <h3 className="text-small tracking-tight text-default-400">{storyDuration}</h3>
+                      <h3 className="text-xs sm:text-sm tracking-tight text-default-400">•</h3>
+                      <h3 className="text-xs sm:text-sm tracking-tight text-default-400">{storyDuration}</h3>
                     </div>
                     <p className="text-small pt-2 overflow-hidden">{intro}</p>
                     {tags.map((tag, index) => (

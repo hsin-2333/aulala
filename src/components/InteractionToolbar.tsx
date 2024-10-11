@@ -3,7 +3,9 @@ import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import dbApi from "../utils/firebaseService";
 import { Comment } from "../types";
 import Icon from "./Icon";
-import { Textarea, Button, Divider, User } from "@nextui-org/react";
+import { Textarea, Button, Divider, User, Link } from "@nextui-org/react";
+import { User as UserType } from "../types";
+import { IoCreateOutline } from "react-icons/io5";
 
 interface InteractionToolbarProps {
   userName: string;
@@ -27,7 +29,6 @@ interface PlaylistButtonProps {
 export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionToolbarProps) => {
   const [liked, setLiked] = useState(false);
   const queryClient = useQueryClient();
-  // console.log("storyId", storyId, "scriptId", scriptId);
   useEffect(() => {
     const fetchLikeStatus = async () => {
       const likeStatus = await dbApi.getInteractionStatus(userName, storyId || null, scriptId || null, "like");
@@ -69,7 +70,7 @@ export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionT
           color={liked ? "#fca5a5cc" : "currentColor"}
         />
       </Button>
-      {/* </button> */}
+
       {storyId ? (
         <PlaylistButton userName={userName} storyId={storyId} />
       ) : (
@@ -167,9 +168,10 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
   );
 };
 
-export const CommentToolbar = ({ userName, avatar, storyId, scriptId, setCommentCount }: InteractionToolbarProps) => {
+export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }: InteractionToolbarProps) => {
   const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
+  const [userAvatars, setUserAvatars] = useState<{ [key: string]: string }>({});
 
   const addCommentMutation = useMutation({
     mutationFn: (newComment: string) =>
@@ -206,6 +208,26 @@ export const CommentToolbar = ({ userName, avatar, storyId, scriptId, setComment
     enabled: !!scriptId || !!storyId,
   });
 
+  useEffect(() => {
+    if (commentsData) {
+      const fetchUserAvatars = async () => {
+        const avatars: { [key: string]: string } = {};
+        for (const comment of commentsData) {
+          if (!avatars[comment.userName]) {
+            const condition = { userName: comment.userName };
+            const user = (await dbApi.queryCollection("users", condition, 1)) as UserType[];
+            if (user.length > 0) {
+              avatars[comment.userName] = user[0].avatar || "";
+            }
+          }
+        }
+        setUserAvatars(avatars);
+      };
+
+      fetchUserAvatars();
+    }
+  }, [commentsData]);
+
   // 使用 useEffect 來監聽 commentsData 的變化
   useEffect(() => {
     if (commentsData && setCommentCount) {
@@ -222,66 +244,84 @@ export const CommentToolbar = ({ userName, avatar, storyId, scriptId, setComment
   return (
     <>
       <section className="flex items-start justify-center flex-col ">
-        <h2 className="text-lg"> Comments</h2>
-        <form onSubmit={handleSubmit} className="w-full text-right my-4">
-          <Textarea
-            variant="bordered"
-            labelPlacement="outside"
-            placeholder="Leave a comment"
-            minRows={comment ? 3 : 1}
-            maxRows={5}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
-          <div className="flex justify-end h-8 mb-4 gap-1">
-            {comment && (
-              <>
-                <Button
-                  size="sm"
-                  radius="sm"
-                  variant="flat"
-                  className="my-2 bg-transparent"
-                  onClick={() => setComment("")}
-                >
-                  Cancel
-                </Button>
-                <Button size="sm" radius="sm" color="primary" type="submit" className="my-2">
-                  Comment
-                </Button>
-              </>
-            )}
+        {userName ? (
+          <form onSubmit={handleSubmit} className="w-full text-right my-4">
+            <Textarea
+              variant="bordered"
+              labelPlacement="outside"
+              placeholder="Leave a comment"
+              minRows={comment ? 3 : 1}
+              maxRows={5}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            <div className="flex justify-end h-8 mb-4 gap-1">
+              {comment && (
+                <>
+                  <Button
+                    size="sm"
+                    radius="sm"
+                    variant="flat"
+                    className="my-2 bg-transparent"
+                    onClick={() => setComment("")}
+                  >
+                    Cancel
+                  </Button>
+                  <Button size="sm" radius="sm" color="primary" type="submit" className="my-2">
+                    Comment
+                  </Button>
+                </>
+              )}
+            </div>
+          </form>
+        ) : (
+          <div className="h-12 my-2">
+            <Button
+              as={Link}
+              href="/login"
+              size="md"
+              color="primary"
+              radius="full"
+              variant="ghost"
+              startContent={<IoCreateOutline size={20} />}
+            >
+              Add a comment
+            </Button>
           </div>
-        </form>
+        )}
+        <h2 className="text-lg mb-4"> Comments</h2>
         {comments.length > 0 ? (
           comments.map((comment) => (
-            <div key={comment.id} className="mb-4 pb-3 w-full">
-              <div className="flex mb-2 gap-3 justify-between">
-                <User
-                  name={userName}
-                  description={
-                    comment.created_at && typeof comment.created_at !== "string"
-                      ? new Date(comment.created_at.seconds * 1000).toLocaleString()
-                      : comment.created_at
-                  }
-                  avatarProps={{
-                    src: avatar,
-                    size: "sm",
-                  }}
-                />
-                {/* <h6 className="text-small text-default-400">{comment.userName}</h6>
-                <h6 className="text-small text-default-400">
-                  {comment.created_at && typeof comment.created_at !== "string"
-                    ? new Date(comment.created_at.seconds * 1000).toLocaleString()
-                    : comment.created_at}
-                </h6> */}
-              </div>
-              <p className="text-default-900 whitespace-pre-wrap ">{comment.comment}</p> <Divider className="my-2 " />
-            </div>
+            <CommentItem key={comment.id} comment={comment} avatar={userAvatars[comment.userName]} />
           ))
         ) : (
           <p>No comments yet</p>
         )}
       </section>
     </>
+  );
+};
+
+export const CommentItem = ({ comment, avatar }: { comment: Comment; avatar: string }) => {
+  return (
+    <div key={comment.id} className="mb-4 pb-3 w-full">
+      <div className="flex mb-2 gap-3 justify-between">
+        <User
+          name={comment.userName}
+          description={
+            comment.created_at && typeof comment.created_at !== "string"
+              ? new Date(comment.created_at.seconds * 1000).toLocaleString()
+              : comment.created_at
+          }
+          avatarProps={{
+            src: avatar,
+            size: "sm",
+            name: comment.userName,
+          }}
+        />
+      </div>
+      <p className="text-default-900 whitespace-pre-wrap break-words">{comment.comment}</p>{" "}
+      <Divider className="my-2 " />
+    </div>
   );
 };

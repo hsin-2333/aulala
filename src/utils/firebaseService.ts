@@ -16,6 +16,7 @@ import {
   QueryConstraint,
   deleteDoc,
   orderBy,
+  writeBatch,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { getAuth } from "firebase/auth";
@@ -530,6 +531,23 @@ const dbApi = {
     });
 
     return unsubscribe;
+  },
+
+  async markNotificationsAsRead(userName: string) {
+    const q = query(
+      collection(db, "notifications"),
+      where("recipient", "==", userName),
+      where("status", "==", "unread")
+    );
+    const querySnapshot = await getDocs(q);
+    console.log("querySnapshot: ", querySnapshot);
+    const batch = writeBatch(db);
+
+    querySnapshot.forEach((doc) => {
+      batch.update(doc.ref, { status: "read" });
+    });
+
+    await batch.commit();
   },
 
   async deleteStory(storyId: string) {

@@ -171,7 +171,7 @@ function ScriptContent() {
             </CardBody>
           </Card>
 
-          <p className="text-gray-700 text-small sm:text-medium my-8 before:content-none whitespace-pre-wrap text-justify">
+          <p className="text-gray-700 text-small sm:text-medium my-8 before:content-none whitespace-pre-wrap break-words text-justify">
             {script.content}
           </p>
 
@@ -205,14 +205,11 @@ function ScriptContent() {
                   </div>
                 }
               >
-                {user && user.userName && (
-                  <CommentToolbar
-                    userName={user.userName}
-                    avatar={user.avatar}
-                    scriptId={script?.id}
-                    setCommentCount={setCommentCount}
-                  />
-                )}
+                <CommentToolbar
+                  userName={user?.userName ?? ""}
+                  scriptId={script?.id}
+                  setCommentCount={setCommentCount}
+                />
               </Tab>
               <Tab
                 key="voiceActors"
@@ -230,39 +227,47 @@ function ScriptContent() {
                 }
               >
                 <section className="flex items-start justify-center flex-col min-h-[300px]">
-                  {/* <h4 className="text-2xl font-semibold mb-2">Voice Actors</h4> */}
-                  {/* <input
-                    className=" text-default-700 border-dashed "
-                    type="file"
-                    accept="audio/*"
-                    onChange={handleAudioUpload}
-                  /> */}
-                  <div className="flex gap-4 w-full justify-end">
-                    {/* <label className="block text-sm font-medium text-gray-700 h-1/5">Only accept audio below 8 MB</label> */}
-                    <input
-                      type="file"
-                      accept="audio/*"
-                      onChange={handleAudioUpload}
-                      ref={AudioInputRef}
-                      className="hidden"
-                    />
-                    <Tooltip color="default" content="create your unique story">
+                  {user ? (
+                    <div className="flex gap-4 w-full justify-end">
+                      <input
+                        type="file"
+                        accept="audio/*"
+                        onChange={handleAudioUpload}
+                        ref={AudioInputRef}
+                        className="hidden"
+                      />
+                      <Tooltip color="default" content="create your unique story">
+                        <Button
+                          className="text-primary items-center border-dashed border-1 "
+                          variant="bordered"
+                          type="button"
+                          startContent={<SlCloudUpload size={18} />}
+                          onClick={() => {
+                            if (AudioInputRef.current) {
+                              AudioInputRef.current.click();
+                            }
+                          }}
+                          radius="sm"
+                        >
+                          Upload
+                        </Button>
+                      </Tooltip>
+                    </div>
+                  ) : (
+                    <div className="h-12 my-2">
                       <Button
-                        className="text-primary items-center border-dashed border-1 "
-                        variant="bordered"
-                        type="button"
+                        as={Link}
+                        href="/login"
+                        size="md"
+                        color="primary"
+                        radius="full"
+                        variant="ghost"
                         startContent={<SlCloudUpload size={18} />}
-                        onClick={() => {
-                          if (AudioInputRef.current) {
-                            AudioInputRef.current.click();
-                          }
-                        }}
-                        radius="sm"
                       >
-                        Upload
+                        Upload your unique story
                       </Button>
-                    </Tooltip>
-                  </div>
+                    </div>
+                  )}
 
                   {relatedStories &&
                     relatedStories.map((story) => {

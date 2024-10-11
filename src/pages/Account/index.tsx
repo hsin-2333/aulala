@@ -1,8 +1,7 @@
 import { AuthContext } from "../../context/AuthContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import MyContent from "./MyContent";
 import { useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
 import {
   Tabs,
   Tab,
@@ -17,32 +16,44 @@ import {
   Avatar,
 } from "@nextui-org/react";
 import { BiSolidEditAlt } from "react-icons/bi";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import dbApi from "../../utils/firebaseService";
 import { User } from "../../types";
-
+import Toast from "../../components/Toast";
 interface FormData {
   selfIntro: string;
-  website: string;
-  twitter: string;
+  website?: string;
+  twitter?: string;
 }
+
+const isValidUrl = (url: string) => {
+  const urlPattern = new RegExp(
+    "^(https?:\\/\\/)?" + // protocol
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" + // domain name
+      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+      "(\\#[-a-z\\d_]*)?$",
+    "i" // fragment locator
+  );
+  return !!urlPattern.test(url);
+};
+
 function Account() {
   const { user } = useContext(AuthContext);
   const { userName } = useParams();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-  const { register, handleSubmit } = useForm({
-    defaultValues: {
-      selfIntro: user?.selfIntro || "",
-      website: user?.social_links?.website || "",
-      twitter: user?.social_links?.twitter || "",
-    },
-  });
+  const [selfIntro, setSelfIntro] = useState("");
+  const [website, setWebsite] = useState("");
+  const [twitter, setTwitter] = useState("");
+
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   const { data: userData, isLoading } = useQuery({
     queryKey: ["user", user?.uid],
-
     queryFn: () => {
       if (user && user.uid) {
         return dbApi.getUser(user.uid);
@@ -55,29 +66,64 @@ function Account() {
 
   if (!user) return null;
 
-  const socialLinks = user.social_links || {};
   const tabs = [
     { id: "homepage", label: "Homepage", content: <MyContent /> },
     { id: "collection", label: "Collection", content: <div>Collection Content</div> },
   ];
 
+  const handleEdit = () => {
+    setSelfIntro(userData.selfIntro || "");
+    setWebsite(userData.social_links?.website || "");
+
+    const twitter = userData.social_links?.twitter || "";
+    const twitterName = twitter.replace("https://twitter.com/", "");
+    setTwitter(twitterName || "");
+    onOpen();
+  };
+
   const handleSave = async (data: FormData) => {
+    const website = data.website?.trim();
+    const twitter = data.twitter?.trim();
+
+    if (website && !isValidUrl(website)) {
+      setToastMessage("網站連結非有效網址，請重新檢查網址");
+      setShowToast(true);
+      return;
+    }
+
     const updatedUser: User = {
       ...user,
-      selfIntro: data.selfIntro,
+      selfIntro: data.selfIntro.trim(),
       social_links: {
-        website: data.website,
-        twitter: data.twitter,
+        website: website,
+        twitter: twitter ? `https://twitter.com/${twitter}` : "",
       },
     };
+
     await dbApi.updateUser(updatedUser);
-    // queryClient.invalidateQueries({ queryKey: ["user", user?.uid] });
+    queryClient.invalidateQueries({ queryKey: ["user", user?.uid] });
     onOpenChange();
-    window.location.reload();
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = {
+      selfIntro,
+      website,
+      twitter,
+    };
+    handleSave(formData);
+  };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
   };
 
   return (
     <>
+      <div className="fixed z-[60] z-1 bg-white">
+        {showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}
+      </div>
       {user && (
         <div>
           <div className="relative ">
@@ -98,7 +144,7 @@ function Account() {
               }}
               className="bg-slate-200 h-8 w-8 rounded"
               aria-label="EditIcon"
-              onPress={onOpen}
+              onPress={handleEdit}
             >
               <BiSolidEditAlt />
             </Button>
@@ -133,17 +179,23 @@ function Account() {
                     <div className="flex w-full px-2 pl-0 sm:pl-6">
                       <div className="hidden sm:block sm:w-60 px-4 flex-shrink-0">
                         <div className="text-left">
-                          <h1 className="text-2xl font-bold mt-4">{user.userName}</h1>
-                          <p>{user.selfIntro ? user.selfIntro : " "}</p>
+                          <h1 className="text-2xl font-bold mt-4 whitespace-pre-wrap break-words">
+                            {userData.userName}
+                          </h1>
+                          <p className="whitespace-pre-wrap break-words mr-1">
+                            {userData.selfIntro ? userData.selfIntro : " "}
+                          </p>
                           <div className="flex justify-center flex-col mt-4">
-                            {socialLinks &&
-                              Object.entries(socialLinks).map(([platform, url]) => (
-                                <a key={platform} href={url} className="text-blue-800">
-                                  {platform}
-                                </a>
-                              ))}
+                            {userData.social_links &&
+                              Object.entries(userData.social_links)
+                                .filter(([, url]) => url) // 過濾掉空的值
+                                .map(([platform, url]) => (
+                                  <a key={platform} href={url as string} className="text-blue-800">
+                                    {platform}
+                                  </a>
+                                ))}
                           </div>
-                          {userName !== user.userName && (
+                          {userName !== userData.userName && (
                             <div className="flex justify-center mt-4">
                               <button className="btn btn-primary border border-slate-500 rounded-full px-3 py-1">
                                 Follow
@@ -170,30 +222,28 @@ function Account() {
       >
         <ModalContent>
           {(onClose) => (
-            <form onSubmit={handleSubmit(handleSave)}>
+            <form onSubmit={handleFormSubmit}>
               <ModalHeader className="flex flex-col gap-1">Edit Profile</ModalHeader>
               <ModalBody>
                 <Input
-                  {...register("selfIntro")}
                   autoFocus
                   label="About Me"
                   placeholder="Enter a shot bio"
                   variant="bordered"
+                  value={selfIntro}
+                  onChange={(e) => setSelfIntro(e.target.value)}
                 />
                 <Input
-                  {...register("website")}
                   label="Website"
                   placeholder="your website URL"
-                  startContent={
-                    <div className="pointer-events-none flex items-center">
-                      <span className="text-default-400 text-small">https://</span>
-                    </div>
-                  }
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
                 />
                 <Input
-                  {...register("twitter")}
                   label="Twitter"
                   placeholder="your Twitter username"
+                  value={twitter}
+                  onChange={(e) => setTwitter(e.target.value)}
                   startContent={
                     <div className="pointer-events-none flex items-center">
                       <span className="text-default-400 text-small">https://twitter.com/</span>

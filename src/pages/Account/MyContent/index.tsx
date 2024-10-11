@@ -6,14 +6,23 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
 import { Story } from "../../../types";
 import { Select, SelectItem } from "@nextui-org/react";
-
+import { useContext } from "react";
+import { AuthContext } from "../../../context/AuthContext";
+import { RecentPlayContext } from "../../../context/RecentPlayContext";
 const MyContent = () => {
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
   const [selectedTab, setSelectedTab] = useState<string>("story");
   const { userName } = useParams();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const initialTab = queryParams.get("tab") || "story";
+  const context = useContext(RecentPlayContext);
+  if (context === undefined) {
+    throw new Error("SomeComponent must be used within a RecentPlayProvider");
+  }
+  const { fetchRecentPlay } = context;
+
   const { data: storyList, isLoading: isStoryLoading } = useQuery<Story[]>({
     queryKey: ["stories", userName],
     queryFn: async () => {
@@ -36,6 +45,18 @@ const MyContent = () => {
     return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
   };
 
+  const handleContentClick = (id: string, type: "script" | "story") => {
+    if (type === "script") navigate(`/script/${id}`);
+    if (type === "story") {
+      if (user && user.uid) {
+        dbApi.updateRecentPlay(user.uid, id, 0).then(() => {
+          fetchRecentPlay();
+        });
+      }
+      navigate(`/story/${id}`);
+    }
+  };
+
   const renderContent = () => {
     if (selectedTab === "story") {
       return storyList?.map((story) => (
@@ -46,8 +67,11 @@ const MyContent = () => {
             title={story.title}
             author={story.author}
             tags={story.tags || []}
+            // onClick={() => {
+            //   navigate(`/story/${story.id}`);
+            // }}
             onClick={() => {
-              navigate(`/story/${story.id}`);
+              if (story.id) handleContentClick(story.id, "story");
             }}
             intro={story.intro || ""}
             duration={story.duration || 0}
