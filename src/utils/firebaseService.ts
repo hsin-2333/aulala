@@ -503,6 +503,19 @@ const dbApi = {
     await updateDoc(storyRef, data);
   },
 
+  async subscribeToStory(author: string, callback: (data: Story[]) => void) {
+    const q = query(collection(db, "stories"), where("author", "==", author));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const StoryData: Story[] = [];
+      querySnapshot.forEach((doc) => {
+        StoryData.push({ id: doc.id, ...doc.data() } as Story);
+      });
+      callback(StoryData);
+    });
+
+    return unsubscribe;
+  },
+
   async subscribeToInteractions(scriptId: string, callback: (data: Interactions) => void) {
     const q = query(collection(db, "interactions"), where("script_id", "==", scriptId));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
