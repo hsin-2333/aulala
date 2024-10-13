@@ -460,9 +460,7 @@ const dbApi = {
           updated_at: serverTimestamp(),
         };
 
-        console.log("comment: ", comment);
         if (interactionType === "comment" && comment) {
-          console.log("comment留言: ", comment);
           data.comment = comment;
         }
 

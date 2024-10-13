@@ -15,7 +15,6 @@ import {
 } from "@nextui-org/react";
 import { FiSearch } from "react-icons/fi";
 import { GiSpellBook } from "react-icons/gi";
-// import { RxUpload } from "react-icons/rx";
 import { IoAdd } from "react-icons/io5";
 import { VscAccount } from "react-icons/vsc";
 import { IoMdNotificationsOutline } from "react-icons/io";
@@ -67,7 +66,7 @@ export function NavbarComponent() {
   }, [user]);
 
   const handleNotificationClick = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    event.preventDefault(); // 防止默認的跳轉行為
+    event.preventDefault();
     console.log("改變通知狀態");
     setHasUnreadNotifications(false);
     if (user && user.userName) {

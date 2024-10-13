@@ -8,7 +8,7 @@ type ToastProps = {
 
 const Toast = ({ message, onClose }: ToastProps) => {
   useEffect(() => {
-    const timer = setTimeout(onClose, 3000); // 3秒後自動關閉
+    const timer = setTimeout(onClose, 3000);
     return () => clearTimeout(timer);
   }, [onClose]);
 

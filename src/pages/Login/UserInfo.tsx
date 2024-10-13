@@ -63,7 +63,7 @@ const UserSignUpForm = () => {
 
       await dbApi.createUser(userData);
       navigate(`/user/${userData.userName}`);
-      window.location.reload(); // 強制重新載入頁面
+      window.location.reload();
     } catch (error) {
       console.error("Error adding user data: ", error);
     }
