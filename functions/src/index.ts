@@ -18,9 +18,8 @@ interface TranscriptionResponse {
   segments: Segment[];
 }
 admin.initializeApp();
-// const db = admin.firestore();
 const openai = new OpenAI({
-  apiKey: functions.config().openai.key, // 從環境變數中讀取 API key
+  apiKey: functions.config().openai.key,
 });
 
 const corsHandler = cors({ origin: true });
@@ -94,23 +93,3 @@ exports.transcribeAudio = functions.https.onRequest((req, res) => {
     }
   });
 });
-
-// exports.transcribeAudio = functions.https.onRequest(async (req, res) => {
-//   try {
-//     const { audioUrl, storyId } = req.body;
-//     const response = await openai.audio.transcriptions.create({
-//       file: audioUrl,
-//       model: "whisper-1",
-//       response_format: "json", // Use JSON to get word-level timestamps
-//     });
-//     console.log(`Received transcription response: ${JSON.stringify(response)}`);
-//     const transcription = response.text; // Assuming it's in the format you want
-//     const storyRef = admin.firestore().collection("stories").doc(storyId);
-//     await storyRef.update({ transcription });
-//     res.status(200).send({ success: true });
-//   } catch (error) {
-//     console.error("Error during transcription:", error);
-//     res.status(500).send({ error: "Transcription failed" });
-//   }
-
-// });

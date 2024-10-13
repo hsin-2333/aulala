@@ -177,7 +177,6 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
     mutationFn: (newComment: string) =>
       dbApi.updateInteraction(userName, storyId || null, scriptId || null, "comment", newComment),
     onSuccess: () => {
-      // 在成功新增留言後，無效化相關的查詢以便重新獲取最新的資料
       queryClient.invalidateQueries({
         queryKey: ["comments", storyId || scriptId],
       });
@@ -228,7 +227,6 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
     }
   }, [commentsData]);
 
-  // 使用 useEffect 來監聽 commentsData 的變化
   useEffect(() => {
     if (commentsData && setCommentCount) {
       setCommentCount(commentsData.length); // 更新評論數量

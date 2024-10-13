@@ -29,8 +29,6 @@ export interface AuthUser {
   email: string | null;
   photoURL: string | null;
   providerId: string;
-
-  // Add other properties as needed
 }
 
 export interface AuthContextType {

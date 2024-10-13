@@ -52,16 +52,6 @@ interface ScriptCardProps {
   onClick?: () => void;
 }
 
-// const formatTimestamp = (timestamp?: Timestamp): string => {
-//   if (!timestamp) {
-//     return "Invalid date";
-//   }
-//   const date = timestamp.toDate();
-//   const year = date.getFullYear();
-//   const month = (date.getMonth() + 1).toString().padStart(2, "0");
-//   return `${year}${month}`;
-// };
-
 export const PlaylistCard = ({ image, title, tags = [], author, onClick }: PlaylistCardProps) => {
   return (
     <div
@@ -84,60 +74,6 @@ export const PlaylistCard = ({ image, title, tags = [], author, onClick }: Playl
   );
 };
 
-// export const ScriptCard = ({ scriptId, title, author, tags = [], summary, created_at, language }: ScriptCardProps) => {
-//   const formattedDate = formatTimestamp(created_at);
-
-//   const [interactions, setInteractions] = useState<InteractionType[]>([]);
-//   console.log(interactions);
-//   useEffect(() => {
-//     if (!scriptId) return;
-
-//     const fetchData = async () => {
-//       const unsubscribe = await dbApi.subscribeToInteractions(scriptId, setInteractions);
-//       return unsubscribe;
-//     };
-
-//     const unsubscribePromise = fetchData();
-
-//     return () => {
-//       unsubscribePromise.then((unsubscribe) => unsubscribe());
-//     };
-//   }, [scriptId]);
-
-//   const getCount = (type: string) => {
-//     return interactions.filter((interaction) => interaction.interaction_type === type).length;
-//   };
-
-//   return (
-//     <div className="flex flex-col w-full bg-gray-100 rounded-lg overflow-hidden mb-2">
-//       <div className="flex items-center p-4 ">
-//         <div className="flex-grow text-left">
-//           <div className="font-bold text-xl text-black">{title}</div>
-//           <div className="text-gray-600">
-//             {author} • {formattedDate}
-//           </div>
-//           <div className="flex space-x-2 mt-2 ">
-//             {tags.map((tag, index) => (
-//               <span key={index} className="text-gray-00 text-sm p-1 rounded-sm bg-slate-300">
-//                 {tag}
-//               </span>
-//             ))}
-//           </div>
-//         </div>
-//       </div>
-//       <div className="p-4 text-gray-700  text-left">{summary}</div>
-//       <div className="flex items-center justify-between p-4 ">
-//         <div className="flex space-x-4">
-//           <p className="text-gray-600 hover:text-gray-800">收藏 {getCount("bookmarked")}</p>
-//           <p className="text-gray-600 hover:text-gray-800">愛心 {getCount("like")}</p>
-//           <p className="text-gray-600 hover:text-gray-800">留言 {getCount("comment")}</p>
-//         </div>
-//         <p className="text-gray-600 hover:text-gray-800">{language}</p>
-//       </div>
-//     </div>
-//   );
-// };
-
 export const ScriptCard = ({
   scriptId,
   title,
@@ -152,8 +88,6 @@ export const ScriptCard = ({
 
   useEffect(() => {
     if (!scriptId) return;
-
-    console.log("不會八");
     const fetchData = async () => {
       const unsubscribe = await dbApi.subscribeToInteractions(scriptId, setInteractions);
       return unsubscribe;
@@ -202,7 +136,6 @@ export const ScriptCard = ({
         </div>
         <div className="flex flex-wrap gap-2 ml-1  items-end ">
           <p className="text-default-500 hover:text-gray-800 flex  gap-1 items-center">
-            {" "}
             <Icon name="bookmarked" className="h-4 w-4" color="hsl(var(--nextui-default-500))" />
             {getCount("bookmarked")}
           </p>
@@ -239,7 +172,7 @@ export const AudioCard: React.FC<PlaylistCardProps> = ({
   // const { storyInfo, isPlaying, setIsPlaying, fetchRecentPlay } = context;
 
   // const togglePlayPause = async (event: React.MouseEvent) => {
-  //   event.stopPropagation(); // 防止事件冒泡
+  //   event.stopPropagation();
   //   if (user && id) {
   //     try {
   //       await dbApi.updateRecentPlay(user.uid, id, 0);
@@ -318,7 +251,7 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
   const { storyInfo, isPlaying } = context;
 
   const togglePlayPause = async (event: React.MouseEvent) => {
-    event.stopPropagation(); // 防止事件冒泡
+    event.stopPropagation();
     if (user && id) {
       try {
         // await dbApi.updateRecentPlay(user.uid, id, 0);

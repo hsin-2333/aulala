@@ -35,7 +35,6 @@ const SubtitlesComponent = () => {
     return () => clearInterval(interval);
   }, [currentTimeRef]);
 
-  // const segments = useMemo(() => context?.storyInfo?.segments || [], [context?.storyInfo?.segments]);
   const segments = useMemo(() => story?.segments || [], [story?.segments]);
 
   useEffect(() => {

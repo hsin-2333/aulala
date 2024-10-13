@@ -31,7 +31,7 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
 
   const [loading, setLoading] = useState(true);
@@ -121,7 +121,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   );
 
   return (
-    //@ts-expect-error(123)
     <AuthContext.Provider value={{ isLogin, loading, user, authUser, userExists, Login, LoginWithEmail, Logout }}>
       {children}
     </AuthContext.Provider>

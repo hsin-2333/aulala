@@ -17,6 +17,8 @@ interface Story {
   created_at?: { seconds: number; nanoseconds: number };
   duration?: number;
   summary?: string;
+  img_url?: string[];
+  tags?: string[];
 }
 
 interface HomePageProps {
@@ -186,11 +188,9 @@ function HomePage({ onCardClick }: HomePageProps) {
               onClick={() => handleContentClick(release.id, "story")}
               key={release.id}
               id={release.id}
-              //@ts-expect-error(123)
-              image={release.img_url?.[0]}
+              image={release.img_url?.[0] ?? ""}
               title={release.title || "Untitled"}
-              //@ts-expect-error(123)
-              tags={release.tags}
+              tags={release.tags ?? []}
               author={release.author || "Unknown"}
               duration={release.duration}
               date={date}
@@ -221,11 +221,9 @@ function HomePage({ onCardClick }: HomePageProps) {
               onClick={() => handleContentClick(story.id, "story")}
               key={story.id}
               id={story.id}
-              //@ts-expect-error(123)
-              image={story.img_url?.[0]}
+              image={story.img_url?.[0] ?? ""}
               title={story.title || "Untitled"}
-              //@ts-expect-error(123)
-              tags={story.tags}
+              tags={story.tags || []}
               author={story.author || "Unknown"}
               duration={story.duration}
               date={date}
@@ -249,11 +247,9 @@ function HomePage({ onCardClick }: HomePageProps) {
             <ScriptCard
               onClick={() => handleContentClick(script.id, "script")}
               key={script.id}
-              //@ts-expect-error(123)
               image={script.img_url?.[0]}
               title={script.title || "Untitled"}
-              //@ts-expect-error(123)
-              tags={script.tags}
+              tags={script.tags || []}
               author={script.author || "Unknown"}
               summary={script.summary || ""}
               scriptId={script.id}

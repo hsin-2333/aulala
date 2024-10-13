@@ -18,8 +18,8 @@ export const OuterLayout = ({ children }: LayoutProps) => {
   const [key, setKey] = useState(0);
   const { user } = useContext(AuthContext);
   const { storyId } = useParams();
+
   useEffect(() => {
-    // 每次路由變化時更新 key，強制重新渲染 RecentPlayBar
     setKey((prevKey) => prevKey + 1);
   }, [location]);
 
@@ -133,136 +133,6 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
   );
 };
 
-//https://github.com/shadcn-ui/ui/blob/main/apps/www/app/(app)/examples/music/page.tsx
-// return (
-//   <>
-//     <div className="md:hidden">
-//       <Image
-//         src="/examples/music-light.png"
-//         width={1280}
-//         height={1114}
-//         alt="Music"
-//         className="block dark:hidden"
-//       />
-//       <Image
-//         src="/examples/music-dark.png"
-//         width={1280}
-//         height={1114}
-//         alt="Music"
-//         className="hidden dark:block"
-//       />
-//     </div>
-//     <div className="hidden md:block">
-//       <Menu />
-//       <div className="border-t">
-//         <div className="bg-background">
-//           <div className="grid lg:grid-cols-5">
-//             <Sidebar playlists={playlists} className="hidden lg:block" />
-//             <div className="col-span-3 lg:col-span-4 lg:border-l">
-//               <div className="h-full px-4 py-6 lg:px-8">
-//                 <Tabs defaultValue="music" className="h-full space-y-6">
-//                   <div className="space-between flex items-center">
-//                     <TabsList>
-//                       <TabsTrigger value="music" className="relative">
-//                         Music
-//                       </TabsTrigger>
-//                       <TabsTrigger value="podcasts">Podcasts</TabsTrigger>
-//                       <TabsTrigger value="live" disabled>
-//                         Live
-//                       </TabsTrigger>
-//                     </TabsList>
-//                     <div className="ml-auto mr-4">
-//                       <Button>
-//                         <PlusCircledIcon className="mr-2 h-4 w-4" />
-//                         Add music
-//                       </Button>
-//                     </div>
-//                   </div>
-//                   <TabsContent
-//                     value="music"
-//                     className="border-none p-0 outline-none"
-//                   >
-//                     <div className="flex items-center justify-between">
-//                       <div className="space-y-1">
-//                         <h2 className="text-2xl font-semibold tracking-tight">
-//                           Listen Now
-//                         </h2>
-//                         <p className="text-sm text-muted-foreground">
-//                           Top picks for you. Updated daily.
-//                         </p>
-//                       </div>
-//                     </div>
-//                     <Separator className="my-4" />
-//                     <div className="relative">
-//                       <ScrollArea>
-//                         <div className="flex space-x-4 pb-4">
-//                           {listenNowAlbums.map((album) => (
-//                             <AlbumArtwork
-//                               key={album.name}
-//                               album={album}
-//                               className="w-[250px]"
-//                               aspectRatio="portrait"
-//                               width={250}
-//                               height={330}
-//                             />
-//                           ))}
-//                         </div>
-//                         <ScrollBar orientation="horizontal" />
-//                       </ScrollArea>
-//                     </div>
-//                     <div className="mt-6 space-y-1">
-//                       <h2 className="text-2xl font-semibold tracking-tight">
-//                         Made for You
-//                       </h2>
-//                       <p className="text-sm text-muted-foreground">
-//                         Your personal playlists. Updated daily.
-//                       </p>
-//                     </div>
-//                     <Separator className="my-4" />
-//                     <div className="relative">
-//                       <ScrollArea>
-//                         <div className="flex space-x-4 pb-4">
-//                           {madeForYouAlbums.map((album) => (
-//                             <AlbumArtwork
-//                               key={album.name}
-//                               album={album}
-//                               className="w-[150px]"
-//                               aspectRatio="square"
-//                               width={150}
-//                               height={150}
-//                             />
-//                           ))}
-//                         </div>
-//                         <ScrollBar orientation="horizontal" />
-//                       </ScrollArea>
-//                     </div>
-//                   </TabsContent>
-//                   <TabsContent
-//                     value="podcasts"
-//                     className="h-full flex-col border-none p-0 data-[state=active]:flex"
-//                   >
-//                     <div className="flex items-center justify-between">
-//                       <div className="space-y-1">
-//                         <h2 className="text-2xl font-semibold tracking-tight">
-//                           New Episodes
-//                         </h2>
-//                         <p className="text-sm text-muted-foreground">
-//                           Your favorite podcasts. Updated daily.
-//                         </p>
-//                       </div>
-//                     </div>
-//                     <Separator className="my-4" />
-//                     <PodcastEmptyPlaceholder />
-//                   </TabsContent>
-//                 </Tabs>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   </>
-
 const Sidebar = () => {
   const { user } = useContext(AuthContext);
 
@@ -270,7 +140,6 @@ const Sidebar = () => {
     <div className="pb-12">
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
-          {/* <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">Discover</h2> */}
           <div className="space-y-1 ">
             <NavLink
               to={`/account/${user?.userName}`}
@@ -332,26 +201,6 @@ const Sidebar = () => {
               </svg>
               Notification
             </NavLink>
-
-            {/* <button className="w-full justify-start align-middle ">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-2 h-4 w-4"
-              >
-                <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9" />
-                <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5" />
-                <circle cx="12" cy="12" r="2" />
-                <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5" />
-                <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19" />
-              </svg>
-              Radio
-            </button> */}
           </div>
         </div>
       </div>

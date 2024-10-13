@@ -121,8 +121,8 @@ const dbApi = {
         if (docSnap.exists()) {
           const unsubscribe = onSnapshot(userDocRef, (doc) => {
             if (doc.exists()) {
-              //@ts-expect-error(123)
-              callback({ id: doc.id, ...doc.data() });
+              const data = doc.data() as IUserData;
+              callback({ id: doc.id, ...data });
             } else {
               console.log("No such document!");
             }
@@ -460,9 +460,7 @@ const dbApi = {
           updated_at: serverTimestamp(),
         };
 
-        console.log("comment: ", comment);
         if (interactionType === "comment" && comment) {
-          console.log("comment留言: ", comment);
           data.comment = comment;
         }
 
