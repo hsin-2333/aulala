@@ -37,11 +37,20 @@ const RecentPlayBar = () => {
       fetchRecentPlay();
       setCurrentTime(0);
       currentTimeRef.current = 0;
-      console.log("新故事!");
-    } else if (recentPlay && recentPlay.story_id === storyInfo?.id) {
+      console.log("story頁面新故事!");
+    } else if (recentPlay?.story_id === storyInfo?.id) {
+      console.log("story頁面舊故事!");
       setLastPlayTimestamp();
     }
-  }, [storyId, storyInfo?.id, fetchRecentPlay, setLastPlayTimestamp, setCurrentTime, currentTimeRef, recentPlay]);
+  }, [
+    storyId,
+    storyInfo?.id,
+    recentPlay?.story_id,
+    fetchRecentPlay,
+    setCurrentTime,
+    currentTimeRef,
+    setLastPlayTimestamp,
+  ]);
 
   useEffect(() => {
     //如果是主頁(aka沒有storyId) 或是 storyId和storyInfo.id一樣，且有audio_url
@@ -269,7 +278,9 @@ export const PlayBar = () => {
       });
 
       return () => {
+        wavesurfer.unAll();
         wavesurfer.destroy();
+        audioRef.current = null;
       };
     }
   }, [story, currentTimeRef, setIsPlaying]);
