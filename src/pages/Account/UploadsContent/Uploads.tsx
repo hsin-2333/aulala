@@ -32,10 +32,15 @@ const StoryTable = () => {
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState<string>("");
 
-  const statusColorMap = {
+  const statusColorMap: {
+    Done: "success";
+    paused: "warning";
+    Processing: "primary";
+    undefined: "default";
+  } = {
     Done: "success",
-    paused: "danger",
-    Processing: "warning",
+    paused: "warning",
+    Processing: "primary",
     undefined: "default",
   };
 
@@ -150,8 +155,12 @@ const StoryTable = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {story.status !== undefined && (
-                    // @ts-expect-error(123)
-                    <Chip className="capitalize" color={statusColorMap[story.status]} size="sm" variant="flat">
+                    <Chip
+                      className="capitalize"
+                      color={statusColorMap[story.status as keyof typeof statusColorMap]}
+                      size="sm"
+                      variant="flat"
+                    >
                       {story.status}
                     </Chip>
                   )}
