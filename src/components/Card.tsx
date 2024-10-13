@@ -3,7 +3,7 @@ import { Timestamp } from "firebase/firestore";
 import dbApi from "../utils/firebaseService";
 import { InteractionType } from "../types";
 import Icon from "./Icon";
-import { AuthContext } from "../context/AuthContext";
+// import { AuthContext } from "../context/AuthContext";
 import { RecentPlayContext } from "../context/RecentPlayContext";
 import { Button } from "@nextui-org/react";
 import { motion } from "framer-motion";
@@ -24,7 +24,7 @@ import {
 } from "@nextui-org/react";
 import { LiaComment } from "react-icons/lia";
 import { SlOptionsVertical } from "react-icons/sl";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 interface PlaylistCardProps {
   id?: string;
@@ -231,18 +231,9 @@ export const AudioCard: React.FC<PlaylistCardProps> = ({
   );
 };
 
-export const ImageCard: React.FC<PlaylistCardProps> = ({
-  id,
-  image,
-  title,
-  duration,
-  author,
-  date,
-  onClick,
-  onCardClick,
-}) => {
-  const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+export const ImageCard: React.FC<PlaylistCardProps> = ({ id, image, title, duration, author, date, onClick }) => {
+  // const navigate = useNavigate();
+  // const { user } = useContext(AuthContext);
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
@@ -250,25 +241,25 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
   // const { storyInfo, isPlaying, setIsPlaying, fetchRecentPlay } = context;
   const { storyInfo, isPlaying } = context;
 
-  const togglePlayPause = async (event: React.MouseEvent) => {
-    event.stopPropagation();
-    if (user && id) {
-      try {
-        // await dbApi.updateRecentPlay(user.uid, id, 0);
-        // fetchRecentPlay();
-        // setIsPlaying(true);
-      } catch (error) {
-        console.error("Error updating recent play: ", error);
-      }
-      if (onCardClick) {
-        onCardClick(); //打開主頁側邊選單
-        // setIsPlaying(!isPlaying);
-        navigate(`/story/${id}`);
-      }
-    } else {
-      navigate(`/story/${id}`);
-    }
-  };
+  // const togglePlayPause = async (event: React.MouseEvent) => {
+  //   event.stopPropagation(); // 防止事件冒泡
+  //   if (user && id) {
+  //     try {
+  //       // await dbApi.updateRecentPlay(user.uid, id, 0);
+  //       // fetchRecentPlay();
+  //       // setIsPlaying(true);
+  //     } catch (error) {
+  //       console.error("Error updating recent play: ", error);
+  //     }
+  //     if (onCardClick) {
+  //       onCardClick(); //打開主頁側邊選單
+  //       // setIsPlaying(!isPlaying);
+  //       navigate(`/story/${id}`);
+  //     }
+  //   } else {
+  //     navigate(`/story/${id}`);
+  //   }
+  // };
 
   const isCurrentStory = id === storyInfo?.id;
   const storyDuration = duration ? `${Math.round((duration / 60) * 2) / 2} min` : "";
@@ -293,7 +284,8 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({
             className="z-10 absolute inset-0 m-auto text-default-900/60 data-[hover]:bg-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             radius="full"
             variant="light"
-            onClick={togglePlayPause}
+            onClick={onClick}
+            // onClick={togglePlayPause}
           >
             <Icon
               name="play"
