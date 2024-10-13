@@ -121,8 +121,8 @@ const dbApi = {
         if (docSnap.exists()) {
           const unsubscribe = onSnapshot(userDocRef, (doc) => {
             if (doc.exists()) {
-              //@ts-expect-error(123)
-              callback({ id: doc.id, ...doc.data() });
+              const data = doc.data() as IUserData;
+              callback({ id: doc.id, ...data });
             } else {
               console.log("No such document!");
             }
