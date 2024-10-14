@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useContext, useCallback } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { RecentPlayContext } from "../context/RecentPlayContext";
 import { AuthContext } from "../context/AuthContext";
@@ -23,37 +23,58 @@ const RecentPlayBar = () => {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
   const { currentTimeRef, isPlaying, setIsPlaying, recentPlay, storyInfo } = context;
+  const [currentStoryInfo, setCurrentStoryInfo] = useState<Story | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const setLastPlayTimestamp = useCallback(() => {
-    if (recentPlay) {
-      setCurrentTime(recentPlay.played_at);
-      currentTimeRef.current = recentPlay.played_at;
-      console.log("setLastPlayTimestamp", recentPlay.played_at);
-    }
-  }, [currentTimeRef, recentPlay]);
-
-  //設定開始播放時間
+  //取得故事資訊
   useEffect(() => {
-    if (storyId && storyInfo?.id !== storyId) {
-      // fetchRecentPlay();
-      console.log("story頁面新故事---------, storyId:", storyId, "storyInfo.id:", storyInfo?.id);
-      setCurrentTime(0);
-      currentTimeRef.current = 0;
-    } else if (recentPlay?.story_id === storyInfo?.id) {
-      console.log("story頁面舊故事!");
-      setLastPlayTimestamp();
+    let isMounted = true;
+    if (storyId) {
+      setIsLoading(true);
+
+      const fetchStoryInfo = async () => {
+        const storyData = await dbApi.getStoryById(storyId);
+        if (isMounted) {
+          setCurrentStoryInfo(storyData);
+          setIsLoading(false);
+        }
+      };
+      fetchStoryInfo();
+      setIsLoading(false);
+    } else {
+      setCurrentStoryInfo(storyInfo);
+      setIsLoading(false);
     }
-  }, [storyId, storyInfo?.id, recentPlay?.story_id, setCurrentTime, currentTimeRef, setLastPlayTimestamp]);
+
+    setIsPlaying(false);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [storyId, storyInfo, setIsPlaying]);
+
+  useEffect(() => {
+    if (currentStoryInfo) {
+      if (recentPlay && recentPlay?.story_id === currentStoryInfo.id) {
+        setCurrentTime(recentPlay.played_at);
+        currentTimeRef.current = recentPlay.played_at;
+        console.log("Set to last played time:", recentPlay.played_at);
+      } else {
+        setCurrentTime(0);
+        currentTimeRef.current = 0;
+        console.log("New story, reset time to 0");
+      }
+    }
+  }, [currentStoryInfo, recentPlay, setCurrentTime, currentTimeRef]);
 
   //創建音頻播放器
   useEffect(() => {
-    //如果是主頁(aka沒有storyId) 或是 storyId和storyInfo.id一樣，且有audio_url
-    if ((storyId === storyInfo?.id && storyInfo?.audio_url) || (!storyId && storyInfo?.audio_url)) {
+    if (currentStoryInfo) {
       const wavesurfer = WaveSurfer.create({
         container: "#waveform_bottom",
         waveColor: "#CCE3FD",
         progressColor: "#66AAF9",
-        url: storyInfo.audio_url,
+        url: currentStoryInfo.audio_url,
         barWidth: 4,
         barGap: 3,
         barRadius: 16,
@@ -67,12 +88,9 @@ const RecentPlayBar = () => {
 
       const updateRecentPlay = debounce((currentTime: number) => {
         if (user && user.uid && storyInfo?.id) {
-          // 更新最近播放到後端
           dbApi.updateRecentPlay(user.uid, storyInfo?.id, currentTime);
-          // fetchRecentPlay();
-          console.log("updateRecentPlay", currentTime);
         }
-      }, 1000);
+      }, 800);
 
       wavesurfer.on("timeupdate", (currentTime) => {
         setCurrentTime(currentTime);
@@ -87,11 +105,9 @@ const RecentPlayBar = () => {
 
       wavesurfer.on("ready", () => {
         setDuration(wavesurfer.getDuration());
-        if (recentPlay && recentPlay.story_id === storyInfo.id) {
-          wavesurfer.seekTo(recentPlay.played_at / wavesurfer.getDuration());
-          setCurrentTime(recentPlay.played_at);
-          currentTimeRef.current = recentPlay.played_at;
-          console.log("音頻準備好，設置當前時間", recentPlay.played_at);
+        if (currentTimeRef.current > 0) {
+          wavesurfer.seekTo(currentTimeRef.current / wavesurfer.getDuration());
+          console.log("Audio ready, seeking to currentTime:", currentTimeRef.current);
         }
       });
 
@@ -112,7 +128,7 @@ const RecentPlayBar = () => {
         wavesurfer.destroy();
       };
     }
-  }, [storyInfo?.audio_url, user, storyInfo?.id, setCurrentTime, currentTimeRef, storyId, recentPlay, setIsPlaying]);
+  }, [currentStoryInfo, currentTimeRef, recentPlay, setIsPlaying, storyInfo?.id, user]);
 
   const togglePlayPause = () => {
     const wavesurfer = audioRef.current;
@@ -137,21 +153,21 @@ const RecentPlayBar = () => {
   };
   return (
     <>
-      {recentPlay && (
+      {!isLoading && currentStoryInfo ? (
         <div className="h-12 sm:h-[80px] fixed bottom-14 sm:bottom-0 left-0 right-0 z-10">
           <div className=" bg-slate-800 p-2 mx-1 rounded-md flex items-center space-x-4 justify-between sm:mx-0 sm:rounded-none sm:p-4 md:px-11">
             <div className="text-left flex gap-2 w-5/6 sm:w-1/6  md:gap-4">
               <img
-                src={storyInfo?.img_url ? storyInfo.img_url[0] : ""}
-                alt={`Cover for ${storyInfo?.title}`}
+                src={currentStoryInfo?.img_url ? currentStoryInfo.img_url[0] : ""}
+                alt={`Cover for ${currentStoryInfo?.title}`}
                 className="w-8 h-8 md:w-12 md:h-12 rounded-sm"
               />
               <div className="flex flex-grow max-w-full flex-col">
                 <div className="text-white whitespace-nowrap overflow-hidden text-overflow-ellipsis text-xs sm:text-medium">
-                  {storyInfo?.voice_actor}
+                  {currentStoryInfo?.voice_actor}
                 </div>
                 <div className="text-gray-400 whitespace-nowrap overflow-hidden text-overflow-ellipsis text-xs sm:text-medium">
-                  {storyInfo?.title}
+                  {currentStoryInfo?.title}
                 </div>
               </div>
             </div>
@@ -196,6 +212,8 @@ const RecentPlayBar = () => {
             </div>
           </div>
         </div>
+      ) : (
+        <div className="h-12 sm:h-[80px] fixed bottom-14 sm:bottom-0 left-0 right-0 z-10 bg-cyan-300">Loading</div>
       )}
     </>
   );

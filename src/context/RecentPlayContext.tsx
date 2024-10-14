@@ -50,7 +50,6 @@ export const RecentPlayProvider = ({ children }: { children: ReactNode }) => {
   const [recentPlay, setRecentPlay] = useState<RecentPlay | null>(null);
   const [storyInfo, setStoryInfo] = useState<Story | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  // const [currentTime, setCurrentTime] = useState(0);
   const currentTimeRef = useRef(0);
 
   const fetchRecentPlay = useCallback(async () => {
