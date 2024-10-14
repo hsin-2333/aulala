@@ -213,7 +213,15 @@ const RecentPlayBar = () => {
           </div>
         </div>
       ) : (
-        <div className="h-12 sm:h-[80px] fixed bottom-14 sm:bottom-0 left-0 right-0 z-10 bg-cyan-300">Loading</div>
+        <div className="h-12 sm:h-[80px] fixed bottom-14 sm:bottom-0 left-0 right-0 z-10 bg-slate-800 p-2 mx-1 rounded-md flex items-center space-x-4 justify-between sm:mx-0 sm:rounded-none sm:p-4 md:px-11">
+          <div className="w-8 h-8 md:w-12 md:h-12 rounded-sm bg-gray-700 animate-pulse"></div>
+          <div className="flex flex-grow max-w-full flex-col space-y-2">
+            <div className="h-4 bg-gray-700 rounded w-3/4 animate-pulse"></div>
+          </div>
+          <div className="w-20 h-8 bg-gray-700 rounded animate-pulse"></div>
+          <div className="hidden sm:block w-3/6 h-8 bg-gray-700 rounded animate-pulse"></div>
+          <div className="hidden sm:flex w-2/6 h-8 bg-gray-700 rounded animate-pulse"></div>
+        </div>
       )}
     </>
   );
