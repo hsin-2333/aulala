@@ -22,7 +22,7 @@ const RecentPlayBar = () => {
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
-  const { currentTimeRef, isPlaying, setIsPlaying, recentPlay, storyInfo, fetchRecentPlay } = context;
+  const { currentTimeRef, isPlaying, setIsPlaying, recentPlay, storyInfo } = context;
 
   const setLastPlayTimestamp = useCallback(() => {
     if (recentPlay) {
@@ -30,28 +30,22 @@ const RecentPlayBar = () => {
       currentTimeRef.current = recentPlay.played_at;
       console.log("setLastPlayTimestamp", recentPlay.played_at);
     }
-  }, [recentPlay, setCurrentTime, currentTimeRef]);
+  }, [currentTimeRef, recentPlay]);
 
+  //設定開始播放時間
   useEffect(() => {
     if (storyId && storyInfo?.id !== storyId) {
-      fetchRecentPlay();
+      // fetchRecentPlay();
+      console.log("story頁面新故事---------, storyId:", storyId, "storyInfo.id:", storyInfo?.id);
       setCurrentTime(0);
       currentTimeRef.current = 0;
-      console.log("story頁面新故事!");
     } else if (recentPlay?.story_id === storyInfo?.id) {
       console.log("story頁面舊故事!");
       setLastPlayTimestamp();
     }
-  }, [
-    storyId,
-    storyInfo?.id,
-    recentPlay?.story_id,
-    fetchRecentPlay,
-    setCurrentTime,
-    currentTimeRef,
-    setLastPlayTimestamp,
-  ]);
+  }, [storyId, storyInfo?.id, recentPlay?.story_id, setCurrentTime, currentTimeRef, setLastPlayTimestamp]);
 
+  //創建音頻播放器
   useEffect(() => {
     //如果是主頁(aka沒有storyId) 或是 storyId和storyInfo.id一樣，且有audio_url
     if ((storyId === storyInfo?.id && storyInfo?.audio_url) || (!storyId && storyInfo?.audio_url)) {
@@ -75,7 +69,7 @@ const RecentPlayBar = () => {
         if (user && user.uid && storyInfo?.id) {
           // 更新最近播放到後端
           dbApi.updateRecentPlay(user.uid, storyInfo?.id, currentTime);
-          fetchRecentPlay();
+          // fetchRecentPlay();
           console.log("updateRecentPlay", currentTime);
         }
       }, 1000);
@@ -118,7 +112,7 @@ const RecentPlayBar = () => {
         wavesurfer.destroy();
       };
     }
-  }, [storyInfo?.audio_url, user, storyInfo?.id, fetchRecentPlay, setCurrentTime, currentTimeRef, storyId]);
+  }, [storyInfo?.audio_url, user, storyInfo?.id, setCurrentTime, currentTimeRef, storyId, recentPlay, setIsPlaying]);
 
   const togglePlayPause = () => {
     const wavesurfer = audioRef.current;
