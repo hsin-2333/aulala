@@ -228,7 +228,7 @@ function ScriptContent() {
               >
                 <section className="flex items-start justify-center flex-col min-h-[300px]">
                   {user ? (
-                    <div className="flex gap-4 w-full justify-end">
+                    <div className="hidden sm:flex gap-4 w-full justify-end mt-2 mb-4">
                       <input
                         type="file"
                         accept="audio/*"

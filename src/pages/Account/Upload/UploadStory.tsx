@@ -415,6 +415,7 @@ const UploadStory = () => {
                       labelPlacement="outside"
                       radius="sm"
                       variant="bordered"
+                      defaultValue="The Watcher's Keep -Demo"
                       {...register("title", { required: true, setValueAs: (value: string) => value.trim() })}
                     />
                     {errors.title && <span className="text-red-500 text-sm">This field is required</span>}
@@ -427,6 +428,7 @@ const UploadStory = () => {
                       labelPlacement="outside"
                       radius="sm"
                       variant="bordered"
+                      defaultValue="Hope you enjoy this story!"
                       {...register("intro", { required: true, setValueAs: (value: string) => value.trim() })}
                     />
                     {errors.intro && <span className="text-red-500 text-sm">This field is required</span>}
@@ -439,6 +441,7 @@ const UploadStory = () => {
                       labelPlacement="outside"
                       radius="sm"
                       variant="bordered"
+                      defaultValue="From the time when there was still magic in the land, and there were elves and wizards and dwarves and dragons and griffins and —"
                       {...register("summary", { required: true, setValueAs: (value: string) => value.trim() })}
                     />
                     {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
