@@ -28,22 +28,30 @@ const RecentPlayBar = () => {
   const { currentTimeRef, isPlaying, setIsPlaying, recentPlay, storyInfo } = context;
   const [currentStoryInfo, setCurrentStoryInfo] = useState<Story | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [istheSameStory, setIstheSameStory] = useState(false);
 
   //取得故事資訊
   useEffect(() => {
     let isMounted = true;
-
     if (storyId) {
       setIsLoading(true);
 
-      const fetchStoryInfo = async () => {
-        const storyData = await dbApi.getStoryById(storyId);
-        if (isMounted) {
-          setCurrentStoryInfo(storyData);
-          setIsLoading(false);
-        }
-      };
-      fetchStoryInfo();
+      if (storyInfo && storyInfo.id === storyId) {
+        setIstheSameStory(true);
+        console.log("同一個故事, storyInfo", storyInfo, "storyId", storyId);
+        setCurrentStoryInfo(storyInfo);
+      } else {
+        const fetchStoryInfo = async () => {
+          const storyData = await dbApi.getStoryById(storyId);
+          if (isMounted) {
+            setCurrentStoryInfo(storyData);
+            setIsLoading(false);
+          }
+        };
+        fetchStoryInfo();
+        setIstheSameStory(false);
+      }
+
       setIsLoading(false);
     } else {
       setCurrentStoryInfo(storyInfo);
@@ -57,28 +65,21 @@ const RecentPlayBar = () => {
     };
   }, [storyId, storyInfo, setIsPlaying]);
 
-  useEffect(() => {
-    console.log("判斷新舊 currentStoryInfo", currentStoryInfo);
-    console.log("判斷新舊 recentPlay", recentPlay, "播放到", recentPlay?.played_at);
-    if (currentStoryInfo) {
-      if (recentPlay && recentPlay?.story_id === currentStoryInfo.id) {
-        console.log("currentTimeRef.current時間===", currentTimeRef.current);
-        // setCurrentTime(recentPlay.played_at);
-        // currentTimeRef.current = recentPlay.played_at;
-        // console.log("Set to last played time:", recentPlay.played_at);
-      } else {
-        // setCurrentTime(0);
-        // currentTimeRef.current = 0;
-        console.log("New story,");
-      }
-    }
-  }, [currentStoryInfo, recentPlay, setCurrentTime, currentTimeRef]);
-
   //創建音頻播放器
   useEffect(() => {
     if (currentStoryInfo) {
       const existingStoryId = audioRef.current.storyId;
-      if (existingStoryId === currentStoryInfo.id && audioRef.current.instance) {
+      // console.log("創建播放器---同一個故事嗎", istheSameStory, audioRef.current.instance);
+      // console.log(
+      //   "創建播放器---currentStoryInfo",
+      //   currentStoryInfo.id,
+      //   "audioRef.current.storyId",
+      //   audioRef.current.storyId
+      // );
+      if (
+        (existingStoryId === currentStoryInfo.id && audioRef.current.instance) ||
+        (istheSameStory && audioRef.current.instance)
+      ) {
         console.log("-------使用舊的player------------------");
         return;
       } else {
@@ -86,7 +87,6 @@ const RecentPlayBar = () => {
           audioRef.current.instance.destroy();
         }
         console.log("-------新的player------------------");
-
         const wavesurfer = WaveSurfer.create({
           container: "#waveform_bottom",
           waveColor: "#CCE3FD",
@@ -103,13 +103,6 @@ const RecentPlayBar = () => {
         }
         // 設置播放時間更新與字幕更新邏輯
         let lastUpdateTime = 0;
-
-        // const updateRecentPlay = debounce((currentTime: number) => {
-        //   if (user && user.uid && currentStoryInfo.id) {
-        //     console.log("更新到資料庫", currentStoryInfo.id, currentTime);
-        //     dbApi.updateRecentPlay(user.uid, currentStoryInfo.id, currentTime);
-        //   }
-        // }, 1000);
 
         const updateRecentPlay = (currentTime: number) => {
           if (user && user.uid && currentStoryInfo.id) {
@@ -131,9 +124,17 @@ const RecentPlayBar = () => {
 
         wavesurfer.on("ready", () => {
           setDuration(wavesurfer.getDuration());
-          if (currentTimeRef.current > 0) {
+
+          console.log("確認id,", currentStoryInfo.id, existingStoryId, recentPlay?.story_id);
+          if (istheSameStory && currentTimeRef.current > 0) {
+            //從上次播放的時間開始播放(故事頁面)
             wavesurfer.seekTo(currentTimeRef.current / wavesurfer.getDuration());
-            console.log("Audio ready, seeking to currentTime:", currentTimeRef.current);
+            // console.log("Audio ready, seeking to currentTime:", currentTimeRef.current);
+          } else if (currentStoryInfo.id === recentPlay?.story_id && recentPlay && recentPlay.played_at > 0) {
+            //從資料庫的最近播放時間 開始播放(主頁)
+            // console.log("existingStoryId", existingStoryId, "recentPlay.story_id", recentPlay.story_id);
+            wavesurfer.seekTo(recentPlay.played_at / wavesurfer.getDuration());
+            // console.log("最近播放 Audio ready, seeking to recentPlay:", recentPlay);
           }
         });
 
@@ -143,7 +144,10 @@ const RecentPlayBar = () => {
           setCurrentTime(newTime);
           currentTimeRef.current = newTime;
           lastUpdateTime = newTime;
-          updateRecentPlay(newTime);
+          if (!istheSameStory) {
+            console.log("時間軸跳轉", newTime);
+            updateRecentPlay(newTime);
+          }
         });
 
         wavesurfer.on("finish", () => {
@@ -155,7 +159,7 @@ const RecentPlayBar = () => {
         // };
       }
     }
-  }, [currentStoryInfo, currentTimeRef, recentPlay, setIsPlaying, storyInfo?.id, user]);
+  }, [currentStoryInfo, currentTimeRef, recentPlay, setIsPlaying, storyInfo?.id, user, istheSameStory]);
 
   const togglePlayPause = () => {
     const wavesurfer = audioRef.current.instance;
