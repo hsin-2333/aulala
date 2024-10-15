@@ -19,8 +19,6 @@ type RecentPlayContextType = {
   isPlaying: boolean;
   setIsPlaying: (isPlaying: boolean) => void;
   fetchRecentPlay: () => Promise<void>;
-  // currentTime: number;
-  // setCurrentTime: (currentTime: number) => void;
   currentTimeRef: React.MutableRefObject<number>;
 };
 
@@ -52,7 +50,6 @@ export const RecentPlayProvider = ({ children }: { children: ReactNode }) => {
   const [recentPlay, setRecentPlay] = useState<RecentPlay | null>(null);
   const [storyInfo, setStoryInfo] = useState<Story | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  // const [currentTime, setCurrentTime] = useState(0);
   const currentTimeRef = useRef(0);
 
   const fetchRecentPlay = useCallback(async () => {
@@ -72,11 +69,3 @@ export const RecentPlayProvider = ({ children }: { children: ReactNode }) => {
     </RecentPlayContext.Provider>
   );
 };
-
-// export const useRecentPlay = () => {
-//   const context = useContext(RecentPlayContext);
-//   if (context === undefined) {
-//     throw new Error("useRecentPlay must be used within a RecentPlayProvider");
-//   }
-//   return context;
-// };

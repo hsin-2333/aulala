@@ -213,6 +213,21 @@ const dbApi = {
     }
   },
 
+  async getStoryById(storyId: string) {
+    try {
+      const storyDocRef = doc(db, "stories", storyId);
+      const storyDoc = await getDoc(storyDocRef);
+      if (storyDoc.exists()) {
+        return { id: storyDoc.id, ...storyDoc.data() } as Story;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      console.error("Error getting story: ", e);
+      throw e;
+    }
+  },
+
   async getStories(limitNum: number) {
     const q = query(collection(db, "stories"), limit(limitNum));
     const querySnapshot = await getDocs(q);
