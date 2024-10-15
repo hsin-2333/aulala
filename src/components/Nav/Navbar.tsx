@@ -117,7 +117,7 @@ export function NavbarComponent() {
                 </form>
 
                 <Tooltip
-                  key="notification"
+                  key="upload"
                   placement="bottom"
                   content="upload your audio story"
                   color="foreground"
@@ -206,6 +206,7 @@ export function NavbarComponent() {
                       color="danger"
                       onClick={handleLogout}
                       startContent={<FiLogOut size={16} />}
+                      className=" data-[hover=true]:bg-[#fba19a47] data-[hover=true]:text-[#f66969]"
                     >
                       Log Out
                     </DropdownItem>

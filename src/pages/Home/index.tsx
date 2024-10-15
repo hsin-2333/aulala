@@ -134,8 +134,8 @@ function HomePage({ onCardClick }: HomePageProps) {
                 <Button
                   key={category.value}
                   radius="full"
-                  className={`border border-default-200 flex-shrink-0 h-7 sm:h-8 ${
-                    selectedCategory === category.value ? "bg-blue-50" : "bg-white"
+                  className={`flex-shrink-0 h-7 sm:h-8 border ${
+                    selectedCategory === category.value ? "bg-blue-50 border-blue-100" : "bg-white border-default-200"
                   }`}
                   onClick={() => setSelectedCategory(category.value)}
                   startContent={

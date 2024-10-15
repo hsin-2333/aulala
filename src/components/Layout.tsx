@@ -24,7 +24,7 @@ export const OuterLayout = ({ children }: LayoutProps) => {
   }, [location]);
 
   return (
-    <div className="flex h-screen overflow-hidden  flex-col">
+    <div className="flex h-screen overflow-hidden flex-col">
       <div className="flex-1">
         <div className="fixed z-10 w-full">
           <NavbarComponent />
