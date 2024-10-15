@@ -12,6 +12,7 @@ import {
   DropdownSection,
   Input,
   Divider,
+  Tooltip,
 } from "@nextui-org/react";
 import { FiSearch } from "react-icons/fi";
 import { GiSpellBook } from "react-icons/gi";
@@ -23,6 +24,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import Logo from "../../assets/logo";
 import dbApi from "../../utils/firebaseService";
+import { SlCloudUpload } from "react-icons/sl";
+import { FiLogOut } from "react-icons/fi";
+import { FaBarsProgress } from "react-icons/fa6";
 
 export function NavbarComponent() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -111,23 +115,56 @@ export function NavbarComponent() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </form>
-                {/* <SearchComponent /> */}
-                <Button as={Link} color="primary" variant="flat" radius="sm" href="/upload/story">
-                  Upload
-                </Button>
-                <Link
-                  href={`/account/${user.userName}/notification`}
+
+                <Tooltip
+                  key="notification"
+                  placement="bottom"
+                  content="upload your audio story"
                   color="foreground"
-                  onClick={handleNotificationClick}
+                  offset={22}
+                  className="bg-opacity-60"
                 >
-                  <div className="relative">
-                    <IoMdNotificationsOutline size={21} color="var(--color-primary)" />
-                    {hasUnreadNotifications && (
-                      <span className="absolute top-0 right-0 h-2 w-2 bg-[#E0756D] rounded-full"></span>
-                    )}
-                  </div>
-                </Link>
-                <Divider orientation="vertical" className="h-10" />
+                  <Button
+                    as={Link}
+                    color="primary"
+                    variant="flat"
+                    radius="sm"
+                    href="/upload/story"
+                    startContent={<SlCloudUpload size={18} />}
+                  >
+                    Upload
+                  </Button>
+                </Tooltip>
+                <Tooltip
+                  key="notification"
+                  placement="bottom"
+                  content="notifications"
+                  color="foreground"
+                  offset={22}
+                  className="bg-opacity-60"
+                >
+                  <Button
+                    isIconOnly
+                    className=" text-default-900/60 data-[hover]:bg-foreground/10 -mx-2 "
+                    radius="full"
+                    variant="light"
+                  >
+                    <Link
+                      href={`/account/${user.userName}/notification`}
+                      color="foreground"
+                      onClick={handleNotificationClick}
+                      className="data-[hover]:bg-foreground/70"
+                    >
+                      <div className="relative">
+                        <IoMdNotificationsOutline size={24} color="var(--color-primary)" />
+                        {hasUnreadNotifications && (
+                          <span className="absolute top-0 right-0 h-2 w-2 bg-[#E0756D] rounded-full"></span>
+                        )}
+                      </div>
+                    </Link>
+                  </Button>
+                </Tooltip>
+                <Divider orientation="vertical" className="h-8" />
                 <Dropdown placement="bottom-end">
                   <DropdownTrigger>
                     <Avatar
@@ -147,20 +184,29 @@ export function NavbarComponent() {
                   >
                     <DropdownSection showDivider>
                       <DropdownItem key="profile" className="h-14 gap-2">
-                        <p className="font-semibold">{user.role}</p>
+                        {/* <p className="font-semibold">{user.role}</p> */}
                         <p className="font-semibold">{user.email}</p>
                       </DropdownItem>
-                      <DropdownItem key="contents" href={`/account/${user.userName}`}>
-                        My Contents
+                      <DropdownItem
+                        key="contents"
+                        href={`/user/${user.userName}/uploads`}
+                        startContent={<FaBarsProgress size={16} />}
+                      >
+                        My Content
                       </DropdownItem>
-                      <DropdownItem key="user_settings" href={`/user/${user.userName}/setting`}>
+                      {/* <DropdownItem key="user_settings" href={`/user/${user.userName}/setting`}>
                         Setting
                       </DropdownItem>
                       <DropdownItem key="analytics" href={`/user/${user.userName}/analytics`}>
                         Analytics
-                      </DropdownItem>
+                      </DropdownItem> */}
                     </DropdownSection>
-                    <DropdownItem key="logout" color="danger" onClick={handleLogout}>
+                    <DropdownItem
+                      key="logout"
+                      color="danger"
+                      onClick={handleLogout}
+                      startContent={<FiLogOut size={16} />}
+                    >
                       Log Out
                     </DropdownItem>
                   </DropdownMenu>
