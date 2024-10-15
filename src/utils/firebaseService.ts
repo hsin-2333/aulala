@@ -517,7 +517,7 @@ const dbApi = {
   },
 
   async subscribeToStory(author: string, callback: (data: Story[]) => void) {
-    const q = query(collection(db, "stories"), where("author", "==", author));
+    const q = query(collection(db, "stories"), where("author", "==", author), orderBy("created_at", "desc"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const StoryData: Story[] = [];
       querySnapshot.forEach((doc) => {

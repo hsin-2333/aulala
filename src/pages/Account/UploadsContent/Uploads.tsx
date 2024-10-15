@@ -63,21 +63,26 @@ const StoryTable = () => {
     };
   }, [user?.userName, queryClient]);
 
-  const { data: storyData, error } = useQuery({
+  const { data: storyData } = useQuery<Story[]>({
     queryKey: ["stories", user?.userName],
-    queryFn: async () => {
-      const story = await dbApi.queryCollection("stories", { author: user?.userName }, 10, "created_at", "desc");
-      return story as Story[];
-    },
+    select: (data) => data || [],
   });
 
-  if (error) return <div>Error loading story data: {error.message}</div>;
-  console.log(storyData);
+  // const { data: storyData, error } = useQuery({
+  //   queryKey: ["stories", user?.userName],
+  //   queryFn: async () => {
+  //     const story = await dbApi.queryCollection("stories", { author: user?.userName }, 10, "created_at", "desc");
+  //     return story as Story[];
+  //   },
+  // });
+
+  // if (error) return <div>Error loading story data: {error.message}</div>;
+  // console.log(storyData);
 
   const handleDelete = async (storyId: string) => {
     await dbApi.deleteStory(storyId);
     if (user?.userName) {
-      queryClient.invalidateQueries({ queryKey: ["stories", user.userName] }); // Refresh the story list
+      queryClient.invalidateQueries({ queryKey: ["stories", user.userName] });
     }
   };
 
@@ -146,14 +151,14 @@ const StoryTable = () => {
               ></th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200 hover:bg-gray-100">
+          <tbody className="bg-white divide-y divide-gray-200 ">
             {storyData?.map((story) => (
-              <tr key={story.id}>
+              <tr key={story.id} className="hover:bg-gray-100">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{story.title}</td>
                 <td className="px-6 py-4 text-sm text-gray-500" style={{ width: "200px" }}>
                   <div className="line-clamp-5 overflow-hidden">{story.summary}</div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 ">
                   {story.status !== undefined && (
                     <Chip
                       className="capitalize"
