@@ -8,6 +8,7 @@ import dbApi from "../utils/firebaseService";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Story } from "../types";
+import { Link } from "@nextui-org/link";
 
 const RecentPlayBar = () => {
   const { user } = useContext(AuthContext);
@@ -195,11 +196,15 @@ const RecentPlayBar = () => {
                 className="w-8 h-8 md:w-12 md:h-12 rounded-sm"
               />
               <div className="flex flex-grow max-w-full flex-col">
-                <div className="text-white whitespace-nowrap overflow-hidden text-overflow-ellipsis text-xs sm:text-medium">
-                  {currentStoryInfo?.voice_actor}
+                <div className=" whitespace-nowrap overflow-hidden text-overflow-ellipsis text-xs sm:text-medium">
+                  <Link href={`/user/${currentStoryInfo?.voice_actor}`} underline="hover" className="text-white">
+                    {currentStoryInfo?.voice_actor}
+                  </Link>
                 </div>
-                <div className="text-gray-400 whitespace-nowrap overflow-hidden text-overflow-ellipsis text-xs sm:text-medium">
-                  {currentStoryInfo?.title}
+                <div className=" whitespace-nowrap overflow-hidden text-overflow-ellipsis text-xs sm:text-medium">
+                  <Link href={`/story/${currentStoryInfo.id}`} underline="hover" className="text-gray-400">
+                    {currentStoryInfo?.title}
+                  </Link>
                 </div>
               </div>
             </div>

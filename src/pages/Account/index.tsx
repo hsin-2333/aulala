@@ -20,6 +20,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import dbApi from "../../utils/firebaseService";
 import { User } from "../../types";
 import Toast from "../../components/Toast";
+
 interface FormData {
   selfIntro: string;
   website?: string;
@@ -52,15 +53,19 @@ function Account() {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
 
+  const urlName = userName as string;
+
   const { data: userData, isLoading } = useQuery({
-    queryKey: ["user", user?.uid],
-    queryFn: () => {
-      if (user && user.uid) {
-        return dbApi.getUser(user.uid);
+    queryKey: ["userName", urlName],
+    queryFn: async () => {
+      if (urlName) {
+        const uuName = await dbApi.queryCollection("users", { userName: urlName }, 1);
+        return uuName[0] as User;
       }
     },
-    enabled: !!user?.uid,
+    enabled: !!urlName,
   });
+
   if (isLoading) return <div>Loading...</div>;
   if (!userData) return null;
 
@@ -101,7 +106,7 @@ function Account() {
     };
 
     await dbApi.updateUser(updatedUser);
-    queryClient.invalidateQueries({ queryKey: ["user", user?.uid] });
+    queryClient.invalidateQueries({ queryKey: ["userName", userName] });
     onOpenChange();
   };
 
@@ -124,7 +129,7 @@ function Account() {
       <div className="fixed z-[60] z-1 bg-white">
         {showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}
       </div>
-      {user && (
+      {urlName && userData && (
         <div>
           <div className="relative ">
             <div
@@ -135,27 +140,30 @@ function Account() {
                 transform: "translate(-50%, -50%)",
               }}
             ></div>
-            <Button
-              isIconOnly
-              style={{
-                right: "2%",
-                transform: "translate(0%, 80%)",
-                position: "absolute",
-              }}
-              className="bg-slate-200 h-8 w-8 rounded"
-              aria-label="EditIcon"
-              onPress={handleEdit}
-            >
-              <BiSolidEditAlt />
-            </Button>
+            {user && user.userName === userData.userName && (
+              <Button
+                isIconOnly
+                style={{
+                  right: "2%",
+                  transform: "translate(0%, 80%)",
+                  position: "absolute",
+                }}
+                className="bg-slate-200 h-8 w-8 rounded"
+                aria-label="EditIcon"
+                onPress={handleEdit}
+              >
+                <BiSolidEditAlt />
+              </Button>
+            )}
+
             <div className=" absolute top-2 left-10 sm:top-12 sm:left-20 transform -translate-x-1/2 flex justify-center items-center h-full flex-col">
               <Avatar
-                src={user.avatar}
+                src={userData.avatar}
                 alt="User Avatar"
                 isBordered
                 as="button"
                 className="transition-transform w-14 h-14 flex-shrink-0"
-                name={user.userName}
+                name={userData.userName}
                 size="sm"
                 color="primary"
               />
@@ -195,11 +203,15 @@ function Account() {
                                   </a>
                                 ))}
                           </div>
-                          {userName !== userData.userName && (
-                            <div className="flex justify-center mt-4">
-                              <button className="btn btn-primary border border-slate-500 rounded-full px-3 py-1">
+                          {user && user.userName !== userData.userName && (
+                            <div className="flex justify-start mt-4">
+                              <Button
+                                variant="ghost"
+                                radius="full"
+                                className="btn btn-primary border border-slate-500 px-3 py-1"
+                              >
                                 Follow
-                              </button>
+                              </Button>
                             </div>
                           )}
                         </div>
