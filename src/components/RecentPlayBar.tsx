@@ -3,7 +3,7 @@ import WaveSurfer from "wavesurfer.js";
 import { RecentPlayContext } from "../context/RecentPlayContext";
 import { AuthContext } from "../context/AuthContext";
 import Icon from "./Icon";
-import { debounce } from "lodash";
+// import { debounce } from "lodash";
 import dbApi from "../utils/firebaseService";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +11,10 @@ import { Story } from "../types";
 
 const RecentPlayBar = () => {
   const { user } = useContext(AuthContext);
-  const audioRef = useRef<WaveSurfer | null>(null);
+  const audioRef = useRef<{ instance: WaveSurfer | null; storyId: string | null }>({
+    instance: null,
+    storyId: null,
+  });
   const volumeRef = useRef<number>(100);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(100);
@@ -29,6 +32,7 @@ const RecentPlayBar = () => {
   //取得故事資訊
   useEffect(() => {
     let isMounted = true;
+
     if (storyId) {
       setIsLoading(true);
 
@@ -54,15 +58,18 @@ const RecentPlayBar = () => {
   }, [storyId, storyInfo, setIsPlaying]);
 
   useEffect(() => {
+    console.log("判斷新舊 currentStoryInfo", currentStoryInfo);
+    console.log("判斷新舊 recentPlay", recentPlay, "播放到", recentPlay?.played_at);
     if (currentStoryInfo) {
       if (recentPlay && recentPlay?.story_id === currentStoryInfo.id) {
-        setCurrentTime(recentPlay.played_at);
-        currentTimeRef.current = recentPlay.played_at;
-        console.log("Set to last played time:", recentPlay.played_at);
+        console.log("currentTimeRef.current時間===", currentTimeRef.current);
+        // setCurrentTime(recentPlay.played_at);
+        // currentTimeRef.current = recentPlay.played_at;
+        // console.log("Set to last played time:", recentPlay.played_at);
       } else {
-        setCurrentTime(0);
-        currentTimeRef.current = 0;
-        console.log("New story, reset time to 0");
+        // setCurrentTime(0);
+        // currentTimeRef.current = 0;
+        console.log("New story,");
       }
     }
   }, [currentStoryInfo, recentPlay, setCurrentTime, currentTimeRef]);
@@ -70,69 +77,90 @@ const RecentPlayBar = () => {
   //創建音頻播放器
   useEffect(() => {
     if (currentStoryInfo) {
-      const wavesurfer = WaveSurfer.create({
-        container: "#waveform_bottom",
-        waveColor: "#CCE3FD",
-        progressColor: "#66AAF9",
-        url: currentStoryInfo.audio_url,
-        barWidth: 4,
-        barGap: 3,
-        barRadius: 16,
-        height: 40,
-      });
-
-      audioRef.current = wavesurfer;
-
-      // 設置播放時間更新與字幕更新邏輯
-      let lastUpdateTime = 0;
-
-      const updateRecentPlay = debounce((currentTime: number) => {
-        if (user && user.uid && storyInfo?.id) {
-          dbApi.updateRecentPlay(user.uid, storyInfo?.id, currentTime);
+      const existingStoryId = audioRef.current.storyId;
+      if (existingStoryId === currentStoryInfo.id && audioRef.current.instance) {
+        console.log("-------使用舊的player------------------");
+        return;
+      } else {
+        if (audioRef.current.instance) {
+          audioRef.current.instance.destroy();
         }
-      }, 800);
+        console.log("-------新的player------------------");
 
-      wavesurfer.on("timeupdate", (currentTime) => {
-        setCurrentTime(currentTime);
-        currentTimeRef.current = currentTime;
+        const wavesurfer = WaveSurfer.create({
+          container: "#waveform_bottom",
+          waveColor: "#CCE3FD",
+          progressColor: "#66AAF9",
+          url: currentStoryInfo.audio_url,
+          barWidth: 4,
+          barGap: 3,
+          barRadius: 16,
+          height: 40,
+        });
 
-        if (currentTime - lastUpdateTime > 0.8) {
-          lastUpdateTime = currentTime;
-          updateRecentPlay(currentTime);
-          console.log("timeupdate event時間更新", currentTime);
+        if (currentStoryInfo.id) {
+          audioRef.current = { instance: wavesurfer, storyId: currentStoryInfo.id };
         }
-      });
+        // 設置播放時間更新與字幕更新邏輯
+        let lastUpdateTime = 0;
 
-      wavesurfer.on("ready", () => {
-        setDuration(wavesurfer.getDuration());
-        if (currentTimeRef.current > 0) {
-          wavesurfer.seekTo(currentTimeRef.current / wavesurfer.getDuration());
-          console.log("Audio ready, seeking to currentTime:", currentTimeRef.current);
-        }
-      });
+        // const updateRecentPlay = debounce((currentTime: number) => {
+        //   if (user && user.uid && currentStoryInfo.id) {
+        //     console.log("更新到資料庫", currentStoryInfo.id, currentTime);
+        //     dbApi.updateRecentPlay(user.uid, currentStoryInfo.id, currentTime);
+        //   }
+        // }, 1000);
 
-      // 時間軸跳轉
-      wavesurfer.on("seeking", (progress) => {
-        const newTime = progress;
-        setCurrentTime(newTime);
-        currentTimeRef.current = newTime;
-        lastUpdateTime = newTime;
-        updateRecentPlay(newTime);
-      });
+        const updateRecentPlay = (currentTime: number) => {
+          if (user && user.uid && currentStoryInfo.id) {
+            console.log("更新到資料庫", currentStoryInfo.id, currentTime);
+            dbApi.updateRecentPlay(user.uid, currentStoryInfo.id, currentTime);
+          }
+        };
 
-      wavesurfer.on("finish", () => {
-        setIsPlaying(false);
-      });
+        wavesurfer.on("timeupdate", (currentTime) => {
+          setCurrentTime(currentTime);
+          currentTimeRef.current = currentTime;
 
-      return () => {
-        wavesurfer.destroy();
-      };
+          if (currentTime - lastUpdateTime > 0.999) {
+            lastUpdateTime = currentTime;
+            updateRecentPlay(currentTime);
+            console.log("timeupdate event時間更新", currentTime);
+          }
+        });
+
+        wavesurfer.on("ready", () => {
+          setDuration(wavesurfer.getDuration());
+          if (currentTimeRef.current > 0) {
+            wavesurfer.seekTo(currentTimeRef.current / wavesurfer.getDuration());
+            console.log("Audio ready, seeking to currentTime:", currentTimeRef.current);
+          }
+        });
+
+        // 時間軸跳轉
+        wavesurfer.on("seeking", (progress) => {
+          const newTime = progress;
+          setCurrentTime(newTime);
+          currentTimeRef.current = newTime;
+          lastUpdateTime = newTime;
+          updateRecentPlay(newTime);
+        });
+
+        wavesurfer.on("finish", () => {
+          setIsPlaying(false);
+        });
+
+        // return () => {
+        //   wavesurfer.destroy();
+        // };
+      }
     }
   }, [currentStoryInfo, currentTimeRef, recentPlay, setIsPlaying, storyInfo?.id, user]);
 
   const togglePlayPause = () => {
-    const wavesurfer = audioRef.current;
-    console.log("togglePlayPause", wavesurfer);
+    const wavesurfer = audioRef.current.instance;
+    // console.log("togglePlayPause", wavesurfer);
+    console.log("暫停/播放====");
     if (wavesurfer) {
       if (isPlaying) {
         wavesurfer.pause();
@@ -147,8 +175,8 @@ const RecentPlayBar = () => {
     const newVolume = +event.target.value;
     setVolume(newVolume);
     volumeRef.current = newVolume;
-    if (audioRef.current) {
-      audioRef.current.setVolume(newVolume / 100);
+    if (audioRef.current.instance) {
+      audioRef.current.instance.setVolume(newVolume / 100);
     }
   };
   return (
