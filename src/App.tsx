@@ -18,17 +18,16 @@ import {
   ScriptLayout,
   UserHomeLayout,
 } from "./components/Layout";
-import TestUI from "./components/testUI";
 import Account from "./pages/Account";
 import Notifications from "./pages/Account/Notification";
 import UploadScript from "./pages/Account/Upload/UploadScript";
 import UploadStory from "./pages/Account/Upload/UploadStory";
 import StoryTable from "./pages/Account/UploadsContent/Uploads";
+import ScriptContent from "./pages/Content/Script";
+import StoryContent from "./pages/Content/Story";
 import HomePage from "./pages/Home";
 import LoginComponent from "./pages/Login";
-import SearchResultsPage from "./pages/SearchResultsPage";
-import ScriptContent from "./pages/UserContent/Script";
-import StoryContent from "./pages/UserContent/Story";
+import SearchResultsPage from "./pages/SearchResult/index";
 const queryClient = new QueryClient();
 
 function App() {
@@ -38,14 +37,6 @@ function App() {
         <AuthContextProvider>
           <RecentPlayProvider>
             <Routes>
-              <Route
-                path="/testUI"
-                element={
-                  <>
-                    <TestUI />
-                  </>
-                }
-              />
               <Route
                 path="/"
                 element={

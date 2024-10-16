@@ -2,8 +2,8 @@ import { Button, Card, Input, Link, Skeleton } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
-import { index } from "../../algoliaClient";
-import { SearchResultCard } from "../components/Card";
+import { index } from "../../../algoliaClient";
+import { SearchResultCard } from "../../components/Card";
 
 type SearchResult = {
   objectID: string;
@@ -53,8 +53,11 @@ const SearchResultsPage = () => {
     .filter((tag, index, self) => self.indexOf(tag) === index);
   return (
     <>
-      <div className="mx-auto flex flex-col align-middle items-center">
-        <form onSubmit={handleSearchSubmit} className="flex justify-center items-center w-full ">
+      <div className="mx-auto flex flex-col items-center align-middle">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="flex w-full items-center justify-center"
+        >
           <Input
             classNames={{
               base: " max-w-[848px] shadow-xl shadow-indigo-200/20",
@@ -71,9 +74,11 @@ const SearchResultsPage = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </form>
-        <p className="font-bold text-2xl mt-4">{query}</p>
-        <p className="text-default-400 text-md mt-1">Search Results for "{query}"</p>
-        <div className="flex flex-wrap mt-2 mx-auto">
+        <p className="mt-4 text-2xl font-bold">{query}</p>
+        <p className="text-md mt-1 text-default-400">
+          Search Results for "{query}"
+        </p>
+        <div className="mx-auto mt-2 flex flex-wrap">
           {allTags.map((tag, index) => (
             <Button
               as={Link}
@@ -82,14 +87,14 @@ const SearchResultsPage = () => {
               color="default"
               size="sm"
               radius="sm"
-              className="mt-1 mr-2"
+              className="mr-2 mt-1"
               variant="flat"
             >
               {tag}
             </Button>
           ))}
         </div>
-        <section className="grid grid-cols-1 align-middle w-full max-w-[848px] mt-8">
+        <section className="mt-8 grid w-full max-w-[848px] grid-cols-1 align-middle">
           {isLoading ? (
             <SearchResultSkeleton />
           ) : searchResults.length > 0 ? (
@@ -127,11 +132,16 @@ export default SearchResultsPage;
 
 const SearchResultSkeleton = () => {
   return (
-    <Card className="mt-8 flex flex-row p-4 gap-4" radius="lg" shadow="sm" fullWidth={true}>
+    <Card
+      className="mt-8 flex flex-row gap-4 p-4"
+      radius="lg"
+      shadow="sm"
+      fullWidth={true}
+    >
       <Skeleton className="rounded-lg">
         <div className="h-24 w-24 rounded-lg bg-default-300"></div>
       </Skeleton>
-      <div className="space-y-3 mt-2 w-full ">
+      <div className="mt-2 w-full space-y-3">
         <Skeleton className="w-3/5 rounded-lg">
           <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
         </Skeleton>

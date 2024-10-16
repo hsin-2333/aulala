@@ -1,14 +1,25 @@
-import { Card, CardBody, Chip, Link, ScrollShadow, Tab, Tabs } from "@nextui-org/react";
+import {
+  Card,
+  CardBody,
+  Chip,
+  Link,
+  ScrollShadow,
+  Tab,
+  Tabs,
+} from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useParams } from "react-router-dom";
-import { CommentToolbar, InteractionToolbar } from "../../components/InteractionToolbar";
+import {
+  CommentToolbar,
+  InteractionToolbar,
+} from "../../components/InteractionToolbar";
 import { AuthContext } from "../../context/AuthContext";
 import { RecentPlayContext } from "../../context/RecentPlayContext";
 import { Story } from "../../types";
 import dbApi from "../../utils/firebaseService";
-import SubtitlesComponent from "../UserContent/Segments";
+import SubtitlesComponent from "../Content/Segments";
 
 function StoryContent() {
   const context = useContext(RecentPlayContext);
@@ -36,39 +47,47 @@ function StoryContent() {
   const tags = story?.tags ? story.tags : [];
   return (
     <>
-      <div className="absolute left-2 top-3 gap-2 self-center flex justify-center sm:hidden">
+      <div className="absolute left-2 top-3 flex justify-center gap-2 self-center sm:hidden">
         <Link href="/" color="foreground">
           <IoIosArrowBack size={20} className="self-center" />
         </Link>
-        <span className="text-medium text-default-800 font-bold"> Upload Story</span>
+        <span className="text-medium font-bold text-default-800">
+          {" "}
+          Upload Story
+        </span>
       </div>
       {story && story.img_url && (
-        <div className="text-left mt-16 sm:mt-0 h-full">
+        <div className="mt-16 h-full text-left sm:mt-0">
           {story && (
-            <div className="flex justify-between mb-4 px-4 lg:px-0">
-              <h2 className="text-2xl font-semibold mb-2">{story.title}</h2>
-              {user && user.userName && <InteractionToolbar userName={user.userName} storyId={story?.id} />}
+            <div className="mb-4 flex justify-between px-4 lg:px-0">
+              <h2 className="mb-2 text-2xl font-semibold">{story.title}</h2>
+              {user && user.userName && (
+                <InteractionToolbar
+                  userName={user.userName}
+                  storyId={story?.id}
+                />
+              )}
             </div>
           )}
 
           <div className="flex flex-col sm:flex-row">
             {story && (
-              <div className="flex-1 px-4 ">
+              <div className="flex-1 px-4">
                 {/* <h2 className="text-2xl text-center font-semibold mb-2">{story.title}</h2> */}
-                <div className="relative p-4 my-16 m-auto flex justify-center">
+                <div className="relative m-auto my-16 flex justify-center p-4">
                   <img
-                    className={`object-cover w-32 h-32 sm:w-56 sm:h-56 rounded-full border-8 border-[black] border-opacity-70 z-10 ${
+                    className={`z-10 h-32 w-32 rounded-full border-8 border-[black] border-opacity-70 object-cover sm:h-56 sm:w-56 ${
                       isPlaying ? "animate-[spin_8s_linear_infinite]" : ""
                     }`}
                     src={story.img_url[0]}
                     alt={story.title}
                   />
 
-                  <div className="absolute inset-0 flex justify-center items-center ">
-                    <div className="w-[16rem] h-[16rem] sm:w-[22rem] sm:h-[22rem] rounded-full border-3 bg-[#27272A] border-[#575757] border-opacity-80  absolute z-3 "></div>
-                    <div className="w-[14rem] h-[14rem] sm:w-[20rem] sm:h-[20rem] rounded-full border-2 bg-[#27272A] border-[#575757] border-opacity-30  absolute z-3 "></div>
-                    <div className="w-[12rem] h-[12rem] sm:w-[18rem] sm:h-[18rem] rounded-full border-2 bg-[#27272A] border-[#575757] border-opacity-30  absolute z-4 "></div>
-                    <div className="w-[10rem] h-[10rem] sm:w-[16rem] sm:h-[16rem] rounded-full border-2 bg-[#27272A] border-[#575757] border-opacity-30 absolute z-5 "></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="z-3 absolute h-[16rem] w-[16rem] rounded-full border-3 border-[#575757] border-opacity-80 bg-[#27272A] sm:h-[22rem] sm:w-[22rem]"></div>
+                    <div className="z-3 absolute h-[14rem] w-[14rem] rounded-full border-2 border-[#575757] border-opacity-30 bg-[#27272A] sm:h-[20rem] sm:w-[20rem]"></div>
+                    <div className="z-4 absolute h-[12rem] w-[12rem] rounded-full border-2 border-[#575757] border-opacity-30 bg-[#27272A] sm:h-[18rem] sm:w-[18rem]"></div>
+                    <div className="z-5 absolute h-[10rem] w-[10rem] rounded-full border-2 border-[#575757] border-opacity-30 bg-[#27272A] sm:h-[16rem] sm:w-[16rem]"></div>
                   </div>
                 </div>
               </div>
@@ -77,7 +96,7 @@ function StoryContent() {
               <Tabs aria-label="Story tabs" variant="underlined">
                 <Tab key="script" title="Script">
                   <ScrollShadow hideScrollBar size={100} className="h-[400px]">
-                    <Card shadow="none" className="max-h-[700px]  ">
+                    <Card shadow="none" className="max-h-[700px]">
                       <CardBody className="p-2">
                         <SubtitlesComponent />
                       </CardBody>
@@ -85,12 +104,20 @@ function StoryContent() {
                   </ScrollShadow>
                 </Tab>
                 <Tab key="summary" title="About">
-                  <Card shadow="none" className="max-h-[400px] bg-white ">
+                  <Card shadow="none" className="max-h-[400px] bg-white">
                     <CardBody>
-                      <p className="text-gray-700 mb-4 before:content-none">{story.summary}</p>
-                      <div className="gap-2 flex">
+                      <p className="mb-4 text-gray-700 before:content-none">
+                        {story.summary}
+                      </p>
+                      <div className="flex gap-2">
                         {tags.map((tag) => (
-                          <Chip key={tag} color="primary" size="md" radius="full" variant="flat">
+                          <Chip
+                            key={tag}
+                            color="primary"
+                            size="md"
+                            radius="full"
+                            variant="flat"
+                          >
                             {tag}
                           </Chip>
                         ))}
@@ -99,10 +126,14 @@ function StoryContent() {
                   </Card>
                 </Tab>
                 <Tab key="comments" title="Comments">
-                  <Card shadow="none" className="max-h-[400px] bg-white ">
+                  <Card shadow="none" className="max-h-[400px] bg-white">
                     <CardBody>
                       {user && user.userName ? (
-                        <CommentToolbar avatar={user.avatar} userName={user.userName} storyId={story?.id} />
+                        <CommentToolbar
+                          avatar={user.avatar}
+                          userName={user.userName}
+                          storyId={story?.id}
+                        />
                       ) : (
                         <p className="w-full text-medium">Login to comment !</p>
                       )}
