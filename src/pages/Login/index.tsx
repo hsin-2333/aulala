@@ -1,9 +1,9 @@
+import { Button, Input } from "@nextui-org/react";
 import { useContext, useEffect, useState } from "react";
+import { FaGoogle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import UserSignUpForm from "../Login/UserInfo";
-import { useNavigate } from "react-router-dom";
-import { Input, Button } from "@nextui-org/react";
-import { FaGoogle } from "react-icons/fa";
 
 const LoginComponent = () => {
   const { user, authUser, Login, LoginWithEmail, userExists } = useContext(AuthContext);

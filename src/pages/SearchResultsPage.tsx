@@ -1,11 +1,11 @@
+import { Button, Input, Link } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 //@ts-expect-error(123)
 import lunr from "lunr";
-import { SearchResultCard } from "../components/Card";
-import { index } from "../../algoliaClient"; // Import Algolia index
-import { Input, Link, Button } from "@nextui-org/react";
 import { FiSearch } from "react-icons/fi";
+import { index } from "../../algoliaClient"; // Import Algolia index
+import { SearchResultCard } from "../components/Card";
 const SearchResultsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();

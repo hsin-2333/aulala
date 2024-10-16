@@ -1,27 +1,26 @@
-import { useForm } from "react-hook-form";
-import { useState, useContext, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../../context/AuthContext";
-import dbApi from "../../../utils/firebaseService";
-import { CategoryOptions } from "../../../constants/categoryOptions";
 import {
-  Select,
-  SelectItem,
-  Input,
+  BreadcrumbItem,
+  Breadcrumbs,
   Button,
   Chip,
-  Progress,
-  Link,
   Divider,
-  Breadcrumbs,
-  BreadcrumbItem,
+  Input,
+  Link,
+  Progress,
+  Select,
+  SelectItem,
 } from "@nextui-org/react";
-import { IoIosArrowBack } from "react-icons/io";
 import { useQueryClient } from "@tanstack/react-query";
+import { useContext, useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { FaCheck } from "react-icons/fa";
+import { IoIosArrowBack } from "react-icons/io";
 import { SlCloudUpload } from "react-icons/sl";
+import { useLocation, useNavigate } from "react-router-dom";
 import Toast from "../../../components/Toast";
-import { useLocation } from "react-router-dom";
+import { CategoryOptions } from "../../../constants/categoryOptions";
+import { AuthContext } from "../../../context/AuthContext";
+import dbApi from "../../../utils/firebaseService";
 
 interface FormData {
   title: string;

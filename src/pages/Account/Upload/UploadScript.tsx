@@ -1,11 +1,11 @@
-import { useState, useEffect, useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import dbApi from "../../../utils/firebaseService";
-import { CategoryOptions } from "../../../constants/categoryOptions";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
+import { CategoryOptions } from "../../../constants/categoryOptions";
 import { AuthContext } from "../../../context/AuthContext";
+import dbApi from "../../../utils/firebaseService";
 
 interface ScriptFormData {
   title: string;

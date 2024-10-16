@@ -1,14 +1,14 @@
-import { useState, useRef, useEffect, useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
-import { RecentPlayContext } from "../context/RecentPlayContext";
 import { AuthContext } from "../context/AuthContext";
+import { RecentPlayContext } from "../context/RecentPlayContext";
 import Icon from "./Icon";
 // import { debounce } from "lodash";
-import dbApi from "../utils/firebaseService";
-import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { Story } from "../types";
 import { Link } from "@nextui-org/link";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { Story } from "../types";
+import dbApi from "../utils/firebaseService";
 
 const RecentPlayBar = () => {
   const { user } = useContext(AuthContext);

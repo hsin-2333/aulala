@@ -1,17 +1,15 @@
-import dbApi from "../../utils/firebaseService";
+import { Button, Card, CardBody, Chip, Divider, Image, Link, Tab, Tabs, Tooltip, User } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
 import { useContext, useRef, useState } from "react";
-import { Story, User as VoiceActor } from "../../types";
-import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
-import { Card, Chip, CardBody, Image, Tabs, Tab, Link, User, Divider, Button, Tooltip } from "@nextui-org/react";
-import { MdLanguage } from "react-icons/md";
 import { FaHashtag } from "react-icons/fa6";
-import { IoIosArrowBack } from "react-icons/io";
-import { IoIosArrowForward } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { MdLanguage } from "react-icons/md";
 import { SlCloudUpload } from "react-icons/sl";
+import { useNavigate, useParams } from "react-router-dom";
+import { CommentToolbar, InteractionToolbar } from "../../components/InteractionToolbar";
+import { AuthContext } from "../../context/AuthContext";
+import { Story, User as VoiceActor } from "../../types";
+import dbApi from "../../utils/firebaseService";
 
 function ScriptContent() {
   const navigate = useNavigate();

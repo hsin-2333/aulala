@@ -1,32 +1,31 @@
 import {
+  Avatar,
+  Button,
+  Divider,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownSection,
+  DropdownTrigger,
+  Input,
+  Link,
   Navbar,
   NavbarBrand,
   NavbarContent,
-  DropdownItem,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  Avatar,
-  Button,
-  Link,
-  DropdownSection,
-  Input,
-  Divider,
   Tooltip,
 } from "@nextui-org/react";
-import { FiSearch } from "react-icons/fi";
-import { GiSpellBook } from "react-icons/gi";
-import { IoAdd } from "react-icons/io5";
-import { VscAccount } from "react-icons/vsc";
-import { IoMdNotificationsOutline } from "react-icons/io";
-import { useContext, useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
-import Logo from "../../assets/logo";
-import dbApi from "../../utils/firebaseService";
-import { SlCloudUpload } from "react-icons/sl";
-import { FiLogOut } from "react-icons/fi";
+import { useContext, useEffect, useState } from "react";
 import { FaBarsProgress } from "react-icons/fa6";
+import { FiLogOut, FiSearch } from "react-icons/fi";
+import { GiSpellBook } from "react-icons/gi";
+import { IoMdNotificationsOutline } from "react-icons/io";
+import { IoAdd } from "react-icons/io5";
+import { SlCloudUpload } from "react-icons/sl";
+import { VscAccount } from "react-icons/vsc";
+import { useLocation, useNavigate } from "react-router-dom";
+import Logo from "../../assets/logo";
+import { AuthContext } from "../../context/AuthContext";
+import dbApi from "../../utils/firebaseService";
 
 export function NavbarComponent() {
   const [searchTerm, setSearchTerm] = useState("");

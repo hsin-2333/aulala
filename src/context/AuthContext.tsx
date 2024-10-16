@@ -1,17 +1,17 @@
 // AuthContext.jsx
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { createContext, useCallback, useEffect, useState, ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { auth } from "../../firebaseConfig";
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
+import { createContext, ReactNode, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebaseConfig";
+import { AuthContextType, AuthUser, User } from "../types";
 import dbApi from "../utils/firebaseService";
-import { AuthContextType, User, AuthUser } from "../types";
 
 interface AuthContextProviderProps {
   children: ReactNode;

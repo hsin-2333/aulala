@@ -1,4 +1,4 @@
-import { Card, CardBody, Image, Button } from "@nextui-org/react";
+import { Button, Card, CardBody, Image } from "@nextui-org/react";
 import Icon from "../components/Icon";
 export default function NextCard() {
   //   const [liked, setLiked] = React.useState(false);

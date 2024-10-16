@@ -1,10 +1,10 @@
-import { useForm, SubmitHandler } from "react-hook-form";
-import dbApi from "../../utils/firebaseService";
+import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { getAuth } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import debounce from "../../utils/debounce";
-import { Input, Button, Select, SelectItem } from "@nextui-org/react";
+import dbApi from "../../utils/firebaseService";
 
 enum GenderEnum {
   female = "female",

@@ -1,14 +1,14 @@
+import { Card, CardBody, Chip, Link, ScrollShadow, Tab, Tabs } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
-import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
-import { useParams } from "react-router-dom";
-import dbApi from "../../utils/firebaseService";
-import { Story } from "../../types";
-import { InteractionToolbar, CommentToolbar } from "../../components/InteractionToolbar";
-import { Tabs, Tab, Card, CardBody, ScrollShadow, Chip, Link } from "@nextui-org/react";
-import SubtitlesComponent from "../UserContent/Segments";
-import { RecentPlayContext } from "../../context/RecentPlayContext";
 import { IoIosArrowBack } from "react-icons/io";
+import { useParams } from "react-router-dom";
+import { CommentToolbar, InteractionToolbar } from "../../components/InteractionToolbar";
+import { AuthContext } from "../../context/AuthContext";
+import { RecentPlayContext } from "../../context/RecentPlayContext";
+import { Story } from "../../types";
+import dbApi from "../../utils/firebaseService";
+import SubtitlesComponent from "../UserContent/Segments";
 
 function StoryContent() {
   const context = useContext(RecentPlayContext);

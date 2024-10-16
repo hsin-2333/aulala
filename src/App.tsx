@@ -1,5 +1,5 @@
+import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthContextProvider } from "./context/AuthContext";
 import { RecentPlayProvider } from "./context/RecentPlayContext";
 import PrivateRoute from "./utils/PrivateRoute";
@@ -7,18 +7,18 @@ import PrivateRoute from "./utils/PrivateRoute";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import HomePage from "./pages/Home";
-import Account from "./pages/Account";
-import LoginComponent from "./pages/Login";
-import StoryContent from "./pages/UserContent/Story";
-import ScriptContent from "./pages/UserContent/Script";
 import { Layout, OuterLayout, ScriptLayout, UserHomeLayout } from "./components/Layout";
+import TestUI from "./components/testUI";
+import Account from "./pages/Account";
+import Notifications from "./pages/Account/Notification";
 import UploadScript from "./pages/Account/Upload/UploadScript";
 import UploadStory from "./pages/Account/Upload/UploadStory";
-import Notifications from "./pages/Account/Notification";
 import StoryTable from "./pages/Account/UploadsContent/Uploads";
-import TestUI from "./components/testUI";
+import HomePage from "./pages/Home";
+import LoginComponent from "./pages/Login";
 import SearchResultsPage from "./pages/SearchResultsPage";
+import ScriptContent from "./pages/UserContent/Script";
+import StoryContent from "./pages/UserContent/Story";
 const queryClient = new QueryClient();
 
 function App() {

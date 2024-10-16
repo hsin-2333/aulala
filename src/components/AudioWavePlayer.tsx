@@ -1,9 +1,9 @@
-import WaveSurfer from "wavesurfer.js";
-import { useEffect, useRef, useState, useContext } from "react";
 import { debounce } from "lodash";
-import dbApi from "../utils/firebaseService";
+import { useContext, useEffect, useRef, useState } from "react";
+import WaveSurfer from "wavesurfer.js";
 import { AuthContext } from "../context/AuthContext";
 import { RecentPlayContext } from "../context/RecentPlayContext";
+import dbApi from "../utils/firebaseService";
 import Icon from "./Icon";
 
 interface AudioWavePlayerProps {

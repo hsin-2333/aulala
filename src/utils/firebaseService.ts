@@ -1,28 +1,27 @@
-import { db, storage } from "../../firebaseConfig";
-import { v4 as uuidv4 } from "uuid";
+import { getAuth } from "firebase/auth";
 import {
-  collection,
+  QueryConstraint,
   addDoc,
-  setDoc,
+  collection,
+  deleteDoc,
+  deleteField,
+  doc,
   getDoc,
-  updateDoc,
   getDocs,
   limit,
   onSnapshot,
-  serverTimestamp,
-  doc,
-  query,
-  where,
-  QueryConstraint,
-  deleteDoc,
   orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
   writeBatch,
-  deleteField,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import { getAuth } from "firebase/auth";
-import { QueryConditions, Story, InteractionType } from "../types";
-import { User } from "../types";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
+import { db, storage } from "../../firebaseConfig";
+import { InteractionType, QueryConditions, Story, User } from "../types";
 interface IUserData {
   id?: string;
   uid: string;

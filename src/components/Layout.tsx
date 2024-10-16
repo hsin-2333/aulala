@@ -1,13 +1,12 @@
-import { useContext, useEffect, useState, ReactNode } from "react";
+import { Divider } from "@nextui-org/react";
 import * as React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { ReactNode, useContext, useEffect, useState } from "react";
+import { FaBarsProgress } from "react-icons/fa6";
+import { NavLink, useLocation, useParams } from "react-router-dom";
+import { NavbarComponent } from "../components/Nav/Navbar";
 import { AuthContext } from "../context/AuthContext";
 import RecentPlayBar, { PlayBar } from "./RecentPlayBar";
 import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
-import { NavbarComponent } from "../components/Nav/Navbar";
-import { FaBarsProgress } from "react-icons/fa6";
-import { Divider } from "@nextui-org/react";
-import { useParams } from "react-router-dom";
 interface LayoutProps {
   children: ReactNode;
   isOuterPage?: boolean;

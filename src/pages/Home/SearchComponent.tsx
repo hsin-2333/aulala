@@ -1,7 +1,7 @@
 // import { useState, useMemo } from "react";
 // import lunr from "lunr";
 import { useState } from "react";
-import { InstantSearch, SearchBox, Hits, Highlight, Configure } from "react-instantsearch-dom";
+import { Configure, Highlight, Hits, InstantSearch, SearchBox } from "react-instantsearch-dom";
 import { searchClient } from "../../../algoliaClient";
 // import { Input } from "@nextui-org/react";
 // import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";

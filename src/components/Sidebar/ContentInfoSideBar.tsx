@@ -1,8 +1,8 @@
-import { RecentPlayContext } from "../../context/RecentPlayContext";
+import { Button, Card, CardBody, CardHeader, Chip, Link, User } from "@nextui-org/react";
 import { useContext, useEffect, useState } from "react";
-import dbApi from "../../utils/firebaseService";
-import { Card, CardHeader, CardBody, Button, Chip, User, Link } from "@nextui-org/react";
 import { IoClose } from "react-icons/io5";
+import { RecentPlayContext } from "../../context/RecentPlayContext";
+import dbApi from "../../utils/firebaseService";
 
 type UserWithAvatar = {
   id: string;
