@@ -39,16 +39,13 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
-        console.log("User logged in:", authUser.uid);
         const dbUser = await dbApi.getUser(authUser.uid);
-        console.log("Database user:", dbUser);
         if (!dbUser) {
           setAuthUser(authUser as AuthUser);
           setUser(null);
         } else {
           setUser(dbUser as User);
           setAuthUser(authUser);
-          console.log("User state after setting:", dbUser);
         }
       } else {
         setUser(null);
@@ -78,7 +75,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     signOut(auth)
       .then(() => {
         queryClient.invalidateQueries({ queryKey: ["auth"] });
-        console.log("Logout successful");
       })
       .catch((error) => {
         console.error("Error during logout:", error);

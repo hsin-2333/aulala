@@ -51,7 +51,6 @@ const dbApi = {
         ...userData,
         created_at: serverTimestamp(),
       });
-      console.log("User created with ID: ", userData.uid);
     } catch (e) {
       console.error("Error creating user: ", e);
     }
@@ -67,7 +66,6 @@ const dbApi = {
         ...userData,
         updated_at: serverTimestamp(),
       });
-      console.log("User updated with ID: ", userData.uid);
     } catch (e) {
       console.error("Error updating user: ", e);
     }
@@ -117,7 +115,6 @@ const dbApi = {
         ...notificationData,
         created_at: serverTimestamp(),
       });
-      console.log("Notification sent successfully");
     } catch (e) {
       console.error("Error sending notification: ", e);
     }
@@ -146,32 +143,6 @@ const dbApi = {
         console.error("User not authenticated");
       }
     });
-  },
-
-  async addStoryData(storyData: Story) {
-    try {
-      const docRef = await addDoc(collection(db, "stories"), {
-        ...storyData,
-        created_at: serverTimestamp(),
-        updated_at: serverTimestamp(),
-      });
-      console.log("Story document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding story document: ", e);
-    }
-  },
-
-  async addScriptData(scriptData: Story) {
-    try {
-      const docRef = await addDoc(collection(db, "scripts"), {
-        ...scriptData,
-        created_at: serverTimestamp(),
-        updated_at: serverTimestamp(),
-      });
-      console.log("Script document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding script document: ", e);
-    }
   },
 
   async getTags() {
@@ -316,8 +287,6 @@ const dbApi = {
         collections: data.collections || [],
       };
 
-      console.log("資料庫存取: ", storyData, "data.collections: ", data.collections);
-
       const storyRef = await addDoc(collection(db, "stories"), storyData);
       const storyId = storyRef.id;
 
@@ -325,11 +294,10 @@ const dbApi = {
       const newAudioRef = ref(storage, `stories/audio_${storyId}`);
       await uploadBytes(newAudioRef, file);
       const newAudioUrl = await getDownloadURL(newAudioRef);
-      console.log("newAudioUrl: ", newAudioUrl, "storyId: ", storyId);
+
       await deleteObject(tempAudioRef);
       await updateDoc(storyRef, { audio_url: newAudioUrl });
 
-      // Trigger transcription
       const transcriptionResponse = await fetch("https://us-central1-aulala-a8757.cloudfunctions.net/transcribeAudio", {
         method: "POST",
         headers: {
@@ -408,7 +376,6 @@ const dbApi = {
       if (interactionDoc.exists()) {
         if (interactionType === "like" || interactionType === "bookmarked") {
           await deleteDoc(interactionRef);
-          console.log("Interaction removed successfully");
         }
       } else {
         const data: InteractionType = {
@@ -425,7 +392,6 @@ const dbApi = {
         }
 
         await setDoc(interactionRef, data);
-        console.log("Interaction added successfully");
       }
     } catch (e) {
       console.error("Error updating interaction: ", e);
@@ -454,8 +420,6 @@ const dbApi = {
         batch.update(followingRef, {
           [`followers.${followerDoc.id}`]: deleteField(),
         });
-
-        console.log("Follow removed successfully");
       } else {
         batch.update(followerRef, {
           [`following.${followingDoc.id}`]: { userName: following, created_at: serverTimestamp() },
@@ -463,8 +427,6 @@ const dbApi = {
         batch.update(followingRef, {
           [`followers.${followerDoc.id}`]: { userName: follower, created_at: serverTimestamp() },
         });
-
-        console.log("Follow added successfully");
       }
       await batch.commit();
     } catch (e) {
@@ -484,7 +446,6 @@ const dbApi = {
         updated_at: serverTimestamp(),
       };
       await setDoc(recentPlayRef, data);
-      console.log("Recent play updated successfully");
     } catch (e) {
       console.error("Error updating recent play: ", e);
       throw e;
@@ -551,7 +512,6 @@ const dbApi = {
       where("status", "==", "unread")
     );
     const querySnapshot = await getDocs(q);
-    console.log("querySnapshot: ", querySnapshot);
     const batch = writeBatch(db);
 
     querySnapshot.forEach((doc) => {
@@ -565,7 +525,6 @@ const dbApi = {
     try {
       const storyRef = doc(db, "stories", storyId);
       await deleteDoc(storyRef);
-      console.log("Story deleted with ID: ", storyId);
     } catch (e) {
       console.error("Error deleting story: ", e);
     }

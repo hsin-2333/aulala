@@ -94,7 +94,6 @@ const SearchResultsPage = () => {
             <SearchResultSkeleton />
           ) : searchResults.length > 0 ? (
             searchResults.map((result) => {
-              console.log("result", result);
               return (
                 result && (
                   <SearchResultCard
