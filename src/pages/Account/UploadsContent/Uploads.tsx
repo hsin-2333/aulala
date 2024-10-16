@@ -46,10 +46,8 @@ const StoryTable = () => {
 
   useEffect(() => {
     if (!user?.userName) return;
-    console.log("進入useEffect -----------------");
 
     const fetchData = async () => {
-      console.log("進入Subscribing to story data");
       const unsubscribe = await dbApi.subscribeToStory(user?.userName as string, (storyData) => {
         queryClient.setQueryData(["stories", user?.userName], storyData);
       });
@@ -67,17 +65,6 @@ const StoryTable = () => {
     queryKey: ["stories", user?.userName],
     select: (data) => data || [],
   });
-
-  // const { data: storyData, error } = useQuery({
-  //   queryKey: ["stories", user?.userName],
-  //   queryFn: async () => {
-  //     const story = await dbApi.queryCollection("stories", { author: user?.userName }, 10, "created_at", "desc");
-  //     return story as Story[];
-  //   },
-  // });
-
-  // if (error) return <div>Error loading story data: {error.message}</div>;
-  // console.log(storyData);
 
   const handleDelete = async (storyId: string) => {
     await dbApi.deleteStory(storyId);
@@ -188,7 +175,6 @@ const StoryTable = () => {
                         <DropdownItem onPress={() => handleEdit(story)}>Edit</DropdownItem>
                         <DropdownItem
                           onPress={() => {
-                            console.log(story.id);
                             if (story.id) {
                               handleDelete(story.id);
                             }

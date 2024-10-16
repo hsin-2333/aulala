@@ -70,7 +70,6 @@ export function NavbarComponent() {
 
   const handleNotificationClick = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.preventDefault();
-    console.log("改變通知狀態");
     setHasUnreadNotifications(false);
     if (user && user.userName) {
       try {
@@ -182,13 +181,14 @@ export function NavbarComponent() {
                     disabledKeys={["user_settings", "analytics"]}
                   >
                     <DropdownSection showDivider>
-                      <DropdownItem key="profile" className="h-14 gap-2">
+                      <DropdownItem key="profile" className="h-14 gap-2" textValue={user.email}>
                         <p className="font-semibold">{user.email}</p>
                       </DropdownItem>
                       <DropdownItem
                         key="contents"
                         href={`/user/${user.userName}/uploads`}
                         startContent={<FaBarsProgress size={16} />}
+                        textValue="My Content"
                       >
                         My Content
                       </DropdownItem>
@@ -198,6 +198,7 @@ export function NavbarComponent() {
                       color="danger"
                       onClick={handleLogout}
                       startContent={<FiLogOut size={16} />}
+                      textValue="logout"
                       className=" data-[hover=true]:bg-[#fba19a47] data-[hover=true]:text-[#f66969]"
                     >
                       Log Out

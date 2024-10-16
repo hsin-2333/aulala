@@ -21,7 +21,6 @@ const Notifications = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       if (user && user.userName) {
-        console.log("Fetching notifications for user:", user.userName);
         try {
           const userNotifications = await dbApi.queryCollection("notifications", { recipient: user.userName }, 10);
           setNotifications(userNotifications as Notification[]);
