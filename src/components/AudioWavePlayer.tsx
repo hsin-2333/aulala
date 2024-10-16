@@ -1,30 +1,49 @@
 import WaveSurfer from "wavesurfer.js";
-import { useEffect, useRef, useState } from "react";
-// import fakeData from "../assets/fakeStory.json";
-import fakeData from "../assets/poetry.json";
+import { useEffect, useRef, useState, useContext } from "react";
 import { debounce } from "lodash";
+import dbApi from "../utils/firebaseService";
+import { AuthContext } from "../context/AuthContext";
+import { RecentPlayContext } from "../context/RecentPlayContext";
+import Icon from "./Icon";
 
 interface AudioWavePlayerProps {
   audio_url: string;
+  storyId: string;
+  segments: { text: string; start: number; end: number }[];
+  showSubtitles: boolean;
 }
 
-function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
-  const audioRef = useRef<HTMLDivElement>(null);
+function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioWavePlayerProps) {
+  const { user } = useContext(AuthContext);
+  const audioRefMain = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
-  const isPlayingRef = useRef(false);
+  // const [isPlaying, setIsPlaying] = useState(false);
   const currentTextRef = useRef<string>("");
   const [currentText, setCurrentText] = useState<string[]>([]);
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState<number>(-1);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const context = useContext(RecentPlayContext);
+  if (context === undefined) {
+    throw new Error("SomeComponent must be used within a RecentPlayProvider");
+  }
+  const { isPlaying, setIsPlaying, fetchRecentPlay } = context;
+
+  const AudioSegments = segments;
   useEffect(() => {
-    if (audioRef.current) {
+    if (audioRefMain.current) {
       const wavesurfer = WaveSurfer.create({
-        container: audioRef.current,
-        waveColor: "violet",
-        progressColor: "purple",
+        container: audioRefMain.current,
+        // barHeight: 0.5,
+        cursorWidth: 0,
+        height: 80,
+        waveColor: "rgba(130, 202, 158, 0.531)",
+        progressColor: "rgb(76, 117, 92)",
         url: audio_url,
-        barWidth: 8,
-        barGap: 12,
-        barRadius: 12,
+        barWidth: 4,
+        barGap: 3,
+        barRadius: 16,
       });
 
       wavesurferRef.current = wavesurfer;
@@ -33,29 +52,23 @@ function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
       let animationFrameId: number;
 
       const updateSubtitles = (currentTime: number) => {
-        // findIndex 沒找到會回傳 -1
-        console.log("進入更新字幕", currentTime);
-        let currentSegmentIndex = fakeData.content.segments.findIndex(
-          (segment) => currentTime >= segment.start_time && currentTime <= segment.end_time
+        let currentSegmentIndex = AudioSegments.findIndex(
+          (segment) => currentTime >= segment.start && currentTime <= segment.end
         );
 
-        // 如果找不到當前時間的字幕段，則找到最近的字幕段
         if (currentSegmentIndex === -1) {
-          currentSegmentIndex = fakeData.content.segments.findIndex((_, index) => {
-            const nextSegment = fakeData.content.segments[index + 1];
-            console.log("nextSegment", nextSegment);
-            return nextSegment && currentTime < nextSegment.start_time;
+          currentSegmentIndex = AudioSegments.findIndex((_, index) => {
+            const nextSegment = AudioSegments[index + 1];
+            return nextSegment && currentTime < nextSegment.start;
           });
         }
 
         if (currentSegmentIndex !== -1) {
-          console.log("currentSegmentIndex找到", currentSegmentIndex);
           const start = Math.max(0, currentSegmentIndex - 2);
-          const end = Math.min(fakeData.content.segments.length, currentSegmentIndex + 3);
-          const segmentsToShow = fakeData.content.segments.slice(start, end).map((segment) => segment.text);
+          const end = Math.min(AudioSegments.length, currentSegmentIndex + 3);
+          const segmentsToShow = AudioSegments.slice(start, end).map((segment) => segment.text);
 
           if (segmentsToShow.join() !== currentTextRef.current) {
-            console.log("segmentsToShow.join()", segmentsToShow.join());
             currentTextRef.current = segmentsToShow.join();
             setCurrentText(segmentsToShow);
             setCurrentSegmentIndex(currentSegmentIndex - start);
@@ -63,70 +76,102 @@ function AudioWavePlayer({ audio_url }: AudioWavePlayerProps) {
         }
       };
 
+      const debouncedUpdateRecentPlay = debounce((currentTime: number) => {
+        if (user && user.uid) {
+          dbApi.updateRecentPlay(user.uid, storyId, currentTime);
+          fetchRecentPlay();
+        }
+      }, 1000);
+
       const updateCurrentTime = () => {
         const currentTime = wavesurfer.getCurrentTime();
+        setCurrentTime(currentTime);
         if (currentTime - lastUpdateTime > 0.8) {
           lastUpdateTime = currentTime;
-          console.log("更新currentTime", currentTime);
           updateSubtitles(currentTime);
+          debouncedUpdateRecentPlay(currentTime);
         }
         animationFrameId = requestAnimationFrame(updateCurrentTime);
       };
 
       animationFrameId = requestAnimationFrame(updateCurrentTime);
 
-      // Initialize the first segment of text
-      const initialSegments = fakeData.content.segments.slice(0, 3).map((segment) => segment.text);
+      const initialSegments = AudioSegments.slice(0, 3).map((segment) => segment.text);
       setCurrentText(initialSegments);
       setCurrentSegmentIndex(0);
 
       const handleSeek = debounce((currentTime: number) => {
-        lastUpdateTime = 0; // 重置 lastUpdateTime
+        lastUpdateTime = 0;
         updateSubtitles(currentTime);
-        console.log("handleSeek", currentTime);
-      }, 100); // 100ms 的防抖時間
+      }, 100);
 
       wavesurfer.on("seeking", handleSeek);
+      wavesurfer.on("ready", () => {
+        setDuration(wavesurfer.getDuration());
+      });
 
       return () => {
         cancelAnimationFrame(animationFrameId);
         wavesurfer.destroy();
       };
     }
-  }, [audioRef, audio_url]);
+  }, [audioRefMain, audio_url, storyId, user, AudioSegments, fetchRecentPlay]);
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
     const wavesurfer = wavesurferRef.current;
     if (wavesurfer) {
-      if (isPlayingRef.current) {
+      if (isPlaying) {
         wavesurfer.pause();
-        console.log("暫停");
       } else {
         wavesurfer.play();
-        console.log("播放");
       }
-      isPlayingRef.current = !isPlayingRef.current;
+      if (user && user.uid) {
+        const currentTime = wavesurfer.getCurrentTime();
+        console.log("更新時間");
+        await dbApi.updateRecentPlay(user.uid, storyId, currentTime);
+        fetchRecentPlay();
+      }
+      setIsPlaying(!isPlaying);
     }
   };
 
   return (
-    <div>
-      <div className="subtitle">
-        {currentText.map((text, index) => (
-          <p
-            key={index}
-            className={
-              index === currentSegmentIndex
-                ? "highlight mb-4 before:content-none"
-                : "text-gray-700 mb-4 before:content-none"
-            }
-          >
-            {text}
-          </p>
-        ))}
+    <div className="mb-6">
+      {showSubtitles && (
+        <div className="subtitle w-full h-72 border border-gray-200 rounded-lg p-8  mb-8">
+          <div className="flex gap-3">
+            {/* <div>
+              <span className="leading-6">換成start time</span>
+            </div> */}
+            <div className="flex-1">
+              {currentText.map((text, index) => (
+                <p
+                  key={index}
+                  className={
+                    index === currentSegmentIndex
+                      ? "highlight mb-4 before:content-none"
+                      : "text-gray-700 mb-4 before:content-none"
+                  }
+                >
+                  {text}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div id="waveform" ref={audioRefMain} />
+      <div className="flex justify-between text-sm text-gray-400 mt-2">
+        <span className="leading-6">{new Date(currentTime * 1000).toISOString().substr(14, 5)}</span>
+        <span className="leading-6">{new Date(duration * 1000).toISOString().substr(14, 5)}</span>
       </div>
-      <div id="waveform" ref={audioRef}></div>
-      <button onClick={handlePlayPause}>{isPlayingRef.current ? "Pause" : "Play"}</button>
+
+      <div className="flex items-center justify-center gap-4  mt-4 ">
+        <button onClick={handlePlayPause} className="flex items-center">
+          <Icon name="play" filled={isPlaying} className="mr-2 h-8 w-8" color="#82ca9eaf" />
+        </button>
+      </div>
     </div>
   );
 }

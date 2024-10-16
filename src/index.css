@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 #root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Inter", sans-serif;
   /* line-height: 1.5;
   font-weight: 400; */
 
@@ -17,9 +17,93 @@
   -moz-osx-font-smoothing: grayscale;
   padding: 0;
   min-height: 100vh;
+  max-width: none;
+
+  color: #334155;
+  --color-primary: #334155;
+  --color-primary-foreground: #ffffff;
+  --color-primary-hover: #103c7515;
+  --color-primary-green: #82ca9e;
+  --color-primary-green-foreground: #065f46;
 }
 
-button {
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.text-primary-foreground {
+  color: var(--color-primary-foreground);
+}
+
+.hover\:bg-primary\/90:hover {
+  background-color: var(--color-primary-hover);
+}
+.active-bg {
+  background-color: #103c7515;
+}
+
+.size-default {
+  height: 2.5rem; /* 10 * 0.25rem */
+  padding-left: 1rem; /* 4 * 0.25rem */
+  padding-right: 1rem; /* 4 * 0.25rem */
+  padding-top: 0.5rem; /* 2 * 0.25rem */
+  padding-bottom: 0.5rem; /* 2 * 0.25rem */
+}
+
+.border-input {
+  border: 1px solid #e2e8f0;
+}
+
+.custom-scrollbar {
+  /* overflow-x: auto; */
+  position: relative;
+}
+
+/* 自定義滾動條 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+  transition: visibility 0.3s, opacity 0.3s;
+  visibility: hidden;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  opacity: 0;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar {
+  visibility: visible;
+  opacity: 0;
+}
+.custom-scrollbar:hover::-webkit-scrollbar-track {
+  /* 滾動條的背景色 */
+  /* background: #f1f1f1; */
+  border-radius: 10px;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: #2e3e4a00; /* 滾動條的顏色  */
+  border-radius: 4px;
+  height: 4px;
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #3a434945; /* 滾動條 hover 的顏色 */
+}
+
+/* 增加滾動條和容器内元素之间的距离 */
+.scroll-padding {
+  padding-bottom: 4px;
+}
+
+@media (max-width: 640px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* button {
   border-radius: 8px;
   border: 1px solid #747bff;
   padding: 0.6em 1.2em;
@@ -30,6 +114,7 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 
 a {
   text-decoration: inherit;
@@ -56,11 +141,6 @@ h1 {
 
 p {
   color: #bf1650;
-}
-
-p::before {
-  display: inline;
-  content: "⚠ ";
 }
 
 input {
@@ -141,11 +221,45 @@ button[type="button"] {
   padding: 10px 20px;
   border-radius: 4px;
 }
-
+*/
 .highlight {
-  background-color: rgba(0, 213, 255, 0.225);
+  background-color: #82ca9e40;
 }
 
+.wavesurfer-container .wavesurfer-cursor {
+  height: 10px; /* 設置中間線的高度 */
+}
+
+input[type="range"],
+input[type="range"]::-webkit-slider-runnable-track,
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+input[type="range"] {
+  height: 6px;
+  width: 180px;
+  cursor: pointer;
+  outline: none;
+  margin: 0 10px 0;
+  border-radius: 24px;
+}
+
+/* 滑動鈕 樣式 */
+input[type="range"]::-webkit-slider-thumb {
+  position: relative;
+  height: 16px;
+  width: 16px;
+  margin-top: 0px; /* 會受到寬高影響定位，需微調 */
+  background-color: transparent; /* 默認為透明 */
+  border-radius: 50%;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  background-color: white; /* hover 時顯示白色 */
+}
+
+/*
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -157,4 +271,4 @@ button[type="button"] {
   button {
     background-color: #f9f9f9;
   }
-}
+} */

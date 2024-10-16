@@ -1,4 +1,5 @@
 import { db, storage } from "../../firebaseConfig";
+import { v4 as uuidv4 } from "uuid";
 import {
   collection,
   addDoc,
@@ -13,20 +14,30 @@ import {
   query,
   where,
   QueryConstraint,
+  deleteDoc,
+  orderBy,
+  writeBatch,
+  deleteField,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { getAuth } from "firebase/auth";
-import { QueryConditions, Story } from "../types";
-
+import { QueryConditions, Story, InteractionType } from "../types";
+import { User } from "../types";
 interface IUserData {
-  id: string;
+  id?: string;
   uid: string;
   avatar: string | null;
   email: string | null;
   userName: string;
   gender: string;
   age: number;
+  social_links?: {
+    website?: string;
+    twitter?: string;
+  };
 }
+
+type Interactions = InteractionType[];
 
 const dbApi = {
   async checkUserExists(uid: string) {
@@ -47,8 +58,11 @@ const dbApi = {
     }
   },
 
-  async updateUser(userData: IUserData) {
+  async updateUser(userData: User) {
     try {
+      if (!userData.uid) {
+        throw new Error("User ID is undefined");
+      }
       const userDocRef = doc(db, "users", userData.uid);
       await updateDoc(userDocRef, {
         ...userData,
@@ -69,38 +83,47 @@ const dbApi = {
   async getUser(uid: string) {
     const userDoc = await getDoc(doc(db, "users", uid));
     const userDocData = userDoc.data();
-    // return userDocData?.userName || null;
     return userDocData || null;
   },
 
-  //目前還沒有使用到
-  // async addPlaybackHistory(uid: string, playbackHistory: any) {
-  //   try {
-  //     const userDocRef = doc(db, "users", uid);
-  //     await updateDoc(userDocRef, {
-  //       playback_history: playbackHistory.map((item: any) => ({
-  //         ...item,
-  //         last_playback_timestamp: new Date(),
-  //       })),
-  //     });
-  //     console.log("Playback history added for user ID: ", uid);
-  //   } catch (e) {
-  //     console.error("Error adding playback history: ", e);
-  //   }
-  // },
+  async getUserByUserName(userName: string) {
+    const q = query(collection(db, "users"), where("userName", "==", userName));
+    const querySnapshot = await getDocs(q);
 
-  //目前還沒有使用到
-  // async handleUserData(userData: IUserData, playbackHistory: any) {
-  //   const userExists = await this.checkUserExists(userData.uid);
-  //   if (userExists) {
-  //     await this.updateUser(userData);
-  //   } else {
-  //     await this.createUser(userData);
-  //   }
-  //   if (playbackHistory) {
-  //     await this.addPlaybackHistory(userData.uid, playbackHistory);
-  //   }
-  // },
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0];
+    } else {
+      console.error(`User with userName ${userName} not found.`);
+      return null;
+    }
+  },
+  async getVAs() {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("role", "==", "VA"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        userName: data.userName,
+        avatar: data.avatar,
+        email: data.email,
+      };
+    });
+  },
+
+  async sendNotification(notificationData: { recipient: string; message: string; link: string }) {
+    try {
+      const notificationRef = collection(db, "notifications");
+      await addDoc(notificationRef, {
+        ...notificationData,
+        created_at: serverTimestamp(),
+      });
+      console.log("Notification sent successfully");
+    } catch (e) {
+      console.error("Error sending notification: ", e);
+    }
+  },
+
   subscribeToUserData(callback: (data: IUserData) => void) {
     const auth = getAuth();
     auth.onAuthStateChanged(async (user) => {
@@ -110,8 +133,8 @@ const dbApi = {
         if (docSnap.exists()) {
           const unsubscribe = onSnapshot(userDocRef, (doc) => {
             if (doc.exists()) {
-              //@ts-expect-error(123)
-              callback({ id: doc.id, ...doc.data() });
+              const data = doc.data() as IUserData;
+              callback({ id: doc.id, ...data });
             } else {
               console.log("No such document!");
             }
@@ -125,9 +148,9 @@ const dbApi = {
       }
     });
   },
-  // async getUserData(uid: string) {
+  // async getUserData(userName: string) {
   //   try {
-  //     const userDocRef = doc(db, "users", uid);
+  //     const userDocRef = doc(db, "users", userName);
   //     const docSnap = await getDoc(userDocRef);
   //     if (docSnap.exists()) {
   //       return { id: docSnap.id, ...docSnap.data() };
@@ -173,6 +196,13 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => doc.data().name);
   },
 
+  async getMyCollections(userName: string) {
+    const collectionsRef = collection(db, "collections");
+    const q = query(collectionsRef, where("userName", "==", userName));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => doc.data().collectionName);
+  },
+
   async addOrUpdateTag(tagName: string, scriptId: string | null, storyId: string | null) {
     const tagRef = doc(db, "tags", tagName);
     const tagDoc = await getDoc(tagRef);
@@ -195,6 +225,21 @@ const dbApi = {
     }
   },
 
+  async getStoryById(storyId: string) {
+    try {
+      const storyDocRef = doc(db, "stories", storyId);
+      const storyDoc = await getDoc(storyDocRef);
+      if (storyDoc.exists()) {
+        return { id: storyDoc.id, ...storyDoc.data() } as Story;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      console.error("Error getting story: ", e);
+      throw e;
+    }
+  },
+
   async getStories(limitNum: number) {
     const q = query(collection(db, "stories"), limit(limitNum));
     const querySnapshot = await getDocs(q);
@@ -207,7 +252,13 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 
-  async queryCollection(collectionName: string, conditions: QueryConditions, limitNum: number = 10) {
+  async queryCollection(
+    collectionName: string,
+    conditions: QueryConditions,
+    limitNum: number = 10,
+    orderByField: string | null = null,
+    orderDirection: "asc" | "desc" = "asc"
+  ) {
     const constraints: QueryConstraint[] = [];
 
     if (conditions.id) {
@@ -218,6 +269,10 @@ const dbApi = {
       constraints.push(where("script_id", "==", conditions.script_id));
     }
 
+    if (conditions.story_id) {
+      constraints.push(where("story_id", "==", conditions.story_id));
+    }
+
     if (conditions.tags) {
       constraints.push(where("tags", "array-contains-any", conditions.tags));
     }
@@ -225,17 +280,32 @@ const dbApi = {
       constraints.push(where("category", "==", conditions.category));
     }
     if (conditions.user) {
-      constraints.push(where("user", "==", conditions.user));
+      constraints.push(where("user_id", "==", conditions.user));
     }
-    if (conditions.timestamp) {
-      constraints.push(where("timestamp", ">=", conditions.timestamp.start));
-      constraints.push(where("timestamp", "<=", conditions.timestamp.end));
+    if (conditions.userName) {
+      constraints.push(where("userName", "==", conditions.userName));
     }
-    if (conditions.likes) {
-      constraints.push(where("likes", ">=", conditions.likes));
+
+    if (conditions.recipient) {
+      constraints.push(where("recipient", "==", conditions.recipient));
     }
+
+    if (conditions.interaction_type) {
+      constraints.push(where("interaction_type", "==", conditions.interaction_type));
+    }
+    // if (conditions.timestamp) {
+    //   constraints.push(where("timestamp", ">=", conditions.timestamp.start));
+    //   constraints.push(where("timestamp", "<=", conditions.timestamp.end));
+    // }
+    // if (conditions.likes) {
+    //   constraints.push(where("likes", ">=", conditions.likes));
+    // }
     if (conditions.author) {
       constraints.push(where("author", "==", conditions.author));
+    }
+
+    if (orderByField) {
+      constraints.push(orderBy(orderByField, orderDirection));
     }
 
     constraints.push(limit(limitNum));
@@ -245,22 +315,52 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 
-  // async getStoryByCategory(category: string) {
-  //   const q = query(collection(db, "stories"), where("category", "==", category), limit(10));
-  //   const querySnapshot = await getDocs(q);
-  //   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  // },
+  // async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
+  //   try {
+  //     const tempAudioRef = ref(storage, `stories/temp_${file.name}`);
+  //     await uploadBytes(tempAudioRef, file);
+  //     const tempAudioUrl = await getDownloadURL(tempAudioRef);
 
-  // async getStoryById(storyId: string) {
-  //   const storyDoc = await getDoc(doc(db, "stories", storyId));
-  //   return storyDoc.data();
-  // },
+  //     let imageUrl = null;
+  //     if (imageFile) {
+  //       const imageRef = ref(storage, `images/${imageFile.name}`);
+  //       await uploadBytes(imageRef, imageFile);
+  //       imageUrl = await getDownloadURL(imageRef);
+  //     }
+  //     const storyData = {
+  //       ...data,
+  //       audio_url: tempAudioUrl,
+  //       img_url: imageUrl ? [imageUrl] : [],
+  //       created_at: serverTimestamp(),
+  //       updated_at: serverTimestamp(),
+  //       tags: data.tags,
+  //     };
 
+  //     const storyRef = await addDoc(collection(db, "stories"), storyData);
+  //     const storyId = storyRef.id;
+
+  //     // Step 3: Rename the audio file in Firebase Storage using the storyId
+  //     const newAudioRef = ref(storage, `stories/audio_${storyId}`);
+  //     await uploadBytes(newAudioRef, file);
+  //     const newAudioUrl = await getDownloadURL(newAudioRef);
+
+  //     // Delete the temporary audio file
+  //     await deleteObject(tempAudioRef);
+
+  //     // Step 4: Update the Firestore document with the new audio URL
+  //     await updateDoc(storyRef, { audio_url: newAudioUrl });
+
+  //     return storyId;
+  //   } catch (e) {
+  //     console.error("Error uploading audio and saving story: ", e);
+  //     throw e;
+  //   }
+  // },
   async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
     try {
-      const storageRef = ref(storage, `stories/${file.name}`);
-      await uploadBytes(storageRef, file);
-      const audioUrl = await getDownloadURL(storageRef);
+      const tempAudioRef = ref(storage, `stories/temp_${file.name}`);
+      await uploadBytes(tempAudioRef, file);
+      const tempAudioUrl = await getDownloadURL(tempAudioRef);
 
       let imageUrl = null;
       if (imageFile) {
@@ -268,24 +368,46 @@ const dbApi = {
         await uploadBytes(imageRef, imageFile);
         imageUrl = await getDownloadURL(imageRef);
       }
+
       const storyData = {
         ...data,
-        audio_url: audioUrl,
+        audio_url: tempAudioUrl,
         img_url: imageUrl ? [imageUrl] : [],
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
-        tags: data.tags,
+        tags: data.tags || [],
+        collections: data.collections || [],
       };
 
-      console.log("storyData: ", storyData);
+      console.log("資料庫存取: ", storyData, "data.collections: ", data.collections);
+
       const storyRef = await addDoc(collection(db, "stories"), storyData);
-      return storyRef.id;
+      const storyId = storyRef.id;
+
+      // Rename and store audio with story ID
+      const newAudioRef = ref(storage, `stories/audio_${storyId}`);
+      await uploadBytes(newAudioRef, file);
+      const newAudioUrl = await getDownloadURL(newAudioRef);
+      console.log("newAudioUrl: ", newAudioUrl, "storyId: ", storyId);
+      await deleteObject(tempAudioRef);
+      await updateDoc(storyRef, { audio_url: newAudioUrl });
+
+      // Trigger transcription
+      const transcriptionResponse = await fetch("https://us-central1-aulala-a8757.cloudfunctions.net/transcribeAudio", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ audioUrl: newAudioUrl, storyId: storyId, author: data.author }),
+      });
+      if (!transcriptionResponse.ok) throw new Error("Transcription failed");
+
+      return storyId;
     } catch (e) {
       console.error("Error uploading audio and saving story: ", e);
       throw e;
     }
   },
-
   async uploadScript(file: File, imageFile: File | null, data: Story) {
     try {
       const storageRef = ref(storage, `script/${file.name}`);
@@ -313,6 +435,230 @@ const dbApi = {
     } catch (e) {
       console.error("Error uploading audio and saving story: ", e);
       throw e;
+    }
+  },
+
+  //獲取點讚、收藏的狀態
+  async getInteractionStatus(
+    userName: string,
+    storyId: string | null,
+    scriptId: string | null,
+    interactionType: string
+  ) {
+    const interactionId = `${userName}_${storyId || scriptId}_${interactionType}`;
+    const interactionRef = doc(db, "interactions", interactionId);
+    const interactionDoc = await getDoc(interactionRef);
+
+    return interactionDoc.exists();
+  },
+
+  async updateInteraction(
+    userName: string,
+    storyId: string | null,
+    scriptId: string | null,
+    interactionType: string,
+    comment?: string
+  ) {
+    try {
+      let interactionId: string;
+      if (interactionType === "comment" && comment) {
+        // 對於留言，使用 UUID 生成唯一的 interactionId
+        interactionId = `${userName}_${storyId || scriptId}_${interactionType}_${uuidv4()}`;
+      } else {
+        // 對於點讚和收藏，保持原有的 interactionId 生成方式
+        interactionId = `${userName}_${storyId || scriptId}_${interactionType}`;
+      }
+      const interactionRef = doc(db, "interactions", interactionId);
+      const interactionDoc = await getDoc(interactionRef);
+
+      if (interactionDoc.exists()) {
+        if (interactionType === "like" || interactionType === "bookmarked") {
+          // 如果是第二次點讚or收藏，則刪除互動(取消收藏or取消讚)
+          await deleteDoc(interactionRef);
+          console.log("Interaction removed successfully");
+        }
+      } else {
+        const data: InteractionType = {
+          userName: userName,
+          story_id: storyId,
+          script_id: scriptId,
+          interaction_type: interactionType,
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp(),
+        };
+
+        if (interactionType === "comment" && comment) {
+          data.comment = comment;
+        }
+
+        await setDoc(interactionRef, data);
+        console.log("Interaction added successfully");
+      }
+    } catch (e) {
+      console.error("Error updating interaction: ", e);
+      throw e;
+    }
+  },
+
+  async updateFollow(follower: string, following: string) {
+    try {
+      const followerDoc = await this.getUserByUserName(follower);
+      const followingDoc = await this.getUserByUserName(following);
+
+      if (!followerDoc || !followingDoc) {
+        throw new Error("User not found.");
+      }
+
+      const followerRef = doc(db, "users", followerDoc.id);
+      const followingRef = doc(db, "users", followingDoc.id);
+
+      const batch = writeBatch(db);
+
+      if (followerDoc.data().following?.[followingDoc.id]) {
+        // 移除 follow
+        batch.update(followerRef, {
+          [`following.${followingDoc.id}`]: deleteField(),
+        });
+        batch.update(followingRef, {
+          [`followers.${followerDoc.id}`]: deleteField(),
+        });
+
+        console.log("Follow removed successfully");
+      } else {
+        // 新增 follow
+        batch.update(followerRef, {
+          [`following.${followingDoc.id}`]: { userName: following, created_at: serverTimestamp() },
+        });
+        batch.update(followingRef, {
+          [`followers.${followerDoc.id}`]: { userName: follower, created_at: serverTimestamp() },
+        });
+
+        console.log("Follow added successfully");
+      }
+      await batch.commit();
+    } catch (e) {
+      console.error("Error updating follow: ", e);
+      throw e;
+    }
+  },
+
+  async updateRecentPlay(userId: string, storyId: string, currentTime: number) {
+    try {
+      const recentPlayId = `${userId}_${storyId}`;
+      const recentPlayRef = doc(db, "recentPlays", recentPlayId);
+      const data = {
+        user_id: userId,
+        story_id: storyId,
+        played_at: currentTime,
+        updated_at: serverTimestamp(),
+      };
+      await setDoc(recentPlayRef, data);
+      console.log("Recent play updated successfully");
+    } catch (e) {
+      console.error("Error updating recent play: ", e);
+      throw e;
+    }
+  },
+
+  async updateStoryStatus(storyId: string, status: string) {
+    const storyRef = doc(db, "stories", storyId);
+    await updateDoc(storyRef, { status });
+  },
+
+  async updateStory(storyId: string, data: { title: string; summary: string }) {
+    const storyRef = doc(db, "stories", storyId);
+    await updateDoc(storyRef, data);
+  },
+
+  async subscribeToStory(author: string, callback: (data: Story[]) => void) {
+    const q = query(collection(db, "stories"), where("author", "==", author), orderBy("created_at", "desc"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const StoryData: Story[] = [];
+      querySnapshot.forEach((doc) => {
+        StoryData.push({ id: doc.id, ...doc.data() } as Story);
+      });
+      callback(StoryData);
+    });
+
+    return unsubscribe;
+  },
+
+  async subscribeToInteractions(scriptId: string, callback: (data: Interactions) => void) {
+    const q = query(collection(db, "interactions"), where("script_id", "==", scriptId));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const interactionsData: InteractionType[] = [];
+      querySnapshot.forEach((doc) => {
+        interactionsData.push({ id: doc.id, ...doc.data() } as InteractionType);
+      });
+      callback(interactionsData);
+    });
+
+    return unsubscribe;
+  },
+
+  async subscribeToNotifications(userName: string, callback: (data: Interactions) => void) {
+    const q = query(
+      collection(db, "notifications"),
+      where("recipient", "==", userName),
+      where("status", "==", "unread")
+    );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const notificationsData: InteractionType[] = [];
+      querySnapshot.forEach((doc) => {
+        notificationsData.push({ id: doc.id, ...doc.data() } as InteractionType);
+      });
+      callback(notificationsData);
+    });
+
+    return unsubscribe;
+  },
+
+  async markNotificationsAsRead(userName: string) {
+    const q = query(
+      collection(db, "notifications"),
+      where("recipient", "==", userName),
+      where("status", "==", "unread")
+    );
+    const querySnapshot = await getDocs(q);
+    console.log("querySnapshot: ", querySnapshot);
+    const batch = writeBatch(db);
+
+    querySnapshot.forEach((doc) => {
+      batch.update(doc.ref, { status: "read" });
+    });
+
+    await batch.commit();
+  },
+
+  async deleteStory(storyId: string) {
+    try {
+      const storyRef = doc(db, "stories", storyId);
+      await deleteDoc(storyRef);
+      console.log("Story deleted with ID: ", storyId);
+    } catch (e) {
+      console.error("Error deleting story: ", e);
+    }
+  },
+
+  async addStoryToCollection(storyId: string, collectionName: string, userName: string) {
+    try {
+      const collectionRef = doc(db, "collections", collectionName);
+      const collectionDoc = await getDoc(collectionRef);
+      if (collectionDoc.exists()) {
+        const existingData = collectionDoc.data();
+        const updatedStoryIds = [...new Set([...existingData.storyIds, storyId])];
+        await updateDoc(collectionRef, {
+          storyIds: updatedStoryIds,
+        });
+      } else {
+        await setDoc(collectionRef, {
+          collectionName: collectionName,
+          storyIds: storyId ? [storyId] : [],
+          userName: userName,
+        });
+      }
+    } catch (e) {
+      console.error("Error adding story to collection: ", e); // 修改錯誤信息
     }
   },
 };
