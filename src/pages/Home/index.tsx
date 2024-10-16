@@ -7,6 +7,7 @@ import { CategoryOptions } from "../../constants/categoryOptions";
 import { AuthContext } from "../../context/AuthContext";
 import { RecentPlayContext } from "../../context/RecentPlayContext";
 import { QueryConditions } from "../../types";
+import { convertTimestampToDate } from "../../utils/convertTimestampToDate";
 import dbApi from "../../utils/firebaseService";
 import SortedMenu from "./SortedMenu";
 
@@ -65,10 +66,6 @@ function HomePage({ onCardClick }: HomePageProps) {
     setSortOrder(order);
   };
 
-  const convertTimestampToDate = (timestamp: { seconds: number; nanoseconds: number }) => {
-    return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
-  };
-
   const sortedStoryList = useMemo(() => {
     if (!storyList) return [];
     return [...storyList].sort((a, b) => {
@@ -107,7 +104,11 @@ function HomePage({ onCardClick }: HomePageProps) {
   }, [storyList]);
 
   if (storyError || scriptError) {
-    return <div>Error fetching data: {storyError?.message || scriptError?.message}</div>;
+    return (
+      <div>
+        Error fetching data: {storyError?.message || scriptError?.message}
+      </div>
+    );
   }
 
   const handleContentClick = (id: string, type: "script" | "story") => {
@@ -125,33 +126,47 @@ function HomePage({ onCardClick }: HomePageProps) {
   return (
     <div className="px-4 sm:px-0">
       <div className="flex items-center justify-between text-left">
-        <div className="space-y-1 w-full ">
-          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight py-2 sm:py-6">Explore</h2>
-          <div className="flex w-full justify-start gap-4 mt-2 overflow-x-auto custom-scrollbar">
+        <div className="w-full space-y-1">
+          <h2 className="py-2 text-xl font-semibold tracking-tight sm:py-6 sm:text-2xl">
+            Explore
+          </h2>
+          <div className="custom-scrollbar mt-2 flex w-full justify-start gap-4 overflow-x-auto">
             {CategoryOptions.map((category) => {
-              const IconComponent = category.icon; // 動態獲取圖標組件
+              const IconComponent = category.icon;
               return (
                 <Button
                   key={category.value}
                   radius="full"
-                  className={`flex-shrink-0 h-7 sm:h-8 border ${
-                    selectedCategory === category.value ? "bg-blue-50 border-blue-100" : "bg-white border-default-200"
+                  className={`h-7 flex-shrink-0 border sm:h-8 ${
+                    selectedCategory === category.value
+                      ? "border-blue-100 bg-blue-50"
+                      : "border-default-200 bg-white"
                   }`}
                   onClick={() => setSelectedCategory(category.value)}
                   startContent={
                     IconComponent && (
                       <IconComponent
-                        color={selectedCategory === category.value ? "hsl(var(--nextui-primary-500))" : ""}
-                        fill={selectedCategory === category.value ? "hsl(var(--nextui-primary-200))" : "none"}
+                        color={
+                          selectedCategory === category.value
+                            ? "hsl(var(--nextui-primary-500))"
+                            : ""
+                        }
+                        fill={
+                          selectedCategory === category.value
+                            ? "hsl(var(--nextui-primary-200))"
+                            : "none"
+                        }
                         size={16}
                       />
                     )
                   }
                 >
-                  <div className="justify-start flex flex-shrink-0 flex-row sm:gap-2">
+                  <div className="flex flex-shrink-0 flex-row justify-start sm:gap-2">
                     <p
                       className={`text-sm sm:text-medium ${
-                        selectedCategory === category.value ? "text-primary-800" : "text-default-900"
+                        selectedCategory === category.value
+                          ? "text-primary-800"
+                          : "text-default-900"
                       }`}
                     >
                       {category.label}
@@ -171,17 +186,23 @@ function HomePage({ onCardClick }: HomePageProps) {
 
       <div className="flex items-center justify-between text-left">
         <div className="sm:space-y-1">
-          <h2 className="text-xl sm:text-2xl  font-semibold tracking-tight">New Stories</h2>
-          <p className="text-sm text-muted-foreground">Check out the latest releases.</p>
+          <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
+            New Stories
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            Check out the latest releases.
+          </p>
         </div>
       </div>
       <div className="relative">
         <div className="my-4" />
       </div>
 
-      <section className="mb-4 h-auto whitespace-nowrap flex overflow-x-auto space-x-8 custom-scrollbar scroll-padding ">
+      <section className="custom-scrollbar scroll-padding mb-4 flex h-auto space-x-8 overflow-x-auto whitespace-nowrap">
         {latestReleases.map((release: Story) => {
-          const date = release.created_at ? convertTimestampToDate(release.created_at).toLocaleDateString() : "";
+          const date = release.created_at
+            ? convertTimestampToDate(release.created_at).toLocaleDateString()
+            : "";
           return (
             <ImageCard
               onCardClick={onCardClick}
@@ -199,11 +220,13 @@ function HomePage({ onCardClick }: HomePageProps) {
         })}
       </section>
 
-      <div className="flex items-center  justify-between text-left">
-        <div className="space-y-1 w-full">
-          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">Stories</h2>
-          <div className="flex justify-between ">
-            <p className="text-sm text-muted-foreground">Top picks for you. </p>
+      <div className="flex items-center justify-between text-left">
+        <div className="w-full space-y-1">
+          <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
+            Stories
+          </h2>
+          <div className="flex justify-between">
+            <p className="text-muted-foreground text-sm">Top picks for you. </p>
             <SortedMenu onSortOrderChange={handleSortOrderChange} />
           </div>
         </div>
@@ -212,9 +235,11 @@ function HomePage({ onCardClick }: HomePageProps) {
         <div className="my-4" />
       </div>
 
-      <section className="mb-4 h-auto whitespace-nowrap flex overflow-x-auto space-x-8 custom-scrollbar scroll-padding ">
+      <section className="custom-scrollbar scroll-padding mb-4 flex h-auto space-x-8 overflow-x-auto whitespace-nowrap">
         {sortedStoryList?.map((story: Story) => {
-          const date = story.created_at ? convertTimestampToDate(story.created_at).toLocaleDateString() : "";
+          const date = story.created_at
+            ? convertTimestampToDate(story.created_at).toLocaleDateString()
+            : "";
           return (
             <ImageCard
               onCardClick={onCardClick}
@@ -235,15 +260,20 @@ function HomePage({ onCardClick }: HomePageProps) {
       <div className="flex items-center justify-between text-left">
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold tracking-tight">Script</h2>
-          <p className="text-sm text-muted-foreground">Top picks for you. Updated daily.</p>
+          <p className="text-muted-foreground text-sm">
+            Top picks for you. Updated daily.
+          </p>
         </div>
       </div>
       <div className="relative">
-        <div className="my-4 " />
+        <div className="my-4" />
       </div>
-      <section className="h-auto flex flex-wrap gap-2 sm:gap-4 custom-scrollbar scroll-padding">
+      <section className="custom-scrollbar scroll-padding flex h-auto flex-wrap gap-2 sm:gap-4">
         {sortedScriptList?.map((script: Story) => (
-          <div key={script.id} className="flex flex-grow justify-start sm:w-1/2 lg:w-1/3 xl:w-1/4 ">
+          <div
+            key={script.id}
+            className="flex flex-grow justify-start sm:w-1/2 lg:w-1/3 xl:w-1/4"
+          >
             <ScriptCard
               onClick={() => handleContentClick(script.id, "script")}
               key={script.id}
@@ -253,7 +283,13 @@ function HomePage({ onCardClick }: HomePageProps) {
               author={script.author || "Unknown"}
               summary={script.summary || ""}
               scriptId={script.id}
-              date={script.created_at ? convertTimestampToDate(script.created_at).toLocaleDateString() : ""}
+              date={
+                script.created_at
+                  ? convertTimestampToDate(
+                      script.created_at,
+                    ).toLocaleDateString()
+                  : ""
+              }
             />
           </div>
         ))}
