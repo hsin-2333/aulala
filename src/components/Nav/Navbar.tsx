@@ -183,7 +183,6 @@ export function NavbarComponent() {
                   >
                     <DropdownSection showDivider>
                       <DropdownItem key="profile" className="h-14 gap-2">
-                        {/* <p className="font-semibold">{user.role}</p> */}
                         <p className="font-semibold">{user.email}</p>
                       </DropdownItem>
                       <DropdownItem
@@ -193,12 +192,6 @@ export function NavbarComponent() {
                       >
                         My Content
                       </DropdownItem>
-                      {/* <DropdownItem key="user_settings" href={`/user/${user.userName}/setting`}>
-                        Setting
-                      </DropdownItem>
-                      <DropdownItem key="analytics" href={`/user/${user.userName}/analytics`}>
-                        Analytics
-                      </DropdownItem> */}
                     </DropdownSection>
                     <DropdownItem
                       key="logout"

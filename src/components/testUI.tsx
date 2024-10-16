@@ -32,31 +32,18 @@ const TestUI = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navbar */}
-      <div className="w-full bg-gray-800 text-white p-4">
-        {/* Navbar 内容 */}
-        Navbar
-      </div>
+      <div className="w-full bg-gray-800 text-white p-4">Navbar</div>
 
-      {/* 主体内容 */}
       <div className="flex flex-grow">
         <div className={`border border-blue-300 flex-grow ${isDetailVisible ? "w-3/4" : "w-full"}`}>
-          {/* 主要内容 */}
           <div onClick={handleCardClick} className="card">
-            {/* 卡片内容 */}
             <Skelenton_ui />
           </div>
         </div>
-        {isDetailVisible && <div className="w-1/3 border border-pink-300">{/* 次要内容 */}</div>}
+        {isDetailVisible && <div className="w-1/3 border border-pink-300"></div>}
       </div>
 
-      {/* 满宽度的 div */}
-      {isDetailVisible && (
-        <div className="w-full bg-gray-200 p-4 border-t border-gray-400">
-          {/* 满宽度 div 内容 */}
-          Full-width div
-        </div>
-      )}
+      {isDetailVisible && <div className="w-full bg-gray-200 p-4 border-t border-gray-400">Full-width div</div>}
     </div>
   );
 };

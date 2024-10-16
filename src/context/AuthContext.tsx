@@ -43,10 +43,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         const dbUser = await dbApi.getUser(authUser.uid);
         console.log("Database user:", dbUser);
         if (!dbUser) {
-          // setAuthUser(authUser as AuthUser); // Set authUser if user is not in the database
           setAuthUser(authUser as AuthUser);
           setUser(null);
-          // setUser("authUser"); //如果使用者不在資料庫中，則先設定為字串，再userInfo中等待使用者填入資料再創建為user
         } else {
           setUser(dbUser as User);
           setAuthUser(authUser);

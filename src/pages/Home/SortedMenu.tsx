@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Icon from "../../components/Icon"; // 確保路徑正確
+import Icon from "../../components/Icon";
 
 interface SortedMenuProps {
   onSortOrderChange: (order: string) => void;

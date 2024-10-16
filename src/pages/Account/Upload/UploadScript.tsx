@@ -17,7 +17,7 @@ interface ScriptFormData {
   url: string;
   img_url: string[];
   author: string;
-  vaUsers: { label: string; value: string }[]; // 新增的字段
+  vaUsers: { label: string; value: string }[];
 }
 
 const UploadScript = () => {
@@ -26,7 +26,7 @@ const UploadScript = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [tagsOptions, setTagsOptions] = useState<{ value: string; label: string }[]>([]);
-  const [vaUsersOptions, setVaUsersOptions] = useState<{ value: string; label: string }[]>([]); // 新增的 state
+  const [vaUsersOptions, setVaUsersOptions] = useState<{ value: string; label: string }[]>([]);
   const navigate = useNavigate();
   const filteredCategoryOptions = CategoryOptions.filter((option) => option.label !== "All");
 
@@ -88,7 +88,6 @@ const UploadScript = () => {
           await dbApi.addOrUpdateTag(tag.value, scriptId, null);
         }
 
-        // 向 VA users 發送通知
         for (const vaUser of data.vaUsers) {
           await dbApi.sendNotification({
             recipient: vaUser.value,

@@ -18,7 +18,6 @@ const Toast = ({ message, onClose }: ToastProps) => {
         <IoWarningOutline className="text-red-400" size={20} />
         <div className="flex flex-col items-start gap-1">
           <span className="font-bold text-sm">{message}</span>
-          {/* <span className="text-xs">{message}</span> */}
         </div>
       </div>
 

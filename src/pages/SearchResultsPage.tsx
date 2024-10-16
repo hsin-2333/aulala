@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 //@ts-expect-error(123)
 import lunr from "lunr";
 import { FiSearch } from "react-icons/fi";
-import { index } from "../../algoliaClient"; // Import Algolia index
+import { index } from "../../algoliaClient";
 import { SearchResultCard } from "../components/Card";
 const SearchResultsPage = () => {
   const location = useLocation();

@@ -44,7 +44,6 @@ const SubtitlesComponent = () => {
         const totalSegments = segments.length;
         const element = subtitlesRef.current.children[activeIndex] as HTMLDivElement;
 
-        // 滾動到字幕
         if (activeIndex < totalSegments - 4) {
           element.scrollIntoView({ behavior: "smooth", block: "center" });
         } else {

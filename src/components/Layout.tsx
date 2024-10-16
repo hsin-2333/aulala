@@ -47,7 +47,6 @@ export const ScriptLayout = ({ children }: LayoutProps) => {
           <NavbarComponent />
         </div>
         <Divider />
-        {/* <div className="bg-gradient-to-tr from-blue-200 to-cyan-200 w-full h-60"></div> */}
         <div
           className={`bg-gradient-to-tr  w-full ${
             scriptId ? "h-60 from-blue-200 to-cyan-200" : "h-28 sm:h-40  bg-gradient-to-tr from-indigo-200  to-sky-100"

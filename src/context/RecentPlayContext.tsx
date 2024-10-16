@@ -29,7 +29,6 @@ const debouncedFetchRecentPlay = debounce(async (user, setRecentPlay, setStoryIn
     };
     const recentPlays = await dbApi.queryCollection("recentPlays", condition, 1, "updated_at", "desc");
     if (recentPlays.length > 0) {
-      console.log("最近播放" + JSON.stringify(recentPlays));
       const recentPlay = recentPlays[0] as RecentPlay;
       setRecentPlay(recentPlay);
 
@@ -58,7 +57,6 @@ export const RecentPlayProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     fetchRecentPlay();
-    console.log("useEffect抓取 fetchRecentPlay ");
   }, [user, fetchRecentPlay]);
 
   return (

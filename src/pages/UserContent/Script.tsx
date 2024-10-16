@@ -85,7 +85,6 @@ function ScriptContent() {
     if (selectedFile) {
       const audioUrl = URL.createObjectURL(selectedFile);
 
-      // 將音檔信息傳遞給 UploadStory 頁面
       navigate("/upload/story", {
         state: {
           script_audioName: selectedFile.name,

@@ -108,7 +108,6 @@ const UploadStory = () => {
     if (selectedFile) {
       const fileSizeInMB = selectedFile.size / (1024 * 1024); // 將文件大小轉換為MB
       if (fileSizeInMB > 8) {
-        console.log("File size is greater than 8MB, please select a smaller file");
         setToastMessage("文件大小超過8MB，請選擇較小的文件");
         setShowToast(true);
         if (AudioInputRef.current) {
@@ -159,7 +158,7 @@ const UploadStory = () => {
           duration: audioDuration || 0,
           author: user?.userName || "Unknown",
           tags: data.tags ? data.tags.map((tag) => tag.value) : [],
-          voice_actor: [user?.userName || ""], //之後要增加多位聲優
+          voice_actor: [user?.userName || ""],
           status: "Processing",
           collections: data.collections ? data.collections.map((collection) => collection) : [],
         };
@@ -210,7 +209,6 @@ const UploadStory = () => {
       setCurrentStep(step);
       if (step < currentStep) {
         setCurrentStep(step);
-        //退回上一步時，清空已選擇的文件
         setImageFile(null);
         setImageUrl(null);
         const inputElement = document.querySelector('input[type="file"]') as HTMLInputElement;

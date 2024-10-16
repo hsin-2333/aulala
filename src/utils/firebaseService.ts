@@ -147,21 +147,6 @@ const dbApi = {
       }
     });
   },
-  // async getUserData(userName: string) {
-  //   try {
-  //     const userDocRef = doc(db, "users", userName);
-  //     const docSnap = await getDoc(userDocRef);
-  //     if (docSnap.exists()) {
-  //       return { id: docSnap.id, ...docSnap.data() };
-  //     } else {
-  //       console.log("No such document!");
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     console.error("Error getting document: ", e);
-  //     return null;
-  //   }
-  // },
 
   async addStoryData(storyData: Story) {
     try {
@@ -292,13 +277,7 @@ const dbApi = {
     if (conditions.interaction_type) {
       constraints.push(where("interaction_type", "==", conditions.interaction_type));
     }
-    // if (conditions.timestamp) {
-    //   constraints.push(where("timestamp", ">=", conditions.timestamp.start));
-    //   constraints.push(where("timestamp", "<=", conditions.timestamp.end));
-    // }
-    // if (conditions.likes) {
-    //   constraints.push(where("likes", ">=", conditions.likes));
-    // }
+
     if (conditions.author) {
       constraints.push(where("author", "==", conditions.author));
     }
@@ -314,47 +293,6 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 
-  // async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
-  //   try {
-  //     const tempAudioRef = ref(storage, `stories/temp_${file.name}`);
-  //     await uploadBytes(tempAudioRef, file);
-  //     const tempAudioUrl = await getDownloadURL(tempAudioRef);
-
-  //     let imageUrl = null;
-  //     if (imageFile) {
-  //       const imageRef = ref(storage, `images/${imageFile.name}`);
-  //       await uploadBytes(imageRef, imageFile);
-  //       imageUrl = await getDownloadURL(imageRef);
-  //     }
-  //     const storyData = {
-  //       ...data,
-  //       audio_url: tempAudioUrl,
-  //       img_url: imageUrl ? [imageUrl] : [],
-  //       created_at: serverTimestamp(),
-  //       updated_at: serverTimestamp(),
-  //       tags: data.tags,
-  //     };
-
-  //     const storyRef = await addDoc(collection(db, "stories"), storyData);
-  //     const storyId = storyRef.id;
-
-  //     // Step 3: Rename the audio file in Firebase Storage using the storyId
-  //     const newAudioRef = ref(storage, `stories/audio_${storyId}`);
-  //     await uploadBytes(newAudioRef, file);
-  //     const newAudioUrl = await getDownloadURL(newAudioRef);
-
-  //     // Delete the temporary audio file
-  //     await deleteObject(tempAudioRef);
-
-  //     // Step 4: Update the Firestore document with the new audio URL
-  //     await updateDoc(storyRef, { audio_url: newAudioUrl });
-
-  //     return storyId;
-  //   } catch (e) {
-  //     console.error("Error uploading audio and saving story: ", e);
-  //     throw e;
-  //   }
-  // },
   async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
     try {
       const tempAudioRef = ref(storage, `stories/temp_${file.name}`);
@@ -427,8 +365,7 @@ const dbApi = {
         updated_at: serverTimestamp(),
         tags: data.tags,
       };
-      console.log("scriptData: ", scriptData);
-      console.log("data.tags: ", data.tags);
+
       const scriptRef = await addDoc(collection(db, "scripts"), scriptData);
       return scriptRef.id;
     } catch (e) {
@@ -461,10 +398,8 @@ const dbApi = {
     try {
       let interactionId: string;
       if (interactionType === "comment" && comment) {
-        // 對於留言，使用 UUID 生成唯一的 interactionId
         interactionId = `${userName}_${storyId || scriptId}_${interactionType}_${uuidv4()}`;
       } else {
-        // 對於點讚和收藏，保持原有的 interactionId 生成方式
         interactionId = `${userName}_${storyId || scriptId}_${interactionType}`;
       }
       const interactionRef = doc(db, "interactions", interactionId);
@@ -472,7 +407,6 @@ const dbApi = {
 
       if (interactionDoc.exists()) {
         if (interactionType === "like" || interactionType === "bookmarked") {
-          // 如果是第二次點讚or收藏，則刪除互動(取消收藏or取消讚)
           await deleteDoc(interactionRef);
           console.log("Interaction removed successfully");
         }
@@ -514,7 +448,6 @@ const dbApi = {
       const batch = writeBatch(db);
 
       if (followerDoc.data().following?.[followingDoc.id]) {
-        // 移除 follow
         batch.update(followerRef, {
           [`following.${followingDoc.id}`]: deleteField(),
         });
@@ -524,7 +457,6 @@ const dbApi = {
 
         console.log("Follow removed successfully");
       } else {
-        // 新增 follow
         batch.update(followerRef, {
           [`following.${followingDoc.id}`]: { userName: following, created_at: serverTimestamp() },
         });
@@ -657,7 +589,7 @@ const dbApi = {
         });
       }
     } catch (e) {
-      console.error("Error adding story to collection: ", e); // 修改錯誤信息
+      console.error("Error adding story to collection: ", e);
     }
   },
 };

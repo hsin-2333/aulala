@@ -1,8 +1,6 @@
 import { Button, Card, CardBody, Image } from "@nextui-org/react";
 import Icon from "../components/Icon";
 export default function NextCard() {
-  //   const [liked, setLiked] = React.useState(false);
-
   return (
     <Card isBlurred className="border-none bg-background/60 dark:bg-default-100/50 max-w-[510px]" shadow="sm">
       <CardBody>
@@ -12,7 +10,6 @@ export default function NextCard() {
               alt="Album cover"
               className="object-cover"
               height="auto"
-              //   shadow="md"
               src="https://nextui.org/images/album-cover.png"
               width="100%"
             />
@@ -30,15 +27,7 @@ export default function NextCard() {
                 </div>
 
                 <div>
-                  {/* <p className="text-small text-default-600 pt-2">03"20</p> */}
-                  <span
-                    className="cursor-pointer bg-gray-50 py-1 text-xs bg-opacity-50"
-
-                    // key={category.value}
-                    // onClick={() => setSelectedCategory(category.value)}
-                  >
-                    # test
-                  </span>
+                  <span className="cursor-pointer bg-gray-50 py-1 text-xs bg-opacity-50"># test</span>
                 </div>
               </div>
               <Button
@@ -46,10 +35,8 @@ export default function NextCard() {
                 className="text-default-900/60 data-[hover]:bg-foreground/10 -translate-y-2 translate-x-2"
                 radius="full"
                 variant="light"
-                // onPress={() => setLiked((v) => !v)}
               >
                 <Icon name="like" className="h-6 w-6" />
-                {/* <Icon className={like ? "[&>path]:stroke-transparent" : ""} fill={liked ? "currentColor" : "none"} /> */}
               </Button>
             </div>
           </div>
