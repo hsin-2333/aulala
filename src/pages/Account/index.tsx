@@ -53,6 +53,9 @@ function Account() {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
 
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showUnfollowModal, setShowUnfollowModal] = useState(false);
+
   const urlName = userName as string;
 
   const { data: userData, isLoading } = useQuery({
@@ -122,6 +125,29 @@ function Account() {
 
   const handleCloseToast = () => {
     setShowToast(false);
+  };
+
+  const handleFollow = async (userName: string) => {
+    if (!user) return;
+
+    try {
+      await dbApi.updateFollow(user.userName as string, userName);
+      setIsFollowing(true);
+    } catch (error) {
+      console.error("Failed to follow user:", error);
+    }
+  };
+
+  const handleUnfollow = async (userName: string) => {
+    if (!user) return;
+
+    try {
+      await dbApi.updateFollow(user.userName as string, userName);
+      setIsFollowing(false);
+      setShowUnfollowModal(false);
+    } catch (error) {
+      console.error("Failed to unfollow user:", error);
+    }
   };
 
   return (
@@ -209,14 +235,21 @@ function Account() {
                                 variant="ghost"
                                 radius="full"
                                 className="btn btn-primary border border-slate-500 px-3 py-1"
+                                onPress={() => {
+                                  if (isFollowing) {
+                                    setShowUnfollowModal(true);
+                                  } else {
+                                    handleFollow(userData.userName as string);
+                                  }
+                                }}
                               >
-                                Follow
+                                {isFollowing ? "Following" : "Follow"}
                               </Button>
                             </div>
                           )}
                         </div>
                       </div>
-                      <div className="sm:pr-6">{item.content}</div>
+                      <div className="sm:pr-6 w-full">{item.content}</div>
                     </div>
                   </Tab>
                 )}
@@ -273,6 +306,20 @@ function Account() {
               </ModalFooter>
             </form>
           )}
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={showUnfollowModal} onOpenChange={setShowUnfollowModal}>
+        <ModalContent>
+          <ModalHeader>Unfollow {userName}?</ModalHeader>
+          <ModalBody>You will stop seeing updates from {userName}</ModalBody>
+          <ModalFooter>
+            <Button color="default" variant="light" onPress={() => setShowUnfollowModal(false)}>
+              Cancel
+            </Button>
+            <Button color="primary" variant="light" onPress={() => handleUnfollow(userName as string)}>
+              Unfollow
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

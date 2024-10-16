@@ -17,6 +17,7 @@ import {
   deleteDoc,
   orderBy,
   writeBatch,
+  deleteField,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { getAuth } from "firebase/auth";
@@ -85,6 +86,17 @@ const dbApi = {
     return userDocData || null;
   },
 
+  async getUserByUserName(userName: string) {
+    const q = query(collection(db, "users"), where("userName", "==", userName));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0];
+    } else {
+      console.error(`User with userName ${userName} not found.`);
+      return null;
+    }
+  },
   async getVAs() {
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("role", "==", "VA"));
@@ -484,6 +496,48 @@ const dbApi = {
       }
     } catch (e) {
       console.error("Error updating interaction: ", e);
+      throw e;
+    }
+  },
+
+  async updateFollow(follower: string, following: string) {
+    try {
+      const followerDoc = await this.getUserByUserName(follower);
+      const followingDoc = await this.getUserByUserName(following);
+
+      if (!followerDoc || !followingDoc) {
+        throw new Error("User not found.");
+      }
+
+      const followerRef = doc(db, "users", followerDoc.id);
+      const followingRef = doc(db, "users", followingDoc.id);
+
+      const batch = writeBatch(db);
+
+      if (followerDoc.data().following?.[followingDoc.id]) {
+        // 移除 follow
+        batch.update(followerRef, {
+          [`following.${followingDoc.id}`]: deleteField(),
+        });
+        batch.update(followingRef, {
+          [`followers.${followerDoc.id}`]: deleteField(),
+        });
+
+        console.log("Follow removed successfully");
+      } else {
+        // 新增 follow
+        batch.update(followerRef, {
+          [`following.${followingDoc.id}`]: { userName: following, created_at: serverTimestamp() },
+        });
+        batch.update(followingRef, {
+          [`followers.${followerDoc.id}`]: { userName: follower, created_at: serverTimestamp() },
+        });
+
+        console.log("Follow added successfully");
+      }
+      await batch.commit();
+    } catch (e) {
+      console.error("Error updating follow: ", e);
       throw e;
     }
   },
