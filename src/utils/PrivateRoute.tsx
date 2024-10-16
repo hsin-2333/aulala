@@ -14,7 +14,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   if (loading) {
     return (
       <UserHomeLayout>
-        <div className="flex justify-center items-center h-fit">
+        <div className="flex h-fit items-center justify-center">
           <img src={loadingGif} width="400px" alt="Loading..." />
         </div>
       </UserHomeLayout>

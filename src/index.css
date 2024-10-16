@@ -55,7 +55,9 @@
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
   height: 4px;
-  transition: visibility 0.3s, opacity 0.3s;
+  transition:
+    visibility 0.3s,
+    opacity 0.3s;
   visibility: hidden;
 }
 

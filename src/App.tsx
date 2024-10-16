@@ -1,4 +1,9 @@
-import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
 import "./App.css";
 import { AuthContextProvider } from "./context/AuthContext";
 import { RecentPlayProvider } from "./context/RecentPlayContext";
@@ -7,7 +12,12 @@ import PrivateRoute from "./utils/PrivateRoute";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import { Layout, OuterLayout, ScriptLayout, UserHomeLayout } from "./components/Layout";
+import {
+  Layout,
+  OuterLayout,
+  ScriptLayout,
+  UserHomeLayout,
+} from "./components/Layout";
 import TestUI from "./components/testUI";
 import Account from "./pages/Account";
 import Notifications from "./pages/Account/Notification";

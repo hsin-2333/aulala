@@ -25,12 +25,14 @@ export const OuterLayout = ({ children }: LayoutProps) => {
   }, [location]);
 
   return (
-    <div className="flex h-screen overflow-hidden flex-col">
+    <div className="flex h-screen flex-col overflow-hidden">
       <div className="flex-1">
         <div className="fixed z-10 w-full">
           <NavbarComponent />
         </div>
-        <main className={` flex-1 ${storyId ? "pb-14 md:pb-24 md:mt-20" : "pb-0"}`}>
+        <main
+          className={`flex-1 ${storyId ? "pb-14 md:mt-20 md:pb-24" : "pb-0"}`}
+        >
           <MainContent isOuterPage={true}>{children}</MainContent>
         </main>
         {user ? <RecentPlayBar key={key} /> : <PlayBar />}
@@ -50,12 +52,14 @@ export const ScriptLayout = ({ children }: LayoutProps) => {
         </div>
         <Divider />
         <div
-          className={`bg-gradient-to-tr  w-full ${
-            scriptId ? "h-60 from-blue-200 to-cyan-200" : "h-28 sm:h-40  bg-gradient-to-tr from-indigo-200  to-sky-100"
+          className={`w-full bg-gradient-to-tr ${
+            scriptId
+              ? "h-60 from-blue-200 to-cyan-200"
+              : "h-28 bg-gradient-to-tr from-indigo-200 to-sky-100 sm:h-40"
           }`}
         ></div>
         <main
-          className={`flex-1 px-2 sm:px-6 max-w-[1024px] m-auto  ${scriptId ? "-mt-44 sm:-mt-32" : "-mt-9 sm:-mt-9"}`}
+          className={`m-auto max-w-[1024px] flex-1 px-2 sm:px-6 ${scriptId ? "-mt-44 sm:-mt-32" : "-mt-9 sm:-mt-9"}`}
         >
           {children}
         </main>
@@ -66,19 +70,19 @@ export const ScriptLayout = ({ children }: LayoutProps) => {
 
 export const UserHomeLayout = ({ children }: LayoutProps) => {
   return (
-    <div className="h-screen flex flex-col">
+    <div className="flex h-screen flex-col">
       <NavbarComponent />
-      <div className="flex-grow mt-16 ">{children}</div>
+      <div className="mt-16 flex-grow">{children}</div>
     </div>
   );
 };
 
 export const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="flex min-h-screen	">
+    <div className="flex min-h-screen">
       <div className="flex-1">
         <NavbarComponent />
-        <main className="flex-1 ">
+        <main className="flex-1">
           <MainContent isOuterPage={false}>{children}</MainContent>
         </main>
       </div>
@@ -91,7 +95,8 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
   const { storyId } = useParams();
   const { user } = useContext(AuthContext);
 
-  const heightStyle = (!storyId && !user) || storyId ? "calc(100vh)" : "calc(100vh - 80px)";
+  const heightStyle =
+    (!storyId && !user) || storyId ? "calc(100vh)" : "calc(100vh - 80px)";
 
   const handleCardClick = () => {
     setIsDetailVisible(true);
@@ -100,7 +105,7 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
   return (
     <div
       style={{ height: heightStyle }}
-      className={`grid overflow-y-scroll custom-scrollbar sm:overflow-y-hidden ${
+      className={`custom-scrollbar grid overflow-y-scroll sm:overflow-y-hidden ${
         isOuterPage ? "grid-cols-1 lg:grid-cols-5" : "lg:grid-cols-5"
       }`}
     >
@@ -112,13 +117,17 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
       <div
         style={{ height: heightStyle }}
         className={`${
-          isDetailVisible || !isOuterPage ? "col-span-4 lg:col-span-4" : "col-span-5 lg:col-span-5"
-        } lg:border-l  sm:overflow-y-auto p-0 custom-scrollbar scroll-padding space-y-8`}
+          isDetailVisible || !isOuterPage
+            ? "col-span-4 lg:col-span-4"
+            : "col-span-5 lg:col-span-5"
+        } custom-scrollbar scroll-padding space-y-8 p-0 sm:overflow-y-auto lg:border-l`}
       >
-        <div className=" md:px-4 lg:px-8 h-full">
-          <div className="space-y-6 h-full">
-            <div className="border-none p-0 outline-none h-full">
-              {React.cloneElement(children as React.ReactElement, { onCardClick: handleCardClick })}
+        <div className="h-full md:px-4 lg:px-8">
+          <div className="h-full space-y-6">
+            <div className="h-full border-none p-0 outline-none">
+              {React.cloneElement(children as React.ReactElement, {
+                onCardClick: handleCardClick,
+              })}
             </div>
           </div>
         </div>
@@ -139,12 +148,12 @@ const Sidebar = () => {
     <div className="pb-12">
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
-          <div className="space-y-1 ">
+          <div className="space-y-1">
             <NavLink
               to={`/account/${user?.userName}`}
               end
               className={({ isActive }) =>
-                `w-full justify-start flex items-center size-default hover:text-primary-400 rounded  ${
+                `size-default flex w-full items-center justify-start rounded hover:text-primary-400 ${
                   isActive ? "bg-primary-100" : "none"
                 }`
               }
@@ -155,7 +164,7 @@ const Sidebar = () => {
             <NavLink
               to={`/user/${user?.userName}/uploads`}
               className={({ isActive }) =>
-                `w-full justify-start flex items-center size-default hover:text-primary-400 rounded  ${
+                `size-default flex w-full items-center justify-start rounded hover:text-primary-400 ${
                   isActive ? "bg-primary-100" : "none"
                 }`
               }
@@ -166,7 +175,7 @@ const Sidebar = () => {
             <NavLink
               to={`/account/${user?.userName}/notification`}
               className={({ isActive }) =>
-                `w-full justify-start flex items-center size-default hover:text-primary-400 rounded ${
+                `size-default flex w-full items-center justify-start rounded hover:text-primary-400 ${
                   isActive ? "bg-primary-100" : "none"
                 }`
               }

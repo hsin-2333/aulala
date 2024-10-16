@@ -13,7 +13,12 @@ interface AudioWavePlayerProps {
   showSubtitles: boolean;
 }
 
-function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioWavePlayerProps) {
+function AudioWavePlayer({
+  audio_url,
+  storyId,
+  segments,
+  showSubtitles,
+}: AudioWavePlayerProps) {
   const { user } = useContext(AuthContext);
   const audioRefMain = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
@@ -53,7 +58,8 @@ function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioW
 
       const updateSubtitles = (currentTime: number) => {
         let currentSegmentIndex = AudioSegments.findIndex(
-          (segment) => currentTime >= segment.start && currentTime <= segment.end
+          (segment) =>
+            currentTime >= segment.start && currentTime <= segment.end,
         );
 
         if (currentSegmentIndex === -1) {
@@ -66,7 +72,9 @@ function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioW
         if (currentSegmentIndex !== -1) {
           const start = Math.max(0, currentSegmentIndex - 2);
           const end = Math.min(AudioSegments.length, currentSegmentIndex + 3);
-          const segmentsToShow = AudioSegments.slice(start, end).map((segment) => segment.text);
+          const segmentsToShow = AudioSegments.slice(start, end).map(
+            (segment) => segment.text,
+          );
 
           if (segmentsToShow.join() !== currentTextRef.current) {
             currentTextRef.current = segmentsToShow.join();
@@ -96,7 +104,9 @@ function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioW
 
       animationFrameId = requestAnimationFrame(updateCurrentTime);
 
-      const initialSegments = AudioSegments.slice(0, 3).map((segment) => segment.text);
+      const initialSegments = AudioSegments.slice(0, 3).map(
+        (segment) => segment.text,
+      );
       setCurrentText(initialSegments);
       setCurrentSegmentIndex(0);
 
@@ -138,7 +148,7 @@ function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioW
   return (
     <div className="mb-6">
       {showSubtitles && (
-        <div className="subtitle w-full h-72 border border-gray-200 rounded-lg p-8  mb-8">
+        <div className="subtitle mb-8 h-72 w-full rounded-lg border border-gray-200 p-8">
           <div className="flex gap-3">
             {/* <div>
               <span className="leading-6">換成start time</span>
@@ -150,7 +160,7 @@ function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioW
                   className={
                     index === currentSegmentIndex
                       ? "highlight mb-4 before:content-none"
-                      : "text-gray-700 mb-4 before:content-none"
+                      : "mb-4 text-gray-700 before:content-none"
                   }
                 >
                   {text}
@@ -162,14 +172,23 @@ function AudioWavePlayer({ audio_url, storyId, segments, showSubtitles }: AudioW
       )}
 
       <div id="waveform" ref={audioRefMain} />
-      <div className="flex justify-between text-sm text-gray-400 mt-2">
-        <span className="leading-6">{new Date(currentTime * 1000).toISOString().substr(14, 5)}</span>
-        <span className="leading-6">{new Date(duration * 1000).toISOString().substr(14, 5)}</span>
+      <div className="mt-2 flex justify-between text-sm text-gray-400">
+        <span className="leading-6">
+          {new Date(currentTime * 1000).toISOString().substr(14, 5)}
+        </span>
+        <span className="leading-6">
+          {new Date(duration * 1000).toISOString().substr(14, 5)}
+        </span>
       </div>
 
-      <div className="flex items-center justify-center gap-4  mt-4 ">
+      <div className="mt-4 flex items-center justify-center gap-4">
         <button onClick={handlePlayPause} className="flex items-center">
-          <Icon name="play" filled={isPlaying} className="mr-2 h-8 w-8" color="#82ca9eaf" />
+          <Icon
+            name="play"
+            filled={isPlaying}
+            className="mr-2 h-8 w-8"
+            color="#82ca9eaf"
+          />
         </button>
       </div>
     </div>

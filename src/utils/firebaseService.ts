@@ -18,7 +18,12 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
 import { db, storage } from "../../firebaseConfig";
 import { InteractionType, QueryConditions, Story, User } from "../types";
@@ -73,7 +78,9 @@ const dbApi = {
 
   async checkUserName(userName: string) {
     const userRef = collection(db, "users");
-    const querySnapshot = await getDocs(query(userRef, where("userName", "==", userName)));
+    const querySnapshot = await getDocs(
+      query(userRef, where("userName", "==", userName)),
+    );
     return querySnapshot.empty;
   },
 
@@ -108,7 +115,11 @@ const dbApi = {
     });
   },
 
-  async sendNotification(notificationData: { recipient: string; message: string; link: string }) {
+  async sendNotification(notificationData: {
+    recipient: string;
+    message: string;
+    link: string;
+  }) {
     try {
       const notificationRef = collection(db, "notifications");
       await addDoc(notificationRef, {
@@ -158,14 +169,22 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => doc.data().collectionName);
   },
 
-  async addOrUpdateTag(tagName: string, scriptId: string | null, storyId: string | null) {
+  async addOrUpdateTag(
+    tagName: string,
+    scriptId: string | null,
+    storyId: string | null,
+  ) {
     const tagRef = doc(db, "tags", tagName);
     const tagDoc = await getDoc(tagRef);
 
     if (tagDoc.exists()) {
       const existingData = tagDoc.data();
-      const updatedScriptIds = scriptId ? [...new Set([...existingData.scriptIds, scriptId])] : existingData.scriptIds;
-      const updatedStoryIds = storyId ? [...new Set([...existingData.storyIds, storyId])] : existingData.storyIds;
+      const updatedScriptIds = scriptId
+        ? [...new Set([...existingData.scriptIds, scriptId])]
+        : existingData.scriptIds;
+      const updatedStoryIds = storyId
+        ? [...new Set([...existingData.storyIds, storyId])]
+        : existingData.storyIds;
 
       await updateDoc(tagRef, {
         scriptIds: updatedScriptIds,
@@ -212,7 +231,7 @@ const dbApi = {
     conditions: QueryConditions,
     limitNum: number = 10,
     orderByField: string | null = null,
-    orderDirection: "asc" | "desc" = "asc"
+    orderDirection: "asc" | "desc" = "asc",
   ) {
     const constraints: QueryConstraint[] = [];
 
@@ -246,7 +265,9 @@ const dbApi = {
     }
 
     if (conditions.interaction_type) {
-      constraints.push(where("interaction_type", "==", conditions.interaction_type));
+      constraints.push(
+        where("interaction_type", "==", conditions.interaction_type),
+      );
     }
 
     if (conditions.author) {
@@ -264,7 +285,11 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 
-  async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
+  async uploadAudioAndSaveStory(
+    file: File,
+    imageFile: File | null,
+    data: Story,
+  ) {
     try {
       const tempAudioRef = ref(storage, `stories/temp_${file.name}`);
       await uploadBytes(tempAudioRef, file);
@@ -298,13 +323,20 @@ const dbApi = {
       await deleteObject(tempAudioRef);
       await updateDoc(storyRef, { audio_url: newAudioUrl });
 
-      const transcriptionResponse = await fetch("https://us-central1-aulala-a8757.cloudfunctions.net/transcribeAudio", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const transcriptionResponse = await fetch(
+        "https://us-central1-aulala-a8757.cloudfunctions.net/transcribeAudio",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            audioUrl: newAudioUrl,
+            storyId: storyId,
+            author: data.author,
+          }),
         },
-        body: JSON.stringify({ audioUrl: newAudioUrl, storyId: storyId, author: data.author }),
-      });
+      );
       if (!transcriptionResponse.ok) throw new Error("Transcription failed");
 
       return storyId;
@@ -347,7 +379,7 @@ const dbApi = {
     userName: string,
     storyId: string | null,
     scriptId: string | null,
-    interactionType: string
+    interactionType: string,
   ) {
     const interactionId = `${userName}_${storyId || scriptId}_${interactionType}`;
     const interactionRef = doc(db, "interactions", interactionId);
@@ -361,7 +393,7 @@ const dbApi = {
     storyId: string | null,
     scriptId: string | null,
     interactionType: string,
-    comment?: string
+    comment?: string,
   ) {
     try {
       let interactionId: string;
@@ -422,10 +454,16 @@ const dbApi = {
         });
       } else {
         batch.update(followerRef, {
-          [`following.${followingDoc.id}`]: { userName: following, created_at: serverTimestamp() },
+          [`following.${followingDoc.id}`]: {
+            userName: following,
+            created_at: serverTimestamp(),
+          },
         });
         batch.update(followingRef, {
-          [`followers.${followerDoc.id}`]: { userName: follower, created_at: serverTimestamp() },
+          [`followers.${followerDoc.id}`]: {
+            userName: follower,
+            created_at: serverTimestamp(),
+          },
         });
       }
       await batch.commit();
@@ -463,7 +501,11 @@ const dbApi = {
   },
 
   async subscribeToStory(author: string, callback: (data: Story[]) => void) {
-    const q = query(collection(db, "stories"), where("author", "==", author), orderBy("created_at", "desc"));
+    const q = query(
+      collection(db, "stories"),
+      where("author", "==", author),
+      orderBy("created_at", "desc"),
+    );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const StoryData: Story[] = [];
       querySnapshot.forEach((doc) => {
@@ -475,8 +517,14 @@ const dbApi = {
     return unsubscribe;
   },
 
-  async subscribeToInteractions(scriptId: string, callback: (data: Interactions) => void) {
-    const q = query(collection(db, "interactions"), where("script_id", "==", scriptId));
+  async subscribeToInteractions(
+    scriptId: string,
+    callback: (data: Interactions) => void,
+  ) {
+    const q = query(
+      collection(db, "interactions"),
+      where("script_id", "==", scriptId),
+    );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const interactionsData: InteractionType[] = [];
       querySnapshot.forEach((doc) => {
@@ -488,16 +536,22 @@ const dbApi = {
     return unsubscribe;
   },
 
-  async subscribeToNotifications(userName: string, callback: (data: Interactions) => void) {
+  async subscribeToNotifications(
+    userName: string,
+    callback: (data: Interactions) => void,
+  ) {
     const q = query(
       collection(db, "notifications"),
       where("recipient", "==", userName),
-      where("status", "==", "unread")
+      where("status", "==", "unread"),
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const notificationsData: InteractionType[] = [];
       querySnapshot.forEach((doc) => {
-        notificationsData.push({ id: doc.id, ...doc.data() } as InteractionType);
+        notificationsData.push({
+          id: doc.id,
+          ...doc.data(),
+        } as InteractionType);
       });
       callback(notificationsData);
     });
@@ -509,7 +563,7 @@ const dbApi = {
     const q = query(
       collection(db, "notifications"),
       where("recipient", "==", userName),
-      where("status", "==", "unread")
+      where("status", "==", "unread"),
     );
     const querySnapshot = await getDocs(q);
     const batch = writeBatch(db);
@@ -530,13 +584,19 @@ const dbApi = {
     }
   },
 
-  async addStoryToCollection(storyId: string, collectionName: string, userName: string) {
+  async addStoryToCollection(
+    storyId: string,
+    collectionName: string,
+    userName: string,
+  ) {
     try {
       const collectionRef = doc(db, "collections", collectionName);
       const collectionDoc = await getDoc(collectionRef);
       if (collectionDoc.exists()) {
         const existingData = collectionDoc.data();
-        const updatedStoryIds = [...new Set([...existingData.storyIds, storyId])];
+        const updatedStoryIds = [
+          ...new Set([...existingData.storyIds, storyId]),
+        ];
         await updateDoc(collectionRef, {
           storyIds: updatedStoryIds,
         });

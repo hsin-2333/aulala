@@ -7,7 +7,13 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
-import { createContext, ReactNode, useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebaseConfig";
 import { AuthContextType, AuthUser, User } from "../types";
@@ -111,11 +117,22 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
           navigate("/error", { state: { errorMessage } });
         });
     },
-    [navigate, queryClient]
+    [navigate, queryClient],
   );
 
   return (
-    <AuthContext.Provider value={{ isLogin, loading, user, authUser, userExists, Login, LoginWithEmail, Logout }}>
+    <AuthContext.Provider
+      value={{
+        isLogin,
+        loading,
+        user,
+        authUser,
+        userExists,
+        Login,
+        LoginWithEmail,
+        Logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -50,17 +50,23 @@ interface ScriptCardProps {
   onClick?: () => void;
 }
 
-export const PlaylistCard = ({ image, title, tags = [], author, onClick }: PlaylistCardProps) => {
+export const PlaylistCard = ({
+  image,
+  title,
+  tags = [],
+  author,
+  onClick,
+}: PlaylistCardProps) => {
   return (
     <div
-      className="flex items-center w-full h-24 bg-slate-200 rounded-lg overflow-hidden cursor-pointer mb-2"
+      className="mb-2 flex h-24 w-full cursor-pointer items-center overflow-hidden rounded-lg bg-slate-200"
       onClick={onClick}
     >
       <img className="h-full w-24 object-cover" src={image} alt={title} />
       <div className="flex-grow pl-4 text-left">
-        <div className="font-bold text-l">{title}</div>
-        <div className="justify-items-start	">{author}</div>
-        <div className="flex space-x-2 mt-2">
+        <div className="text-l font-bold">{title}</div>
+        <div className="justify-items-start">{author}</div>
+        <div className="mt-2 flex space-x-2">
           {tags.map((tag, index) => (
             <span key={index} className="rounded-sm bg-slate-300">
               {tag}
@@ -87,7 +93,10 @@ export const ScriptCard = ({
   useEffect(() => {
     if (!scriptId) return;
     const fetchData = async () => {
-      const unsubscribe = await dbApi.subscribeToInteractions(scriptId, setInteractions);
+      const unsubscribe = await dbApi.subscribeToInteractions(
+        scriptId,
+        setInteractions,
+      );
       return unsubscribe;
     };
 
@@ -99,50 +108,73 @@ export const ScriptCard = ({
   }, [scriptId]);
 
   const getCount = (type: string) => {
-    return interactions.filter((interaction) => interaction.interaction_type === type).length;
+    return interactions.filter(
+      (interaction) => interaction.interaction_type === type,
+    ).length;
   };
 
   return (
     <Card
-      className="w-full border border-default-200 mb-1 sm:mb-8 hover:bg-default-50"
+      className="mb-1 w-full border border-default-200 hover:bg-default-50 sm:mb-8"
       isPressable
       onPress={onClick}
       shadow="none"
     >
       <CardHeader className="flex flex-col items-start">
-        <div className="flex gap-2 align-middle items-center">
-          <Image alt="story cover image" height={40} radius="sm" width={40} src={image} />
+        <div className="flex items-center gap-2 align-middle">
+          <Image
+            alt="story cover image"
+            height={40}
+            radius="sm"
+            width={40}
+            src={image}
+          />
           <div>
-            <h2 className="font-bold text-l sm:text-xl break-words whitespace-normal text-left">{title}</h2>
-            <p className="text-small text-default-500 text-left">{date}</p>
+            <h2 className="text-l whitespace-normal break-words text-left font-bold sm:text-xl">
+              {title}
+            </h2>
+            <p className="text-left text-small text-default-500">{date}</p>
           </div>
         </div>
       </CardHeader>
 
       <CardBody className="px-4 py-2 sm:py-4">
-        <p className="text-gray-700 break-words whitespace-normal">{summary}</p>
+        <p className="whitespace-normal break-words text-gray-700">{summary}</p>
       </CardBody>
       <Divider className="bg-slate-100" />
 
-      <CardFooter className="flex flex-wrap items-center w-full justify-between py-2 sm:py-4 gap-2">
-        <div className="flex flex-wrap space-x-2 flex-grow">
+      <CardFooter className="flex w-full flex-wrap items-center justify-between gap-2 py-2 sm:py-4">
+        <div className="flex flex-grow flex-wrap space-x-2">
           {tags.map((tag, index) => (
             <Chip key={index} color="primary" className="text-xs sm:text-sm">
               {tag}
             </Chip>
           ))}
         </div>
-        <div className="flex flex-wrap gap-2 ml-1  items-end ">
-          <p className="text-default-500 hover:text-gray-800 flex  gap-1 items-center">
-            <Icon name="bookmarked" className="h-4 w-4" color="hsl(var(--nextui-default-500))" />
+        <div className="ml-1 flex flex-wrap items-end gap-2">
+          <p className="flex items-center gap-1 text-default-500 hover:text-gray-800">
+            <Icon
+              name="bookmarked"
+              className="h-4 w-4"
+              color="hsl(var(--nextui-default-500))"
+            />
             {getCount("bookmarked")}
           </p>
-          <p className="text-default-500 hover:text-gray-800 flex  gap-1 items-center">
-            <Icon name="like" className="h-4 w-4" color="hsl(var(--nextui-default-500))" /> {getCount("like")}
+          <p className="flex items-center gap-1 text-default-500 hover:text-gray-800">
+            <Icon
+              name="like"
+              className="h-4 w-4"
+              color="hsl(var(--nextui-default-500))"
+            />{" "}
+            {getCount("like")}
           </p>
 
-          <p className="text-default-500 hover:text-gray-800 flex  gap-1 items-center ">
-            <LiaComment className="h-5 w-5" color="hsl(var(--nextui-default-500))" /> {getCount("comment")}
+          <p className="flex items-center gap-1 text-default-500 hover:text-gray-800">
+            <LiaComment
+              className="h-5 w-5"
+              color="hsl(var(--nextui-default-500))"
+            />{" "}
+            {getCount("comment")}
           </p>
         </div>
         <p className="text-default-500 hover:text-gray-800">{language}</p>
@@ -151,21 +183,42 @@ export const ScriptCard = ({
   );
 };
 
-export const AudioCard: React.FC<PlaylistCardProps> = ({ image, title, duration, author, date, onClick, intro }) => {
+export const AudioCard: React.FC<PlaylistCardProps> = ({
+  image,
+  title,
+  duration,
+  author,
+  date,
+  onClick,
+  intro,
+}) => {
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
 
-  const storyDuration = duration ? `${Math.round((duration / 60) * 2) / 2} min` : "";
+  const storyDuration = duration
+    ? `${Math.round((duration / 60) * 2) / 2} min`
+    : "";
   return (
-    <Card className="min-w-52 sm:min-w-72 w-full group" shadow="none" isPressable onPress={onClick}>
-      <CardHeader className="flex gap-3  justify-between items-center">
-        <div className="flex  gap-3">
-          <Image alt="story cover image" height={40} radius="sm" src={image} width={40} />
+    <Card
+      className="group w-full min-w-52 sm:min-w-72"
+      shadow="none"
+      isPressable
+      onPress={onClick}
+    >
+      <CardHeader className="flex items-center justify-between gap-3">
+        <div className="flex gap-3">
+          <Image
+            alt="story cover image"
+            height={40}
+            radius="sm"
+            src={image}
+            width={40}
+          />
           <div className="flex flex-col">
             <p className="text-md text-left">{author}</p>
-            <p className="text-small text-default-500 text-left">
+            <p className="text-left text-small text-default-500">
               {date} • {storyDuration}
             </p>
           </div>
@@ -173,14 +226,24 @@ export const AudioCard: React.FC<PlaylistCardProps> = ({ image, title, duration,
       </CardHeader>
       <Divider className="bg-slate-100" />
       <CardBody className="flex gap-3">
-        <span className="font-bold text-xl break-words whitespace-normal text-left">{title}</span>
-        <p className="text-gray-700 break-words whitespace-normal">{intro}</p>
+        <span className="whitespace-normal break-words text-left text-xl font-bold">
+          {title}
+        </span>
+        <p className="whitespace-normal break-words text-gray-700">{intro}</p>
       </CardBody>
     </Card>
   );
 };
 
-export const ImageCard: React.FC<PlaylistCardProps> = ({ id, image, title, duration, author, date, onClick }) => {
+export const ImageCard: React.FC<PlaylistCardProps> = ({
+  id,
+  image,
+  title,
+  duration,
+  author,
+  date,
+  onClick,
+}) => {
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
@@ -188,26 +251,28 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({ id, image, title, durat
   const { storyInfo, isPlaying } = context;
 
   const isCurrentStory = id === storyInfo?.id;
-  const storyDuration = duration ? `${Math.round((duration / 60) * 2) / 2} min` : "";
+  const storyDuration = duration
+    ? `${Math.round((duration / 60) * 2) / 2} min`
+    : "";
   return (
     <Card
       isPressable
       onPress={onClick}
-      className="flex-shrink-0 bg-transparent max-w-[240px] "
+      className="max-w-[240px] flex-shrink-0 bg-transparent"
       shadow="none"
       radius="none"
     >
-      <CardBody className="overflow-visible py-2 p-0">
-        <div className="z-3  relative group w-36 sm:w-60">
+      <CardBody className="overflow-visible p-0 py-2">
+        <div className="z-3 group relative w-36 sm:w-60">
           <Image
             src={image}
             alt="Card background"
-            className="z-0 object-cover rounded-xl w-36 h-36 sm:w-48 sm:h-48 md:w-60 md:h-60"
+            className="z-0 h-36 w-36 rounded-xl object-cover sm:h-48 sm:w-48 md:h-60 md:w-60"
           />
-          <div className="z-2 absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+          <div className="z-2 absolute inset-0 rounded-xl bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
           <Button
             isIconOnly
-            className="z-10 absolute inset-0 m-auto text-default-900/60 data-[hover]:bg-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            className="absolute inset-0 z-10 m-auto text-default-900/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100 data-[hover]:bg-foreground/10"
             radius="full"
             variant="light"
             onClick={onClick}
@@ -221,9 +286,9 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({ id, image, title, durat
           </Button>
         </div>
       </CardBody>
-      <CardHeader className="p-0 mt-1 flex-col items-start w-full">
+      <CardHeader className="mt-1 w-full flex-col items-start p-0">
         <motion.p
-          className="font-bold text-large text-left items-start overflow-hidden whitespace-nowrap"
+          className="items-start overflow-hidden whitespace-nowrap text-left text-large font-bold"
           whileHover={{ x: ["0", "-100%"] }}
           transition={{ duration: 4, ease: "linear", repeat: Infinity }}
         >
@@ -237,13 +302,24 @@ export const ImageCard: React.FC<PlaylistCardProps> = ({ id, image, title, durat
   );
 };
 
-export const SearchResultCard = ({ id, image, intro, duration, title, tags, author, onClick }: PlaylistCardProps) => {
+export const SearchResultCard = ({
+  id,
+  image,
+  intro,
+  duration,
+  title,
+  tags,
+  author,
+  onClick,
+}: PlaylistCardProps) => {
   const context = useContext(RecentPlayContext);
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
 
-  const storyDuration = duration ? `${Math.round((duration / 60) * 2) / 2} min` : "";
+  const storyDuration = duration
+    ? `${Math.round((duration / 60) * 2) / 2} min`
+    : "";
 
   return (
     <>
@@ -256,34 +332,42 @@ export const SearchResultCard = ({ id, image, intro, duration, title, tags, auth
         radius="sm"
       >
         <CardBody>
-          <div className="max-h-40  grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-start justify-center">
-            <div className="relative sm:col-span-2 col-span-2 md:col-span-2 md:h-full w-fit ">
+          <div className="grid max-h-40 grid-cols-6 items-start justify-center gap-6 md:grid-cols-12 md:gap-4">
+            <div className="relative col-span-2 w-fit sm:col-span-2 md:col-span-2 md:h-full">
               <img
                 alt={title}
-                className="ml-0 sm:ml-6 object-cover rounded-lg w-full h-full md:max-w-32 md:max-h-32 "
+                className="ml-0 h-full w-full rounded-lg object-cover sm:ml-6 md:max-h-32 md:max-w-32"
                 src={image}
                 width="100%"
-                style={{ height: "100px", width: "100px", borderRadius: "0.5rem" }}
+                style={{
+                  height: "100px",
+                  width: "100px",
+                  borderRadius: "0.5rem",
+                }}
               />
             </div>
 
-            <div className="flex flex-col sm:col-span-3  col-span-4 md:col-span-10 h-full">
-              <div className="flex justify-between items-start h-full">
-                <div className="flex flex-col gap-0 col-span-3 justify-between">
+            <div className="col-span-4 flex h-full flex-col sm:col-span-3 md:col-span-10">
+              <div className="flex h-full items-start justify-between">
+                <div className="col-span-3 flex flex-col justify-between gap-0">
                   <div>
-                    <h1 className="text-medium font-semibold ">{title}</h1>
+                    <h1 className="text-medium font-semibold">{title}</h1>
                     <div className="flex gap-1">
                       <Link
                         href={`/user/${author}`}
                         color="foreground"
-                        className="text-xs sm:text-sm tracking-tight text-default-400 hover:text-default-600"
+                        className="text-xs tracking-tight text-default-400 hover:text-default-600 sm:text-sm"
                       >
                         {author}
                       </Link>
-                      <h3 className="text-xs sm:text-sm tracking-tight text-default-400">•</h3>
-                      <h3 className="text-xs sm:text-sm tracking-tight text-default-400">{storyDuration}</h3>
+                      <h3 className="text-xs tracking-tight text-default-400 sm:text-sm">
+                        •
+                      </h3>
+                      <h3 className="text-xs tracking-tight text-default-400 sm:text-sm">
+                        {storyDuration}
+                      </h3>
                     </div>
-                    <p className="text-small pt-2 overflow-hidden">{intro}</p>
+                    <p className="overflow-hidden pt-2 text-small">{intro}</p>
                     {tags.map((tag, index) => (
                       <Chip
                         key={index}
@@ -292,7 +376,7 @@ export const SearchResultCard = ({ id, image, intro, duration, title, tags, auth
                         isDisabled
                         size="sm"
                         radius="sm"
-                        className="mt-1 mr-1"
+                        className="mr-1 mt-1"
                       >
                         # {tag}
                       </Chip>
@@ -300,7 +384,7 @@ export const SearchResultCard = ({ id, image, intro, duration, title, tags, auth
                   </div>
                 </div>
 
-                <div className="flex items-center h-full ">
+                <div className="flex h-full items-center">
                   <Dropdown>
                     <DropdownTrigger>
                       <Button isIconOnly size="sm" variant="light">

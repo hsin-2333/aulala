@@ -13,15 +13,18 @@ const Toast = ({ message, onClose }: ToastProps) => {
   }, [onClose]);
 
   return (
-    <div className="fixed bottom-4 left-3 text-medium border bg-white border-default-200 py-3 px-4 rounded-xl flex items-center justify-between w-1/3 group">
-      <div className="flex gap-4 justify-center items-center">
+    <div className="group fixed bottom-4 left-3 flex w-1/3 items-center justify-between rounded-xl border border-default-200 bg-white px-4 py-3 text-medium">
+      <div className="flex items-center justify-center gap-4">
         <IoWarningOutline className="text-red-400" size={20} />
         <div className="flex flex-col items-start gap-1">
-          <span className="font-bold text-sm">{message}</span>
+          <span className="text-sm font-bold">{message}</span>
         </div>
       </div>
 
-      <button onClick={onClose} className="bg-none border-none hidden group-hover:block">
+      <button
+        onClick={onClose}
+        className="hidden border-none bg-none group-hover:block"
+      >
         ✖
       </button>
     </div>

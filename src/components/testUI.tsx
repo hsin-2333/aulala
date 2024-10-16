@@ -31,19 +31,27 @@ const TestUI = () => {
   console.log("TestUI");
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="w-full bg-gray-800 text-white p-4">Navbar</div>
+    <div className="flex min-h-screen flex-col">
+      <div className="w-full bg-gray-800 p-4 text-white">Navbar</div>
 
       <div className="flex flex-grow">
-        <div className={`border border-blue-300 flex-grow ${isDetailVisible ? "w-3/4" : "w-full"}`}>
+        <div
+          className={`flex-grow border border-blue-300 ${isDetailVisible ? "w-3/4" : "w-full"}`}
+        >
           <div onClick={handleCardClick} className="card">
             <Skelenton_ui />
           </div>
         </div>
-        {isDetailVisible && <div className="w-1/3 border border-pink-300"></div>}
+        {isDetailVisible && (
+          <div className="w-1/3 border border-pink-300"></div>
+        )}
       </div>
 
-      {isDetailVisible && <div className="w-full bg-gray-200 p-4 border-t border-gray-400">Full-width div</div>}
+      {isDetailVisible && (
+        <div className="w-full border-t border-gray-400 bg-gray-200 p-4">
+          Full-width div
+        </div>
+      )}
     </div>
   );
 };

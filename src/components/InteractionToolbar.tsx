@@ -25,12 +25,21 @@ interface PlaylistButtonProps {
   storyId?: string;
 }
 
-export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionToolbarProps) => {
+export const InteractionToolbar = ({
+  userName,
+  storyId,
+  scriptId,
+}: InteractionToolbarProps) => {
   const [liked, setLiked] = useState(false);
   const queryClient = useQueryClient();
   useEffect(() => {
     const fetchLikeStatus = async () => {
-      const likeStatus = await dbApi.getInteractionStatus(userName, storyId || null, scriptId || null, "like");
+      const likeStatus = await dbApi.getInteractionStatus(
+        userName,
+        storyId || null,
+        scriptId || null,
+        "like",
+      );
       setLiked(likeStatus);
     };
 
@@ -38,7 +47,13 @@ export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionT
   }, [userName, storyId, scriptId]);
 
   const likeMutation = useMutation({
-    mutationFn: () => dbApi.updateInteraction(userName, storyId || null, scriptId || null, "like"),
+    mutationFn: () =>
+      dbApi.updateInteraction(
+        userName,
+        storyId || null,
+        scriptId || null,
+        "like",
+      ),
     onMutate: async () => {
       const previousLiked = liked;
       setLiked((prev) => !prev);
@@ -56,7 +71,7 @@ export const InteractionToolbar = ({ userName, storyId, scriptId }: InteractionT
       {/* <button onClick={() => likeMutation.mutate()} className="flex items-center"> */}
       <Button
         isIconOnly
-        className=" text-default-900/60 data-[hover]:bg-foreground/10  "
+        className="text-default-900/60 data-[hover]:bg-foreground/10"
         radius="full"
         variant="light"
         onPress={() => likeMutation.mutate()}
@@ -85,7 +100,12 @@ export const BookmarkButton = ({ userName, scriptId }: BookmarkButtonProps) => {
 
   useEffect(() => {
     const fetchBookmarkStatus = async () => {
-      const bookmarkStatus = await dbApi.getInteractionStatus(userName, null, scriptId || null, "bookmarked");
+      const bookmarkStatus = await dbApi.getInteractionStatus(
+        userName,
+        null,
+        scriptId || null,
+        "bookmarked",
+      );
       setBookmarked(bookmarkStatus);
     };
 
@@ -93,7 +113,8 @@ export const BookmarkButton = ({ userName, scriptId }: BookmarkButtonProps) => {
   }, [userName, scriptId]);
 
   const saveMutation = useMutation({
-    mutationFn: () => dbApi.updateInteraction(userName, null, scriptId || null, "bookmarked"),
+    mutationFn: () =>
+      dbApi.updateInteraction(userName, null, scriptId || null, "bookmarked"),
     onMutate: async () => {
       setBookmarked((prev) => !prev);
     },
@@ -107,7 +128,7 @@ export const BookmarkButton = ({ userName, scriptId }: BookmarkButtonProps) => {
   return (
     <Button
       isIconOnly
-      className=" text-default-900/60 data-[hover]:bg-foreground/10  "
+      className="text-default-900/60 data-[hover]:bg-foreground/10"
       radius="full"
       variant="light"
       onPress={() => saveMutation.mutate()}
@@ -129,7 +150,12 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
 
   useEffect(() => {
     const fetchPlaylistStatus = async () => {
-      const playlistStatus = await dbApi.getInteractionStatus(userName, storyId || null, null, "playlist");
+      const playlistStatus = await dbApi.getInteractionStatus(
+        userName,
+        storyId || null,
+        null,
+        "playlist",
+      );
       setInPlaylist(playlistStatus);
     };
 
@@ -137,7 +163,8 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
   }, [userName, storyId]);
 
   const playlistMutation = useMutation({
-    mutationFn: () => dbApi.updateInteraction(userName, storyId || null, null, "playlist"),
+    mutationFn: () =>
+      dbApi.updateInteraction(userName, storyId || null, null, "playlist"),
     onMutate: async () => {
       setInPlaylist((prev) => !prev);
     },
@@ -151,7 +178,7 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
   return (
     <Button
       isIconOnly
-      className=" text-default-900/60 data-[hover]:bg-foreground/10  "
+      className="text-default-900/60 data-[hover]:bg-foreground/10"
       radius="full"
       variant="light"
       onPress={() => playlistMutation.mutate()}
@@ -167,14 +194,25 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
   );
 };
 
-export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }: InteractionToolbarProps) => {
+export const CommentToolbar = ({
+  userName,
+  storyId,
+  scriptId,
+  setCommentCount,
+}: InteractionToolbarProps) => {
   const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
   const [userAvatars, setUserAvatars] = useState<{ [key: string]: string }>({});
 
   const addCommentMutation = useMutation({
     mutationFn: (newComment: string) =>
-      dbApi.updateInteraction(userName, storyId || null, scriptId || null, "comment", newComment),
+      dbApi.updateInteraction(
+        userName,
+        storyId || null,
+        scriptId || null,
+        "comment",
+        newComment,
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["comments", storyId || scriptId],
@@ -199,7 +237,7 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
         },
         10,
         "created_at",
-        "desc"
+        "desc",
       );
       return comments as Comment[];
     },
@@ -213,7 +251,11 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
         for (const comment of commentsData) {
           if (!avatars[comment.userName]) {
             const condition = { userName: comment.userName };
-            const user = (await dbApi.queryCollection("users", condition, 1)) as UserType[];
+            const user = (await dbApi.queryCollection(
+              "users",
+              condition,
+              1,
+            )) as UserType[];
             if (user.length > 0) {
               avatars[comment.userName] = user[0].avatar || "";
             }
@@ -240,9 +282,9 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
 
   return (
     <>
-      <section className="flex items-start justify-center flex-col ">
+      <section className="flex flex-col items-start justify-center">
         {userName ? (
-          <form onSubmit={handleSubmit} className="w-full text-right my-4">
+          <form onSubmit={handleSubmit} className="my-4 w-full text-right">
             <Textarea
               variant="bordered"
               labelPlacement="outside"
@@ -252,7 +294,7 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
               value={comment}
               onChange={(e) => setComment(e.target.value)}
             />
-            <div className="flex justify-end h-8 mb-4 gap-1">
+            <div className="mb-4 flex h-8 justify-end gap-1">
               {comment && (
                 <>
                   <Button
@@ -264,7 +306,13 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
                   >
                     Cancel
                   </Button>
-                  <Button size="sm" radius="sm" color="primary" type="submit" className="my-2">
+                  <Button
+                    size="sm"
+                    radius="sm"
+                    color="primary"
+                    type="submit"
+                    className="my-2"
+                  >
                     Comment
                   </Button>
                 </>
@@ -272,7 +320,7 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
             </div>
           </form>
         ) : (
-          <div className="h-12 my-2">
+          <div className="my-2 h-12">
             <Button
               as={Link}
               href="/login"
@@ -286,10 +334,14 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
             </Button>
           </div>
         )}
-        <h2 className="text-lg mb-4"> Comments</h2>
+        <h2 className="mb-4 text-lg"> Comments</h2>
         {comments.length > 0 ? (
           comments.map((comment) => (
-            <CommentItem key={comment.id} comment={comment} avatar={userAvatars[comment.userName]} />
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              avatar={userAvatars[comment.userName]}
+            />
           ))
         ) : (
           <p>No comments yet</p>
@@ -299,10 +351,16 @@ export const CommentToolbar = ({ userName, storyId, scriptId, setCommentCount }:
   );
 };
 
-export const CommentItem = ({ comment, avatar }: { comment: Comment; avatar: string }) => {
+export const CommentItem = ({
+  comment,
+  avatar,
+}: {
+  comment: Comment;
+  avatar: string;
+}) => {
   return (
-    <div key={comment.id} className="mb-4 pb-3 w-full">
-      <div className="flex mb-2 gap-3 justify-between">
+    <div key={comment.id} className="mb-4 w-full pb-3">
+      <div className="mb-2 flex justify-between gap-3">
         <User
           name={comment.userName}
           description={
@@ -317,8 +375,10 @@ export const CommentItem = ({ comment, avatar }: { comment: Comment; avatar: str
           }}
         />
       </div>
-      <p className="text-default-900 whitespace-pre-wrap break-words">{comment.comment}</p>{" "}
-      <Divider className="my-2 " />
+      <p className="whitespace-pre-wrap break-words text-default-900">
+        {comment.comment}
+      </p>{" "}
+      <Divider className="my-2" />
     </div>
   );
 };

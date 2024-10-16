@@ -50,13 +50,16 @@ export function NavbarComponent() {
 
   useEffect(() => {
     if (user && user.userName) {
-      const unsubscribePromise = dbApi.subscribeToNotifications(user.userName, (notifications) => {
-        if (notifications.length > 0) {
-          setHasUnreadNotifications(true);
-        } else {
-          setHasUnreadNotifications(false);
-        }
-      });
+      const unsubscribePromise = dbApi.subscribeToNotifications(
+        user.userName,
+        (notifications) => {
+          if (notifications.length > 0) {
+            setHasUnreadNotifications(true);
+          } else {
+            setHasUnreadNotifications(false);
+          }
+        },
+      );
 
       unsubscribePromise
         .then((unsubscribe) => {
@@ -68,7 +71,9 @@ export function NavbarComponent() {
     }
   }, [user]);
 
-  const handleNotificationClick = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const handleNotificationClick = async (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) => {
     event.preventDefault();
     setHasUnreadNotifications(false);
     if (user && user.userName) {
@@ -91,18 +96,25 @@ export function NavbarComponent() {
             <Logo />
           </NavbarBrand>
 
-          <NavbarContent className="flex flex-grow gap-4" justify="center"></NavbarContent>
+          <NavbarContent
+            className="flex flex-grow gap-4"
+            justify="center"
+          ></NavbarContent>
 
           <NavbarContent as="div" className="flex flex-shrink-0" justify="end">
             {user ? (
               <>
-                <form onSubmit={handleSearchSubmit} className="flex items-center flex-shrink-0">
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="flex flex-shrink-0 items-center"
+                >
                   <Input
                     classNames={{
                       base: "max-w-full sm:max-w-[10rem] h-10",
                       mainWrapper: "h-full",
                       input: "text-small",
-                      inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+                      inputWrapper:
+                        "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
                     }}
                     placeholder="Search..."
                     size="sm"
@@ -142,7 +154,7 @@ export function NavbarComponent() {
                 >
                   <Button
                     isIconOnly
-                    className=" text-default-900/60 data-[hover]:bg-foreground/10 -mx-2 "
+                    className="-mx-2 text-default-900/60 data-[hover]:bg-foreground/10"
                     radius="full"
                     variant="light"
                   >
@@ -153,9 +165,12 @@ export function NavbarComponent() {
                       className="data-[hover]:bg-foreground/70"
                     >
                       <div className="relative">
-                        <IoMdNotificationsOutline size={24} color="var(--color-primary)" />
+                        <IoMdNotificationsOutline
+                          size={24}
+                          color="var(--color-primary)"
+                        />
                         {hasUnreadNotifications && (
-                          <span className="absolute top-0 right-0 h-2 w-2 bg-[#E0756D] rounded-full"></span>
+                          <span className="absolute right-0 top-0 h-2 w-2 rounded-full bg-[#E0756D]"></span>
                         )}
                       </div>
                     </Link>
@@ -167,7 +182,7 @@ export function NavbarComponent() {
                     <Avatar
                       isBordered
                       as="button"
-                      className="transition-transform w-8 h-8 flex-shrink-0"
+                      className="h-8 w-8 flex-shrink-0 transition-transform"
                       name={user.userName}
                       size="sm"
                       src={user.avatar}
@@ -180,7 +195,11 @@ export function NavbarComponent() {
                     disabledKeys={["user_settings", "analytics"]}
                   >
                     <DropdownSection showDivider>
-                      <DropdownItem key="profile" className="h-14 gap-2" textValue={user.email}>
+                      <DropdownItem
+                        key="profile"
+                        className="h-14 gap-2"
+                        textValue={user.email}
+                      >
                         <p className="font-semibold">{user.email}</p>
                       </DropdownItem>
                       <DropdownItem
@@ -198,7 +217,7 @@ export function NavbarComponent() {
                       onClick={handleLogout}
                       startContent={<FiLogOut size={16} />}
                       textValue="logout"
-                      className=" data-[hover=true]:bg-[#fba19a47] data-[hover=true]:text-[#f66969]"
+                      className="data-[hover=true]:bg-[#fba19a47] data-[hover=true]:text-[#f66969]"
                     >
                       Log Out
                     </DropdownItem>
@@ -207,13 +226,17 @@ export function NavbarComponent() {
               </>
             ) : (
               <>
-                <form onSubmit={handleSearchSubmit} className="flex items-center flex-shrink-0">
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="flex flex-shrink-0 items-center"
+                >
                   <Input
                     classNames={{
                       base: "max-w-full sm:max-w-[10rem] h-10",
                       mainWrapper: "h-full",
                       input: "text-small",
-                      inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+                      inputWrapper:
+                        "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
                     }}
                     placeholder="Search..."
                     size="sm"
@@ -223,7 +246,13 @@ export function NavbarComponent() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </form>
-                <Button as={Link} color="primary" variant="flat" radius="sm" href={`/login`}>
+                <Button
+                  as={Link}
+                  color="primary"
+                  variant="flat"
+                  radius="sm"
+                  href={`/login`}
+                >
                   Login
                 </Button>
               </>
@@ -234,38 +263,59 @@ export function NavbarComponent() {
 
       {/* 手機板 */}
       {location.pathname !== "/upload/story" && (
-        <div className="z-50 block sm:hidden fixed bottom-0 left-0 right-0 bg-slate-300 h-[50px]">
-          <div className="flex justify-around p-1 ">
-            <Link href="/" className="text-center flex items-center justify-end flex-col gap-[2px]">
+        <div className="fixed bottom-0 left-0 right-0 z-50 block h-[50px] bg-slate-300 sm:hidden">
+          <div className="flex justify-around p-1">
+            <Link
+              href="/"
+              className="flex flex-col items-center justify-end gap-[2px] text-center"
+            >
               <GiSpellBook size={22} color="var(--color-primary)" />
-              <span className="text-xs text-end text-default-600 ">Explore</span>
+              <span className="text-end text-xs text-default-600">Explore</span>
             </Link>
 
-            <Link href="/upload/story" className="text-center items-center justify-end flex flex-col gap-[2px]">
+            <Link
+              href="/upload/story"
+              className="flex flex-col items-center justify-end gap-[2px] text-center"
+            >
               <IoAdd size={22} color="var(--color-primary)" />
-              <span className="text-xs  text-end text-default-600">Upload</span>
+              <span className="text-end text-xs text-default-600">Upload</span>
             </Link>
             {user && (
               <Link
                 href={`/account/${user.userName}/notification`}
-                className="text-center items-center justify-end flex flex-col gap-[0px]"
+                className="flex flex-col items-center justify-end gap-[0px] text-center"
               >
-                <IoMdNotificationsOutline size={21} color="var(--color-primary)" />
-                <span className="text-xs text-end text-default-600"> InBox</span>
+                <IoMdNotificationsOutline
+                  size={21}
+                  color="var(--color-primary)"
+                />
+                <span className="text-end text-xs text-default-600">
+                  {" "}
+                  InBox
+                </span>
               </Link>
             )}
             {user ? (
               <Link
                 href={`/user/${user.userName}`}
-                className="text-center items-center justify-end flex flex-col gap-[2px]"
+                className="flex flex-col items-center justify-end gap-[2px] text-center"
               >
                 <VscAccount size={18} color="var(--color-primary)" />
-                <span className="text-xs text-end text-default-600"> Profile</span>
+                <span className="text-end text-xs text-default-600">
+                  {" "}
+                  Profile
+                </span>
               </Link>
             ) : (
-              <Link href="/login" className="text-center items-center justify-end flex flex-col gap-[2px]">
+              <Link
+                href="/login"
+                className="flex flex-col items-center justify-end gap-[2px] text-center"
+              >
                 <VscAccount size={18} color="var(--color-primary)" />
-                <span className="text-xs text-end text-default-600"> Profile</span>
+                <span className="text-end text-xs text-default-600">
+                  {" "}
+                  Profile
+                </span>
               </Link>
             )}
           </div>

@@ -6,8 +6,8 @@ import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <NextUIProvider className="light text-foreground bg-background">
+    <NextUIProvider className="bg-background text-foreground light">
       <App />
     </NextUIProvider>
-  </StrictMode>
+  </StrictMode>,
 );
