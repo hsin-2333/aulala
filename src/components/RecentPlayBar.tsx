@@ -31,7 +31,6 @@ const RecentPlayBar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [istheSameStory, setIstheSameStory] = useState(false);
 
-  //取得故事資訊
   useEffect(() => {
     let isMounted = true;
     if (storyId) {
@@ -39,7 +38,6 @@ const RecentPlayBar = () => {
 
       if (storyInfo && storyInfo.id === storyId) {
         setIstheSameStory(true);
-        console.log("同一個故事, storyInfo", storyInfo, "storyId", storyId);
         setCurrentStoryInfo(storyInfo);
       } else {
         const fetchStoryInfo = async () => {
@@ -66,7 +64,6 @@ const RecentPlayBar = () => {
     };
   }, [storyId, storyInfo, setIsPlaying]);
 
-  //創建音頻播放器
   useEffect(() => {
     if (currentStoryInfo) {
       const existingStoryId = audioRef.current.storyId;
@@ -81,13 +78,11 @@ const RecentPlayBar = () => {
         (existingStoryId === currentStoryInfo.id && audioRef.current.instance) ||
         (istheSameStory && audioRef.current.instance)
       ) {
-        console.log("-------使用舊的player------------------");
         return;
       } else {
         if (audioRef.current.instance) {
           audioRef.current.instance.destroy();
         }
-        console.log("-------新的player------------------");
         const wavesurfer = WaveSurfer.create({
           container: "#waveform_bottom",
           waveColor: "#CCE3FD",
@@ -102,12 +97,10 @@ const RecentPlayBar = () => {
         if (currentStoryInfo.id) {
           audioRef.current = { instance: wavesurfer, storyId: currentStoryInfo.id };
         }
-        // 設置播放時間更新與字幕更新邏輯
         let lastUpdateTime = 0;
 
         const updateRecentPlay = (currentTime: number) => {
           if (user && user.uid && currentStoryInfo.id) {
-            console.log("更新到資料庫", currentStoryInfo.id, currentTime);
             dbApi.updateRecentPlay(user.uid, currentStoryInfo.id, currentTime);
           }
         };
@@ -119,7 +112,6 @@ const RecentPlayBar = () => {
           if (currentTime - lastUpdateTime > 0.999) {
             lastUpdateTime = currentTime;
             updateRecentPlay(currentTime);
-            console.log("timeupdate event時間更新", currentTime);
           }
         });
 
@@ -139,14 +131,12 @@ const RecentPlayBar = () => {
           }
         });
 
-        // 時間軸跳轉
         wavesurfer.on("seeking", (progress) => {
           const newTime = progress;
           setCurrentTime(newTime);
           currentTimeRef.current = newTime;
           lastUpdateTime = newTime;
           if (!istheSameStory) {
-            console.log("時間軸跳轉", newTime);
             updateRecentPlay(newTime);
           }
         });
@@ -154,18 +144,12 @@ const RecentPlayBar = () => {
         wavesurfer.on("finish", () => {
           setIsPlaying(false);
         });
-
-        // return () => {
-        //   wavesurfer.destroy();
-        // };
       }
     }
   }, [currentStoryInfo, currentTimeRef, recentPlay, setIsPlaying, storyInfo?.id, user, istheSameStory]);
 
   const togglePlayPause = () => {
     const wavesurfer = audioRef.current.instance;
-    // console.log("togglePlayPause", wavesurfer);
-    console.log("暫停/播放====");
     if (wavesurfer) {
       if (isPlaying) {
         wavesurfer.pause();

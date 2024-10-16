@@ -5,8 +5,10 @@ import { FaBarsProgress } from "react-icons/fa6";
 import { NavLink, useLocation, useParams } from "react-router-dom";
 import { NavbarComponent } from "../components/Nav/Navbar";
 import { AuthContext } from "../context/AuthContext";
+import Icon from "./Icon";
 import RecentPlayBar, { PlayBar } from "./RecentPlayBar";
 import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
+
 interface LayoutProps {
   children: ReactNode;
   isOuterPage?: boolean;
@@ -116,7 +118,6 @@ const MainContent = ({ isOuterPage, children }: LayoutProps) => {
         <div className=" md:px-4 lg:px-8 h-full">
           <div className="space-y-6 h-full">
             <div className="border-none p-0 outline-none h-full">
-              {/* {children} */}
               {React.cloneElement(children as React.ReactElement, { onCardClick: handleCardClick })}
             </div>
           </div>
@@ -148,21 +149,7 @@ const Sidebar = () => {
                 }`
               }
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-2 h-4 w-4"
-              >
-                <rect width="7" height="7" x="3" y="3" rx="1" />
-                <rect width="7" height="7" x="14" y="3" rx="1" />
-                <rect width="7" height="7" x="14" y="14" rx="1" />
-                <rect width="7" height="7" x="3" y="14" rx="1" />
-              </svg>
+              <Icon name="homepage" />
               Your Homepage
             </NavLink>
             <NavLink
@@ -184,19 +171,7 @@ const Sidebar = () => {
                 }`
               }
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-2 h-4 w-4"
-              >
-                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-              </svg>
+              <Icon name="notification" />
               Notification
             </NavLink>
           </div>

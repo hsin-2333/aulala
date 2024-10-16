@@ -74,7 +74,6 @@ export function NavbarComponent() {
     if (user && user.userName) {
       try {
         await dbApi.markNotificationsAsRead(user.userName);
-        console.log("Marked notifications as read");
         navigate(`/account/${user.userName}/notification`);
       } catch (error) {
         console.error("Failed to mark notifications as read:", error);
