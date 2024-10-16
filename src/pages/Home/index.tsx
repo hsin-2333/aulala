@@ -1,14 +1,14 @@
-import { Button, Divider } from "@nextui-org/react";
+import { Divider } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
 import { useContext, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImageCard, ScriptCard } from "../../components/Card";
-import { CategoryOptions } from "../../constants/categoryOptions";
 import { AuthContext } from "../../context/AuthContext";
 import { RecentPlayContext } from "../../context/RecentPlayContext";
 import { QueryConditions } from "../../types";
 import { convertTimestampToDate } from "../../utils/convertTimestampToDate";
 import dbApi from "../../utils/firebaseService";
+import { CategorySelector } from "./CategorySelector";
 import SortedMenu from "./SortedMenu";
 
 interface Story {
@@ -130,52 +130,10 @@ function HomePage({ onCardClick }: HomePageProps) {
           <h2 className="py-2 text-xl font-semibold tracking-tight sm:py-6 sm:text-2xl">
             Explore
           </h2>
-          <div className="custom-scrollbar mt-2 flex w-full justify-start gap-4 overflow-x-auto">
-            {CategoryOptions.map((category) => {
-              const IconComponent = category.icon;
-              return (
-                <Button
-                  key={category.value}
-                  radius="full"
-                  className={`h-7 flex-shrink-0 border sm:h-8 ${
-                    selectedCategory === category.value
-                      ? "border-blue-100 bg-blue-50"
-                      : "border-default-200 bg-white"
-                  }`}
-                  onClick={() => setSelectedCategory(category.value)}
-                  startContent={
-                    IconComponent && (
-                      <IconComponent
-                        color={
-                          selectedCategory === category.value
-                            ? "hsl(var(--nextui-primary-500))"
-                            : ""
-                        }
-                        fill={
-                          selectedCategory === category.value
-                            ? "hsl(var(--nextui-primary-200))"
-                            : "none"
-                        }
-                        size={16}
-                      />
-                    )
-                  }
-                >
-                  <div className="flex flex-shrink-0 flex-row justify-start sm:gap-2">
-                    <p
-                      className={`text-sm sm:text-medium ${
-                        selectedCategory === category.value
-                          ? "text-primary-800"
-                          : "text-default-900"
-                      }`}
-                    >
-                      {category.label}
-                    </p>
-                  </div>
-                </Button>
-              );
-            })}
-          </div>
+          <CategorySelector
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+          />
         </div>
       </div>
       <Divider className="my-4" />
