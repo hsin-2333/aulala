@@ -20,14 +20,14 @@ import {
 } from "./components/Layout";
 import Account from "./pages/Account";
 import Notifications from "./pages/Account/Notification";
-import UploadScript from "./pages/Account/Upload/UploadScript";
-import UploadStory from "./pages/Account/Upload/UploadStory";
-import StoryTable from "./pages/Account/UploadsContent/Uploads";
+import StoryTable from "./pages/Account/UploadedContent/Uploads";
 import HomePage from "./pages/Home";
 import LoginComponent from "./pages/Login";
 import ScriptContent from "./pages/Script/index";
 import SearchResultsPage from "./pages/SearchResult/index";
 import StoryContent from "./pages/Story/index";
+import UploadScript from "./pages/UploadScript/UploadScript";
+import UploadStory from "./pages/UploadStory/UploadStory";
 const queryClient = new QueryClient();
 
 function App() {

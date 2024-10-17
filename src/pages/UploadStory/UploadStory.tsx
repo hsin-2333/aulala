@@ -17,11 +17,11 @@ import { FaCheck } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { SlCloudUpload } from "react-icons/sl";
 import { useLocation, useNavigate } from "react-router-dom";
-import Toast from "../../../components/Toast";
-import { CategoryOptions } from "../../../constants/categoryOptions";
-import { AuthContext } from "../../../context/AuthContext";
-import { useToast } from "../../../hooks/useToast";
-import dbApi from "../../../utils/firebaseService";
+import Toast from "../../components/Toast";
+import { CategoryOptions } from "../../constants/categoryOptions";
+import { AuthContext } from "../../context/AuthContext";
+import { useToast } from "../../hooks/useToast";
+import dbApi from "../../utils/firebaseService";
 
 interface FormData {
   title: string;
@@ -159,9 +159,7 @@ const UploadStory = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
     if (file) {
-      console.log("有file");
       let storyId: string | null = null;
 
       try {
