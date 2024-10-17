@@ -20,6 +20,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Toast from "../../../components/Toast";
 import { CategoryOptions } from "../../../constants/categoryOptions";
 import { AuthContext } from "../../../context/AuthContext";
+import { useToast } from "../../../hooks/useToast";
 import dbApi from "../../../utils/firebaseService";
 
 interface FormData {
@@ -53,18 +54,26 @@ const UploadStory = () => {
   const [audioName, setAudioName] = useState<string | null>(null);
   const [audioDuration, setAudioDuration] = useState<number | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
-  const [toastMessage, setToastMessage] = useState("");
-  const [showToast, setShowToast] = useState(false);
+  const { toastMessage, showToast, showToastMessage, handleCloseToast } =
+    useToast();
 
-  const filteredCategoryOptions = CategoryOptions.filter((option) => option.label !== "All");
+  const filteredCategoryOptions = CategoryOptions.filter(
+    (option) => option.label !== "All",
+  );
   const AudioInputRef = useRef<HTMLInputElement>(null);
 
-  const [tagsOptions, setTagsOptions] = useState<{ value: string; label: string }[]>([]);
+  const [tagsOptions, setTagsOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [newTag, setNewTag] = useState("");
-  const [selectedTags, setSelectedTags] = useState<{ value: string; label: string }[]>([]);
+  const [selectedTags, setSelectedTags] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
-  const [collectionsOptions, setCollectionsOptions] = useState<string[] | null>();
+  const [collectionsOptions, setCollectionsOptions] = useState<
+    string[] | null
+  >();
   const [currentDateTime, setCurrentDateTime] = useState("");
 
   const {
@@ -106,12 +115,11 @@ const UploadStory = () => {
 
   const handleAudioUpload = async (selectedFile: File) => {
     if (selectedFile) {
-      const fileSizeInMB = selectedFile.size / (1024 * 1024); // 將文件大小轉換為MB
+      const fileSizeInMB = selectedFile.size / (1024 * 1024);
       if (fileSizeInMB > 8) {
-        setToastMessage("文件大小超過8MB，請選擇較小的文件");
-        setShowToast(true);
+        showToastMessage("文件大小超過8MB，請選擇較小的文件");
         if (AudioInputRef.current) {
-          AudioInputRef.current.value = ""; // 清空文件輸入框
+          AudioInputRef.current.value = "";
         }
         return;
       }
@@ -130,14 +138,18 @@ const UploadStory = () => {
     }
   };
 
-  const handleAudioInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAudioInputChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       handleAudioUpload(selectedFile);
     }
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       setImageFile(selectedFile);
@@ -160,15 +172,23 @@ const UploadStory = () => {
           tags: data.tags ? data.tags.map((tag) => tag.value) : [],
           voice_actor: [user?.userName || ""],
           status: "Processing",
-          collections: data.collections ? data.collections.map((collection) => collection) : [],
+          collections: data.collections
+            ? data.collections.map((collection) => collection)
+            : [],
         };
 
         navigate(`/user/${user?.userName}/uploads`);
         setTimeout(() => {
-          queryClient.invalidateQueries({ queryKey: ["stories", user?.userName] });
+          queryClient.invalidateQueries({
+            queryKey: ["stories", user?.userName],
+          });
         }, 2000);
 
-        storyId = await dbApi.uploadAudioAndSaveStory(file, imageFile, storyData);
+        storyId = await dbApi.uploadAudioAndSaveStory(
+          file,
+          imageFile,
+          storyData,
+        );
         if (data.tags) {
           for (const tag of data.tags) {
             await dbApi.addOrUpdateTag(tag.value, storyId, null);
@@ -177,7 +197,11 @@ const UploadStory = () => {
 
         if (data.collections) {
           for (const collection of data.collections) {
-            await dbApi.addStoryToCollection(storyId, collection, user?.userName || "Unknown");
+            await dbApi.addStoryToCollection(
+              storyId,
+              collection,
+              user?.userName || "Unknown",
+            );
           }
         }
       } catch (error) {
@@ -211,14 +235,15 @@ const UploadStory = () => {
         setCurrentStep(step);
         setImageFile(null);
         setImageUrl(null);
-        const inputElement = document.querySelector('input[type="file"]') as HTMLInputElement;
+        const inputElement = document.querySelector(
+          'input[type="file"]',
+        ) as HTMLInputElement;
         if (inputElement) {
           inputElement.value = "";
         }
       }
     } else {
-      setToastMessage("請填寫所有必填字段");
-      setShowToast(true);
+      showToastMessage("請填寫所有必填字段");
     }
   };
 
@@ -231,15 +256,16 @@ const UploadStory = () => {
       setNewTag("");
       setIsDropdownVisible(false);
     } else if (selectedTags.length >= 8) {
-      setToastMessage("最多只能選擇8個標籤");
-      setShowToast(true);
+      showToastMessage("最多只能選擇8個標籤");
     }
   };
 
   const handleTagRemoval = (tagValue: string) => {
     const removedTag = selectedTags.find((tag) => tag.value === tagValue);
     if (removedTag) {
-      const newSelectedTags = selectedTags.filter((tag) => tag.value !== tagValue);
+      const newSelectedTags = selectedTags.filter(
+        (tag) => tag.value !== tagValue,
+      );
       setSelectedTags(newSelectedTags);
       setTagsOptions((prev) => [...prev, removedTag]);
       setValue("tags", newSelectedTags);
@@ -249,12 +275,13 @@ const UploadStory = () => {
   const handleTagSelection = (tag: { value: string; label: string }) => {
     if (selectedTags.length < 8) {
       setSelectedTags((prev) => [...prev, tag]);
-      setTagsOptions((prev) => prev.filter((option) => option.value !== tag.value));
+      setTagsOptions((prev) =>
+        prev.filter((option) => option.value !== tag.value),
+      );
       setIsDropdownVisible(false);
       setValue("tags", [...selectedTags, tag]);
     } else {
-      setToastMessage("最多只能選擇8個標籤");
-      setShowToast(true);
+      showToastMessage("最多只能選擇8個標籤");
     }
   };
   useEffect(() => {
@@ -265,13 +292,13 @@ const UploadStory = () => {
     setValue("scheduled_release_date", formattedDateTime);
   }, [setValue]);
 
-  const handleCloseToast = () => {
-    setShowToast(false);
-  };
-
   return (
     <>
-      <div>{showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}</div>
+      <div>
+        {showToast && (
+          <Toast message={toastMessage} onClose={handleCloseToast} />
+        )}
+      </div>
       {isAudioUploaded && (
         <div className="mb-8 sm:hidden">
           <Progress
@@ -282,27 +309,32 @@ const UploadStory = () => {
             showValueLabel={false}
             className="max-w-md"
           />
-          <div className=" flex items-center justify-center mt-2 mx-2">
-            <div className="absolute left-2 top-3 gap-2 self-center flex justify-center">
+          <div className="mx-2 mt-2 flex items-center justify-center">
+            <div className="absolute left-2 top-3 flex justify-center gap-2 self-center">
               <Link href="/" color="foreground">
                 <IoIosArrowBack size={20} className="self-center" />
               </Link>
-              <span className="text-medium text-default-800 font-bold"> Upload Story</span>
+              <span className="text-medium font-bold text-default-800">
+                {" "}
+                Upload Story
+              </span>
             </div>
 
             {/* <span className="text-left text-tiny text-default-400 m-1"> {getStepLabel(currentStep)}</span> */}
           </div>
         </div>
       )}
-      <div className="container mx-auto w-full p-2 relative">
+      <div className="container relative mx-auto w-full p-2">
         {/* <h2 className="text-2xl font-bold mb-4">Upload Section</h2> */}
         <Breadcrumbs>
           <BreadcrumbItem href="/">Home</BreadcrumbItem>
-          <BreadcrumbItem href={`/user/${user?.userName}/uploads`}>Uploaded Content</BreadcrumbItem>
+          <BreadcrumbItem href={`/user/${user?.userName}/uploads`}>
+            Uploaded Content
+          </BreadcrumbItem>
           <BreadcrumbItem>Upload</BreadcrumbItem>
         </Breadcrumbs>
         {!isAudioUploaded ? (
-          <div className="flex gap-4 flex-col items-center mt-20">
+          <div className="mt-20 flex flex-col items-center gap-4">
             {/* <label className="block text-sm font-medium text-gray-700 h-1/5">Only accept audio below 8 MB</label> */}
             <input
               type="file"
@@ -312,7 +344,7 @@ const UploadStory = () => {
               className="hidden"
             />
             <Button
-              className=" text-primary flex-col items-center border-dashed h-32 w-64 border-2 "
+              className="h-32 w-64 flex-col items-center border-2 border-dashed text-primary"
               variant="bordered"
               type="button"
               startContent={<SlCloudUpload size={32} />}
@@ -324,7 +356,9 @@ const UploadStory = () => {
               radius="sm"
             >
               Upload Audio File
-              <label className="block text-xs font-medium text-gray-400 h-1/5">Only accept audio below 8 MB</label>
+              <label className="block h-1/5 text-xs font-medium text-gray-400">
+                Only accept audio below 8 MB
+              </label>
             </Button>
           </div>
         ) : (
@@ -333,24 +367,27 @@ const UploadStory = () => {
               <h6 className="mt-10">
                 Audio Name: {audioName || script_audioName}
                 <br />
-                Audio Duration: {audioDuration ? `${audioDuration.toFixed(2)} seconds` : "Loading..."}
+                Audio Duration:{" "}
+                {audioDuration
+                  ? `${audioDuration.toFixed(2)} seconds`
+                  : "Loading..."}
               </h6>
             </div>
-            <div className="hidden sm:flex items-center justify-evenly m-8">
+            <div className="m-8 hidden items-center justify-evenly sm:flex">
               <div className="flex flex-col items-center gap-1">
                 {currentStep === 1 ? (
                   <Chip
                     color="primary"
                     className={`text-sm font-bold ${
                       currentStep === 1
-                        ? "bg-primary-300 "
-                        : "bg-white border border-slate-300 text-default-500 shadow-sky-300/20"
+                        ? "bg-primary-300"
+                        : "border border-slate-300 bg-white text-default-500 shadow-sky-300/20"
                     }`}
                   >
                     1
                   </Chip>
                 ) : (
-                  <div className="text-xs bg-primary-300 rounded-full w-6 h-6 flex items-center justify-center">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-300 text-xs">
                     <FaCheck className="text-white" />
                   </div>
                 )}
@@ -364,14 +401,14 @@ const UploadStory = () => {
                     color="primary"
                     className={`text-sm font-bold ${
                       currentStep === 2
-                        ? "bg-primary-300 "
-                        : "bg-white border border-slate-300 text-default-500 shadow-sky-300/20"
+                        ? "bg-primary-300"
+                        : "border border-slate-300 bg-white text-default-500 shadow-sky-300/20"
                     }`}
                   >
                     2
                   </Chip>
                 ) : (
-                  <div className="text-xs bg-primary-300 rounded-full w-6 h-6 flex items-center justify-center">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-300 text-xs">
                     <FaCheck className="text-white" />
                   </div>
                 )}
@@ -385,23 +422,28 @@ const UploadStory = () => {
                     color="primary"
                     className={`text-sm font-bold ${
                       currentStep === 3
-                        ? "bg-primary-300 "
-                        : "bg-white border border-slate-300 text-default-500 shadow-sky-300/20"
+                        ? "bg-primary-300"
+                        : "border border-slate-300 bg-white text-default-500 shadow-sky-300/20"
                     }`}
                   >
                     3
                   </Chip>
                 ) : (
-                  <div className="text-xs bg-primary-300 rounded-full w-6 h-6 flex items-center justify-center">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-300 text-xs">
                     <FaCheck className="text-white" />
                   </div>
                 )}
 
-                <span className="text-xs text-default-500">Add Cover Image</span>
+                <span className="text-xs text-default-500">
+                  Add Cover Image
+                </span>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left ">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-4 text-left"
+            >
               {currentStep === 1 && (
                 <div className="h-full">
                   <div className="mt-4 border border-transparent">
@@ -413,9 +455,16 @@ const UploadStory = () => {
                       radius="sm"
                       variant="bordered"
                       defaultValue="The Watcher's Keep -Demo"
-                      {...register("title", { required: true, setValueAs: (value: string) => value.trim() })}
+                      {...register("title", {
+                        required: true,
+                        setValueAs: (value: string) => value.trim(),
+                      })}
                     />
-                    {errors.title && <span className="text-red-500 text-sm">This field is required</span>}
+                    {errors.title && (
+                      <span className="text-sm text-red-500">
+                        This field is required
+                      </span>
+                    )}
                   </div>
                   <div className="mt-4 border border-transparent">
                     <Input
@@ -426,9 +475,16 @@ const UploadStory = () => {
                       radius="sm"
                       variant="bordered"
                       defaultValue="Hope you enjoy this story!"
-                      {...register("intro", { required: true, setValueAs: (value: string) => value.trim() })}
+                      {...register("intro", {
+                        required: true,
+                        setValueAs: (value: string) => value.trim(),
+                      })}
                     />
-                    {errors.intro && <span className="text-red-500 text-sm">This field is required</span>}
+                    {errors.intro && (
+                      <span className="text-sm text-red-500">
+                        This field is required
+                      </span>
+                    )}
                   </div>
                   <div className="mt-4 border border-transparent">
                     <Input
@@ -439,11 +495,18 @@ const UploadStory = () => {
                       radius="sm"
                       variant="bordered"
                       defaultValue="From the time when there was still magic in the land, and there were elves and wizards and dwarves and dragons and griffins and —"
-                      {...register("summary", { required: true, setValueAs: (value: string) => value.trim() })}
+                      {...register("summary", {
+                        required: true,
+                        setValueAs: (value: string) => value.trim(),
+                      })}
                     />
-                    {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
+                    {errors.summary && (
+                      <span className="text-sm text-red-500">
+                        This field is required
+                      </span>
+                    )}
                   </div>
-                  <div className="fixed bottom-0 left-4 right-4 w-[calc(100%-2rem)] sm:w-full sm:static flex justify-end sm:mt-4">
+                  <div className="fixed bottom-0 left-4 right-4 flex w-[calc(100%-2rem)] justify-end sm:static sm:mt-4 sm:w-full">
                     <Button
                       type="button"
                       onClick={() => handleStepClick(2)}
@@ -460,7 +523,9 @@ const UploadStory = () => {
                   <div className="mt-4 border border-transparent">
                     <Select
                       placeholder="Select a category"
-                      onSelectionChange={(keys) => setValue("category", Array.from(keys).join(""))}
+                      onSelectionChange={(keys) =>
+                        setValue("category", Array.from(keys).join(""))
+                      }
                       defaultSelectedKeys={[]}
                       disableAnimation
                       labelPlacement="outside"
@@ -471,13 +536,21 @@ const UploadStory = () => {
                       {...register("category", { required: true })}
                     >
                       {filteredCategoryOptions.map((option) => (
-                        <SelectItem key={`${option.value}`}>{option.label}</SelectItem>
+                        <SelectItem key={`${option.value}`}>
+                          {option.label}
+                        </SelectItem>
                       ))}
                     </Select>
-                    {errors.category && <span className="text-red-500 text-sm">This field is required</span>}
+                    {errors.category && (
+                      <span className="text-sm text-red-500">
+                        This field is required
+                      </span>
+                    )}
                   </div>
                   <div className="mt-4 border border-transparent">
-                    <label className="block text-sm font-medium text-gray-700  mb-1">Tags</label>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">
+                      Tags
+                    </label>
                     <div className="relative">
                       <Input
                         placeholder="Select or Create new tag | max 8 tags"
@@ -486,7 +559,9 @@ const UploadStory = () => {
                         value={newTag}
                         onChange={(e) => setNewTag(e.target.value)}
                         onFocus={() => setIsDropdownVisible(true)}
-                        onBlur={() => setTimeout(() => setIsDropdownVisible(false), 200)}
+                        onBlur={() =>
+                          setTimeout(() => setIsDropdownVisible(false), 200)
+                        }
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -495,11 +570,11 @@ const UploadStory = () => {
                         }}
                       />
                       {isDropdownVisible && (
-                        <div className="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1">
+                        <div className="absolute z-50 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
                           {tagsOptions.map((option) => (
                             <div
                               key={option.value}
-                              className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                              className="cursor-pointer px-4 py-2 hover:bg-gray-100"
                               onClick={() => handleTagSelection(option)}
                             >
                               {option.label}
@@ -509,18 +584,28 @@ const UploadStory = () => {
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-2 mt-2 ml-1">
+                  <div className="ml-1 mt-2 flex gap-2">
                     {selectedTags.map((tag) => (
-                      <Chip key={tag.value} className="bg-primary-100" onClose={() => handleTagRemoval(tag.value)}>
+                      <Chip
+                        key={tag.value}
+                        className="bg-primary-100"
+                        onClose={() => handleTagRemoval(tag.value)}
+                      >
                         {tag.label}
                       </Chip>
                     ))}
                   </div>
-                  {errors.tags && <span className="text-red-500 text-sm">This field is required</span>}
+                  {errors.tags && (
+                    <span className="text-sm text-red-500">
+                      This field is required
+                    </span>
+                  )}
                   <div className="mt-4 border border-transparent">
                     <Select
                       placeholder="Select collection"
-                      onSelectionChange={(keys) => setValue("collections", Array.from(keys).map(String))}
+                      onSelectionChange={(keys) =>
+                        setValue("collections", Array.from(keys).map(String))
+                      }
                       defaultSelectedKeys={[]}
                       disableAnimation
                       labelPlacement="outside"
@@ -530,7 +615,9 @@ const UploadStory = () => {
                       variant="bordered"
                     >
                       {collectionsOptions ? (
-                        collectionsOptions.map((option) => <SelectItem key={option}>{option}</SelectItem>)
+                        collectionsOptions.map((option) => (
+                          <SelectItem key={option}>{option}</SelectItem>
+                        ))
                       ) : (
                         <Select>
                           <SelectItem key="a">aaa</SelectItem>
@@ -549,12 +636,18 @@ const UploadStory = () => {
                       radius="sm"
                       variant="bordered"
                       defaultValue={currentDateTime}
-                      {...register("scheduled_release_date", { required: true })}
+                      {...register("scheduled_release_date", {
+                        required: true,
+                      })}
                     />
-                    {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
+                    {errors.summary && (
+                      <span className="text-sm text-red-500">
+                        This field is required
+                      </span>
+                    )}
                   </div>
 
-                  <div className="fixed bottom-0 left-4 right-4 w-[calc(100%-2rem)] sm:w-full sm:static flex justify-end sm:mt-4">
+                  <div className="fixed bottom-0 left-4 right-4 flex w-[calc(100%-2rem)] justify-end sm:static sm:mt-4 sm:w-full">
                     <Button
                       type="button"
                       onClick={() => handleStepClick(1)}
@@ -591,11 +684,19 @@ const UploadStory = () => {
                       onChange={handleImageUpload}
                     />
                     {imageUrl && (
-                      <img src={imageUrl} alt="Uploaded" className="mt-2 h-48 border-2 border-default-200 rounded-sm" />
+                      <img
+                        src={imageUrl}
+                        alt="Uploaded"
+                        className="mt-2 h-48 rounded-sm border-2 border-default-200"
+                      />
                     )}
-                    {errors.summary && <span className="text-red-500 text-sm">This field is required</span>}
+                    {errors.summary && (
+                      <span className="text-sm text-red-500">
+                        This field is required
+                      </span>
+                    )}
                   </div>
-                  <div className="fixed bottom-0 left-4 right-4 w-[calc(100%-2rem)] sm:w-full sm:static flex justify-end sm:mt-4">
+                  <div className="fixed bottom-0 left-4 right-4 flex w-[calc(100%-2rem)] justify-end sm:static sm:mt-4 sm:w-full">
                     <Button
                       type="button"
                       onClick={() => handleStepClick(2)}
@@ -605,7 +706,11 @@ const UploadStory = () => {
                     >
                       Previous
                     </Button>
-                    <Button type="submit" color="primary" className="rounded-full sm:rounded-sm">
+                    <Button
+                      type="submit"
+                      color="primary"
+                      className="rounded-full sm:rounded-sm"
+                    >
                       Submit
                     </Button>
                   </div>
