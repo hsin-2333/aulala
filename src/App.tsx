@@ -23,11 +23,11 @@ import Notifications from "./pages/Account/Notification";
 import UploadScript from "./pages/Account/Upload/UploadScript";
 import UploadStory from "./pages/Account/Upload/UploadStory";
 import StoryTable from "./pages/Account/UploadsContent/Uploads";
-import ScriptContent from "./pages/Content/Script";
-import StoryContent from "./pages/Content/Story";
 import HomePage from "./pages/Home";
 import LoginComponent from "./pages/Login";
+import ScriptContent from "./pages/Script/index";
 import SearchResultsPage from "./pages/SearchResult/index";
+import StoryContent from "./pages/Story/index";
 const queryClient = new QueryClient();
 
 function App() {
