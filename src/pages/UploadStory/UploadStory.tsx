@@ -11,7 +11,14 @@ import {
   SelectItem,
 } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import { FaCheck } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
@@ -57,9 +64,11 @@ const UploadStory = () => {
   const { toastMessage, showToast, showToastMessage, handleCloseToast } =
     useToast();
 
-  const filteredCategoryOptions = CategoryOptions.filter(
-    (option) => option.label !== "All",
+  const filteredCategoryOptions = useMemo(
+    () => CategoryOptions.filter((option) => option.label !== "All"),
+    [],
   );
+
   const AudioInputRef = useRef<HTMLInputElement>(null);
 
   const [tagsOptions, setTagsOptions] = useState<
