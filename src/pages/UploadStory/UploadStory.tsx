@@ -11,7 +11,7 @@ import {
   SelectItem,
 } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaCheck } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
@@ -101,6 +101,33 @@ const UploadStory = () => {
     fetchCollections();
   }, [user?.userName]);
 
+  const handleAudioUpload = useCallback(
+    async (selectedFile: File) => {
+      if (selectedFile) {
+        const fileSizeInMB = selectedFile.size / (1024 * 1024);
+        if (fileSizeInMB > 8) {
+          showToastMessage("文件大小超過8MB，請選擇較小的文件");
+          if (AudioInputRef.current) {
+            AudioInputRef.current.value = "";
+          }
+          return;
+        }
+
+        setFile(selectedFile);
+        setAudioName(selectedFile.name);
+
+        const audioUrl = URL.createObjectURL(selectedFile);
+        const audio = new Audio(audioUrl);
+
+        audio.onloadedmetadata = () => {
+          setAudioDuration(audio.duration);
+          setIsAudioUploaded(true);
+        };
+      }
+    },
+    [showToastMessage],
+  );
+
   useEffect(() => {
     if (script_audioUrl) {
       const fileName = script_audioName || "uploaded_audio.mp3";
@@ -111,32 +138,7 @@ const UploadStory = () => {
           handleAudioUpload(file);
         });
     }
-  }, [script_audioUrl, script_audioName]);
-
-  const handleAudioUpload = async (selectedFile: File) => {
-    if (selectedFile) {
-      const fileSizeInMB = selectedFile.size / (1024 * 1024);
-      if (fileSizeInMB > 8) {
-        showToastMessage("文件大小超過8MB，請選擇較小的文件");
-        if (AudioInputRef.current) {
-          AudioInputRef.current.value = "";
-        }
-        return;
-      }
-
-      setFile(selectedFile);
-      setAudioName(selectedFile.name);
-
-      const audioUrl = URL.createObjectURL(selectedFile);
-      const audio = new Audio(audioUrl);
-
-      audio.onloadedmetadata = () => {
-        setAudioDuration(audio.duration);
-        setIsAudioUploaded(true);
-      };
-      setCurrentStep(1);
-    }
-  };
+  }, [script_audioUrl, script_audioName, handleAudioUpload]);
 
   const handleAudioInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
