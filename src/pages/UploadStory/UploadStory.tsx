@@ -4,31 +4,23 @@ import {
   Button,
   Chip,
   Divider,
-  Input,
   Link,
   Progress,
-  Select,
-  SelectItem,
 } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { useForm } from "react-hook-form";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { FaCheck } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { SlCloudUpload } from "react-icons/sl";
 import { useLocation, useNavigate } from "react-router-dom";
 import Toast from "../../components/Toast";
-import { CategoryOptions } from "../../constants/categoryOptions";
 import { AuthContext } from "../../context/AuthContext";
 import { useToast } from "../../hooks/useToast";
 import dbApi from "../../utils/firebaseService";
+import StoryCoverForm from "./formSteps/StoryCoverForm";
+import StoryInfoForm from "./formSteps/StoryInfoForm";
+import StorySettingForm from "./formSteps/StorySettingForm";
 
 interface FormData {
   title: string;
@@ -64,51 +56,8 @@ const UploadStory = () => {
   const { toastMessage, showToast, showToastMessage, handleCloseToast } =
     useToast();
 
-  const filteredCategoryOptions = useMemo(
-    () => CategoryOptions.filter((option) => option.label !== "All"),
-    [],
-  );
-
   const AudioInputRef = useRef<HTMLInputElement>(null);
-
-  const [tagsOptions, setTagsOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
-  const [newTag, setNewTag] = useState("");
-  const [selectedTags, setSelectedTags] = useState<
-    { value: string; label: string }[]
-  >([]);
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-
-  const [collectionsOptions, setCollectionsOptions] = useState<
-    string[] | null
-  >();
-  const [currentDateTime, setCurrentDateTime] = useState("");
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    trigger,
-  } = useForm<FormData>();
-
-  useEffect(() => {
-    const fetchTags = async () => {
-      const tags = await dbApi.getTags();
-      setTagsOptions(tags.map((tag: string) => ({ label: tag, value: tag })));
-    };
-    fetchTags();
-
-    const fetchCollections = async () => {
-      if (user?.userName) {
-        const collections = await dbApi.getMyCollections(user.userName);
-        setCollectionsOptions(collections);
-      }
-    };
-
-    fetchCollections();
-  }, [user?.userName]);
+  const methods = useForm<FormData>();
 
   const handleAudioUpload = useCallback(
     async (selectedFile: File) => {
@@ -155,17 +104,6 @@ const UploadStory = () => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       handleAudioUpload(selectedFile);
-    }
-  };
-
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setImageFile(selectedFile);
-      const imageUrl = URL.createObjectURL(selectedFile);
-      setImageUrl(imageUrl);
     }
   };
 
@@ -228,78 +166,27 @@ const UploadStory = () => {
     }
   };
 
-  const handleStepClick = async (step: number) => {
-    let isValid = true;
-    if (step > currentStep) {
-      if (currentStep === 1) {
-        isValid = await trigger(["title", "intro", "summary"]);
-      } else if (currentStep === 2) {
-        isValid = await trigger(["category", "tags", "scheduled_release_date"]);
-      }
-    }
-
-    if (isValid) {
-      setCurrentStep(step);
-      if (step < currentStep) {
-        setCurrentStep(step);
-        setImageFile(null);
-        setImageUrl(null);
-        const inputElement = document.querySelector(
-          'input[type="file"]',
-        ) as HTMLInputElement;
-        if (inputElement) {
-          inputElement.value = "";
-        }
-      }
-    } else {
-      showToastMessage("請填寫所有必填字段");
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      setImageFile(selectedFile);
+      const imageUrl = URL.createObjectURL(selectedFile);
+      setImageUrl(imageUrl);
     }
   };
 
-  const handleTagCreation = () => {
-    if (newTag.trim() !== "" && selectedTags.length < 8) {
-      console.log("newTag", newTag);
-      const newTagOption = { value: newTag, label: newTag };
-      setTagsOptions((prev) => [...prev, newTagOption]);
-      setSelectedTags((prev) => [...prev, newTagOption]);
-      setNewTag("");
-      setIsDropdownVisible(false);
-    } else if (selectedTags.length >= 8) {
-      showToastMessage("最多只能選擇8個標籤");
+  const resetImage = () => {
+    setImageFile(null);
+    setImageUrl(null);
+    const inputElement = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    if (inputElement) {
+      inputElement.value = "";
     }
   };
-
-  const handleTagRemoval = (tagValue: string) => {
-    const removedTag = selectedTags.find((tag) => tag.value === tagValue);
-    if (removedTag) {
-      const newSelectedTags = selectedTags.filter(
-        (tag) => tag.value !== tagValue,
-      );
-      setSelectedTags(newSelectedTags);
-      setTagsOptions((prev) => [...prev, removedTag]);
-      setValue("tags", newSelectedTags);
-    }
-  };
-
-  const handleTagSelection = (tag: { value: string; label: string }) => {
-    if (selectedTags.length < 8) {
-      setSelectedTags((prev) => [...prev, tag]);
-      setTagsOptions((prev) =>
-        prev.filter((option) => option.value !== tag.value),
-      );
-      setIsDropdownVisible(false);
-      setValue("tags", [...selectedTags, tag]);
-    } else {
-      showToastMessage("最多只能選擇8個標籤");
-    }
-  };
-  useEffect(() => {
-    const now = new Date();
-    const gmt8Time = new Date(now.getTime() + 8 * 60 * 60 * 1000); //GMT+8
-    const formattedDateTime = gmt8Time.toISOString().slice(0, 16);
-    setCurrentDateTime(formattedDateTime);
-    setValue("scheduled_release_date", formattedDateTime);
-  }, [setValue]);
 
   return (
     <>
@@ -324,17 +211,13 @@ const UploadStory = () => {
                 <IoIosArrowBack size={20} className="self-center" />
               </Link>
               <span className="text-medium font-bold text-default-800">
-                {" "}
                 Upload Story
               </span>
             </div>
-
-            {/* <span className="text-left text-tiny text-default-400 m-1"> {getStepLabel(currentStep)}</span> */}
           </div>
         </div>
       )}
       <div className="container relative mx-auto w-full p-2">
-        {/* <h2 className="text-2xl font-bold mb-4">Upload Section</h2> */}
         <Breadcrumbs>
           <BreadcrumbItem href="/">Home</BreadcrumbItem>
           <BreadcrumbItem href={`/user/${user?.userName}/uploads`}>
@@ -344,7 +227,6 @@ const UploadStory = () => {
         </Breadcrumbs>
         {!isAudioUploaded ? (
           <div className="mt-20 flex flex-col items-center gap-4">
-            {/* <label className="block text-sm font-medium text-gray-700 h-1/5">Only accept audio below 8 MB</label> */}
             <input
               type="file"
               accept="audio/*"
@@ -448,284 +330,33 @@ const UploadStory = () => {
                 </span>
               </div>
             </div>
-
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="space-y-4 text-left"
-            >
-              {currentStep === 1 && (
-                <div className="h-full">
-                  <div className="mt-4 border border-transparent">
-                    <Input
-                      label="Title"
-                      isRequired
-                      placeholder="Your Audio Story Title"
-                      labelPlacement="outside"
-                      radius="sm"
-                      variant="bordered"
-                      defaultValue="The Watcher's Keep -Demo"
-                      {...register("title", {
-                        required: true,
-                        setValueAs: (value: string) => value.trim(),
-                      })}
-                    />
-                    {errors.title && (
-                      <span className="text-sm text-red-500">
-                        This field is required
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-4 border border-transparent">
-                    <Input
-                      label="Intro"
-                      isRequired
-                      placeholder="Enter intro"
-                      labelPlacement="outside"
-                      radius="sm"
-                      variant="bordered"
-                      defaultValue="Hope you enjoy this story!"
-                      {...register("intro", {
-                        required: true,
-                        setValueAs: (value: string) => value.trim(),
-                      })}
-                    />
-                    {errors.intro && (
-                      <span className="text-sm text-red-500">
-                        This field is required
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-4 border border-transparent">
-                    <Input
-                      label="Summary"
-                      isRequired
-                      placeholder="Enter summary"
-                      labelPlacement="outside"
-                      radius="sm"
-                      variant="bordered"
-                      defaultValue="From the time when there was still magic in the land, and there were elves and wizards and dwarves and dragons and griffins and —"
-                      {...register("summary", {
-                        required: true,
-                        setValueAs: (value: string) => value.trim(),
-                      })}
-                    />
-                    {errors.summary && (
-                      <span className="text-sm text-red-500">
-                        This field is required
-                      </span>
-                    )}
-                  </div>
-                  <div className="fixed bottom-0 left-4 right-4 flex w-[calc(100%-2rem)] justify-end sm:static sm:mt-4 sm:w-full">
-                    <Button
-                      type="button"
-                      onClick={() => handleStepClick(2)}
-                      color="primary"
-                      className="rounded-full sm:rounded-sm"
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </div>
-              )}
-              {currentStep === 2 && (
-                <div>
-                  <div className="mt-4 border border-transparent">
-                    <Select
-                      placeholder="Select a category"
-                      onSelectionChange={(keys) =>
-                        setValue("category", Array.from(keys).join(""))
-                      }
-                      defaultSelectedKeys={[]}
-                      disableAnimation
-                      labelPlacement="outside"
-                      radius="sm"
-                      label="Category"
-                      isRequired
-                      variant="bordered"
-                      {...register("category", { required: true })}
-                    >
-                      {filteredCategoryOptions.map((option) => (
-                        <SelectItem key={`${option.value}`}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                    {errors.category && (
-                      <span className="text-sm text-red-500">
-                        This field is required
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-4 border border-transparent">
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      Tags
-                    </label>
-                    <div className="relative">
-                      <Input
-                        placeholder="Select or Create new tag | max 8 tags"
-                        variant="bordered"
-                        radius="sm"
-                        value={newTag}
-                        onChange={(e) => setNewTag(e.target.value)}
-                        onFocus={() => setIsDropdownVisible(true)}
-                        onBlur={() =>
-                          setTimeout(() => setIsDropdownVisible(false), 200)
-                        }
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            handleTagCreation();
-                          }
-                        }}
-                      />
-                      {isDropdownVisible && (
-                        <div className="absolute z-50 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
-                          {tagsOptions.map((option) => (
-                            <div
-                              key={option.value}
-                              className="cursor-pointer px-4 py-2 hover:bg-gray-100"
-                              onClick={() => handleTagSelection(option)}
-                            >
-                              {option.label}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="ml-1 mt-2 flex gap-2">
-                    {selectedTags.map((tag) => (
-                      <Chip
-                        key={tag.value}
-                        className="bg-primary-100"
-                        onClose={() => handleTagRemoval(tag.value)}
-                      >
-                        {tag.label}
-                      </Chip>
-                    ))}
-                  </div>
-                  {errors.tags && (
-                    <span className="text-sm text-red-500">
-                      This field is required
-                    </span>
-                  )}
-                  <div className="mt-4 border border-transparent">
-                    <Select
-                      placeholder="Select collection"
-                      onSelectionChange={(keys) =>
-                        setValue("collections", Array.from(keys).map(String))
-                      }
-                      defaultSelectedKeys={[]}
-                      disableAnimation
-                      labelPlacement="outside"
-                      radius="sm"
-                      selectionMode="multiple"
-                      label="Add to collection"
-                      variant="bordered"
-                    >
-                      {collectionsOptions ? (
-                        collectionsOptions.map((option) => (
-                          <SelectItem key={option}>{option}</SelectItem>
-                        ))
-                      ) : (
-                        <Select>
-                          <SelectItem key="a">aaa</SelectItem>
-                        </Select>
-                      )}
-                    </Select>
-                  </div>
-
-                  <div className="mt-4 border border-transparent">
-                    <Input
-                      type="datetime-local"
-                      label="Release Date"
-                      isRequired
-                      placeholder="Pick Release Date"
-                      labelPlacement="outside"
-                      radius="sm"
-                      variant="bordered"
-                      defaultValue={currentDateTime}
-                      {...register("scheduled_release_date", {
-                        required: true,
-                      })}
-                    />
-                    {errors.summary && (
-                      <span className="text-sm text-red-500">
-                        This field is required
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="fixed bottom-0 left-4 right-4 flex w-[calc(100%-2rem)] justify-end sm:static sm:mt-4 sm:w-full">
-                    <Button
-                      type="button"
-                      onClick={() => handleStepClick(1)}
-                      color="default"
-                      variant="light"
-                      className="rounded-full sm:rounded-sm"
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => handleStepClick(3)}
-                      color="primary"
-                      className="rounded-full sm:rounded-sm"
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </div>
-              )}
-              {currentStep === 3 && (
-                <div>
-                  <div className="mt-4 border border-transparent">
-                    <Input
-                      label="Cover Image"
-                      isRequired
-                      placeholder="Choose a cover image"
-                      labelPlacement="outside"
-                      radius="sm"
-                      variant="bordered"
-                      accept="image/*"
-                      type="file"
-                      {...register("img_url", { required: true })}
-                      onChange={handleImageUpload}
-                    />
-                    {imageUrl && (
-                      <img
-                        src={imageUrl}
-                        alt="Uploaded"
-                        className="mt-2 h-48 rounded-sm border-2 border-default-200"
-                      />
-                    )}
-                    {errors.summary && (
-                      <span className="text-sm text-red-500">
-                        This field is required
-                      </span>
-                    )}
-                  </div>
-                  <div className="fixed bottom-0 left-4 right-4 flex w-[calc(100%-2rem)] justify-end sm:static sm:mt-4 sm:w-full">
-                    <Button
-                      type="button"
-                      onClick={() => handleStepClick(2)}
-                      color="default"
-                      variant="light"
-                      className="rounded-full sm:rounded-sm"
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      type="submit"
-                      color="primary"
-                      className="rounded-full sm:rounded-sm"
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </form>
+            <FormProvider {...methods}>
+              <form
+                onSubmit={methods.handleSubmit(onSubmit)}
+                className="space-y-4 text-left"
+              >
+                {currentStep === 1 && (
+                  <StoryInfoForm onNext={() => setCurrentStep(2)} />
+                )}
+                {currentStep === 2 && (
+                  <StorySettingForm
+                    onNext={() => setCurrentStep(3)}
+                    onPrev={() => setCurrentStep(1)}
+                  />
+                )}
+                {currentStep === 3 && (
+                  <StoryCoverForm
+                    onPrev={() => {
+                      resetImage();
+                      setCurrentStep(2);
+                    }}
+                    onNext={methods.handleSubmit(onSubmit)}
+                    imageUrl={imageUrl}
+                    onImageUpload={handleImageUpload}
+                  />
+                )}
+              </form>
+            </FormProvider>
           </>
         )}
       </div>
