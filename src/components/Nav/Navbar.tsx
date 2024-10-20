@@ -88,7 +88,7 @@ export function NavbarComponent() {
 
   return (
     <>
-      {/*電腦版*/}
+
       <div className="hidden sm:block">
         <Navbar maxWidth="full" className="px-2">
           <NavbarBrand as={Link} className="cursor-pointer" href="/">
@@ -261,7 +261,7 @@ export function NavbarComponent() {
         </Navbar>
       </div>
 
-      {/* 手機板 */}
+ 
       {location.pathname !== "/upload/story" && (
         <div className="fixed bottom-0 left-0 right-0 z-50 block h-[50px] bg-slate-300 sm:hidden">
           <div className="flex justify-around p-1">
