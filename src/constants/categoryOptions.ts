@@ -1,4 +1,4 @@
-interface Category {
+export interface Category {
   label: string;
   value: string | null;
   icon: React.ComponentType<IconBaseProps> | null;
