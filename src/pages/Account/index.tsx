@@ -29,13 +29,13 @@ interface FormData {
 
 const isValidUrl = (url: string) => {
   const urlPattern = new RegExp(
-    "^(https?:\\/\\/)?" + // protocol
-      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" + // domain name
-      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+    "^(https?:\\/\\/)?" +
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" +
+      "((\\d{1,3}\\.){3}\\d{1,3}))" +
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" +
+      "(\\?[;&a-z\\d%_.~+=-]*)?" +
       "(\\#[-a-z\\d_]*)?$",
-    "i" // fragment locator
+    "i",
   );
   return !!urlPattern.test(url);
 };
@@ -62,7 +62,11 @@ function Account() {
     queryKey: ["userName", urlName],
     queryFn: async () => {
       if (urlName) {
-        const uuName = await dbApi.queryCollection("users", { userName: urlName }, 1);
+        const uuName = await dbApi.queryCollection(
+          "users",
+          { userName: urlName },
+          1,
+        );
         return uuName[0] as User;
       }
     },
@@ -76,7 +80,11 @@ function Account() {
 
   const tabs = [
     { id: "homepage", label: "Homepage", content: <MyContent /> },
-    { id: "collection", label: "Collection", content: <div>Collection Content</div> },
+    {
+      id: "collection",
+      label: "Collection",
+      content: <div>Collection Content</div>,
+    },
   ];
 
   const handleEdit = () => {
@@ -152,14 +160,16 @@ function Account() {
 
   return (
     <>
-      <div className="fixed z-[60] z-1 bg-white">
-        {showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}
+      <div className="z-1 fixed z-[60] bg-white">
+        {showToast && (
+          <Toast message={toastMessage} onClose={handleCloseToast} />
+        )}
       </div>
       {urlName && userData && (
         <div>
-          <div className="relative ">
+          <div className="relative">
             <div
-              className="absolute w-full h-32 bg-cover bg-center bg-gradient-to-tr from-blue-200 to-cyan-200 "
+              className="absolute h-32 w-full bg-gradient-to-tr from-blue-200 to-cyan-200 bg-cover bg-center"
               style={{
                 top: "-50%",
                 left: "50%",
@@ -174,7 +184,7 @@ function Account() {
                   transform: "translate(0%, 80%)",
                   position: "absolute",
                 }}
-                className="bg-slate-200 h-8 w-8 rounded"
+                className="h-8 w-8 rounded bg-slate-200"
                 aria-label="EditIcon"
                 onPress={handleEdit}
               >
@@ -182,27 +192,31 @@ function Account() {
               </Button>
             )}
 
-            <div className=" absolute top-2 left-10 sm:top-12 sm:left-20 transform -translate-x-1/2 flex justify-center items-center h-full flex-col">
+            <div className="absolute left-10 top-2 flex h-full -translate-x-1/2 transform flex-col items-center justify-center sm:left-20 sm:top-12">
               <Avatar
                 src={userData.avatar}
                 alt="User Avatar"
                 isBordered
                 as="button"
-                className="transition-transform w-14 h-14 flex-shrink-0"
+                className="h-14 w-14 flex-shrink-0 transition-transform"
                 name={userData.userName}
                 size="sm"
                 color="primary"
               />
             </div>
           </div>
-          <div className="container w-full pt-16" style={{ height: "calc(100vh-100px)" }}>
-            <div className="w-full flex flex-col justify-s">
+          <div
+            className="container w-full pt-16"
+            style={{ height: "calc(100vh-100px)" }}
+          >
+            <div className="justify-s flex w-full flex-col">
               <Tabs
                 aria-label="Dynamic tabs"
                 items={tabs}
                 variant="underlined"
                 classNames={{
-                  tabList: "gap-6 w-full relative rounded-none p-0 sm:pl-64 border-b border-divider",
+                  tabList:
+                    "gap-6 w-full relative rounded-none p-0 sm:pl-64 border-b border-divider",
                   cursor: "w-full bg-primary-200",
                   tab: "w-full sm:max-w-fit px-0 h-12",
                   tabContent: "group-data-[selected=true]:text-primary-600",
@@ -211,26 +225,30 @@ function Account() {
                 {(item) => (
                   <Tab key={item.id} title={item.label}>
                     <div className="flex w-full px-2 pl-0 sm:pl-6">
-                      <div className="hidden sm:block sm:w-60 px-4 flex-shrink-0">
+                      <div className="hidden flex-shrink-0 px-4 sm:block sm:w-60">
                         <div className="text-left">
-                          <h1 className="text-2xl font-bold mt-4 whitespace-pre-wrap break-words">
+                          <h1 className="mt-4 whitespace-pre-wrap break-words text-2xl font-bold">
                             {userData.userName}
                           </h1>
-                          <p className="whitespace-pre-wrap break-words mr-1">
+                          <p className="mr-1 whitespace-pre-wrap break-words">
                             {userData.selfIntro ? userData.selfIntro : " "}
                           </p>
-                          <div className="flex justify-center flex-col mt-4">
+                          <div className="mt-4 flex flex-col justify-center">
                             {userData.social_links &&
                               Object.entries(userData.social_links)
-                                .filter(([, url]) => url) // 過濾掉空的值
+                                .filter(([, url]) => url)
                                 .map(([platform, url]) => (
-                                  <a key={platform} href={url as string} className="text-blue-800">
+                                  <a
+                                    key={platform}
+                                    href={url as string}
+                                    className="text-blue-800"
+                                  >
                                     {platform}
                                   </a>
                                 ))}
                           </div>
                           {user && user.userName !== userData.userName && (
-                            <div className="flex justify-start mt-4">
+                            <div className="mt-4 flex justify-start">
                               <Button
                                 variant="ghost"
                                 radius="full"
@@ -249,7 +267,7 @@ function Account() {
                           )}
                         </div>
                       </div>
-                      <div className="sm:pr-6 w-full">{item.content}</div>
+                      <div className="w-full sm:pr-6">{item.content}</div>
                     </div>
                   </Tab>
                 )}
@@ -263,12 +281,14 @@ function Account() {
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         placement="bottom-center"
-        className="m-0 rounded-b-none sm:rounded-b-3xl "
+        className="m-0 rounded-b-none sm:rounded-b-3xl"
       >
         <ModalContent>
           {(onClose) => (
             <form onSubmit={handleFormSubmit}>
-              <ModalHeader className="flex flex-col gap-1">Edit Profile</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                Edit Profile
+              </ModalHeader>
               <ModalBody>
                 <Input
                   autoFocus
@@ -291,7 +311,9 @@ function Account() {
                   onChange={(e) => setTwitter(e.target.value)}
                   startContent={
                     <div className="pointer-events-none flex items-center">
-                      <span className="text-default-400 text-small">https://twitter.com/</span>
+                      <span className="text-small text-default-400">
+                        https://twitter.com/
+                      </span>
                     </div>
                   }
                 />
@@ -313,10 +335,18 @@ function Account() {
           <ModalHeader>Unfollow {userName}?</ModalHeader>
           <ModalBody>You will stop seeing updates from {userName}</ModalBody>
           <ModalFooter>
-            <Button color="default" variant="light" onPress={() => setShowUnfollowModal(false)}>
+            <Button
+              color="default"
+              variant="light"
+              onPress={() => setShowUnfollowModal(false)}
+            >
               Cancel
             </Button>
-            <Button color="primary" variant="light" onPress={() => handleUnfollow(userName as string)}>
+            <Button
+              color="primary"
+              variant="light"
+              onPress={() => handleUnfollow(userName as string)}
+            >
               Unfollow
             </Button>
           </ModalFooter>

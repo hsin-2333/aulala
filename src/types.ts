@@ -46,7 +46,7 @@ export type QueryConditions = {
   author?: string;
   tags?: string[];
   category?: string;
-  user?: string; // user id
+  user?: string;
   timestamp?: {
     start: Date;
     end: Date;

@@ -1,3 +1,3 @@
 //@ts-expect-error(123)
-import debounce from "lodash.debounce"; // Correct import syntax with allowSyntheticDefaultImports enabled
+import debounce from "lodash.debounce";
 export default debounce;

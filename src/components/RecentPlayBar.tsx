@@ -1,14 +1,13 @@
+import { Link } from "@nextui-org/link";
+import { useQuery } from "@tanstack/react-query";
 import { useContext, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import WaveSurfer from "wavesurfer.js";
 import { AuthContext } from "../context/AuthContext";
 import { RecentPlayContext } from "../context/RecentPlayContext";
-import Icon from "./Icon";
-// import { debounce } from "lodash";
-import { Link } from "@nextui-org/link";
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
 import { Story } from "../types";
 import dbApi from "../utils/firebaseService";
+import Icon from "./Icon";
 
 const RecentPlayBar = () => {
   const { user } = useContext(AuthContext);
@@ -71,13 +70,7 @@ const RecentPlayBar = () => {
   useEffect(() => {
     if (currentStoryInfo) {
       const existingStoryId = audioRef.current.storyId;
-      // console.log("創建播放器---同一個故事嗎", istheSameStory, audioRef.current.instance);
-      // console.log(
-      //   "創建播放器---currentStoryInfo",
-      //   currentStoryInfo.id,
-      //   "audioRef.current.storyId",
-      //   audioRef.current.storyId
-      // );
+
       if (
         (existingStoryId === currentStoryInfo.id &&
           audioRef.current.instance) ||
@@ -133,20 +126,15 @@ const RecentPlayBar = () => {
             recentPlay?.story_id,
           );
           if (istheSameStory && currentTimeRef.current > 0) {
-            //從上次播放的時間開始播放(故事頁面)
             wavesurfer.seekTo(
               currentTimeRef.current / wavesurfer.getDuration(),
             );
-            // console.log("Audio ready, seeking to currentTime:", currentTimeRef.current);
           } else if (
             currentStoryInfo.id === recentPlay?.story_id &&
             recentPlay &&
             recentPlay.played_at > 0
           ) {
-            //從資料庫的最近播放時間 開始播放(主頁)
-            // console.log("existingStoryId", existingStoryId, "recentPlay.story_id", recentPlay.story_id);
             wavesurfer.seekTo(recentPlay.played_at / wavesurfer.getDuration());
-            // console.log("最近播放 Audio ready, seeking to recentPlay:", recentPlay);
           }
         });
 
@@ -354,7 +342,6 @@ export const PlayBar = () => {
         lastUpdateTime = newTime;
       });
 
-      // 音頻播放完畢
       wavesurfer.on("finish", () => {
         setIsPlaying(false);
       });

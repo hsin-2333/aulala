@@ -315,7 +315,6 @@ const dbApi = {
       const storyRef = await addDoc(collection(db, "stories"), storyData);
       const storyId = storyRef.id;
 
-      // Rename and store audio with story ID
       const newAudioRef = ref(storage, `stories/audio_${storyId}`);
       await uploadBytes(newAudioRef, file);
       const newAudioUrl = await getDownloadURL(newAudioRef);
@@ -374,7 +373,6 @@ const dbApi = {
     }
   },
 
-  //獲取點讚、收藏的狀態
   async getInteractionStatus(
     userName: string,
     storyId: string | null,

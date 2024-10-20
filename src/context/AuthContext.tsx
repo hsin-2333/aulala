@@ -1,4 +1,3 @@
-// AuthContext.jsx
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   GoogleAuthProvider,

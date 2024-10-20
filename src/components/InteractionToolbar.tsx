@@ -16,7 +16,6 @@ interface InteractionToolbarProps {
 
 interface BookmarkButtonProps {
   userName: string;
-  // storyId?: string;
   scriptId?: string;
 }
 
@@ -68,14 +67,12 @@ export const InteractionToolbar = ({
 
   return (
     <div className="interaction-toolbar flex">
-      {/* <button onClick={() => likeMutation.mutate()} className="flex items-center"> */}
       <Button
         isIconOnly
         className="text-default-900/60 data-[hover]:bg-foreground/10"
         radius="full"
         variant="light"
         onPress={() => likeMutation.mutate()}
-        // onClick={togglePlayPause}
       >
         <Icon
           name="like"
@@ -132,7 +129,6 @@ export const BookmarkButton = ({ userName, scriptId }: BookmarkButtonProps) => {
       radius="full"
       variant="light"
       onPress={() => saveMutation.mutate()}
-      // onClick={togglePlayPause}
     >
       <Icon
         name="bookmarked"
@@ -182,7 +178,6 @@ export const PlaylistButton = ({ userName, storyId }: PlaylistButtonProps) => {
       radius="full"
       variant="light"
       onPress={() => playlistMutation.mutate()}
-      // onClick={togglePlayPause}
     >
       <Icon
         name={inPlaylist ? "added-to-playlist" : "add-to-playlist"}
@@ -270,7 +265,7 @@ export const CommentToolbar = ({
 
   useEffect(() => {
     if (commentsData && setCommentCount) {
-      setCommentCount(commentsData.length); // 更新評論數量
+      setCommentCount(commentsData.length);
     }
   }, [commentsData, setCommentCount]);
 
