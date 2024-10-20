@@ -1,9 +1,17 @@
-import { useRef, createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
-import dbApi from "../utils/firebaseService";
-import { AuthContext } from "../context/AuthContext";
 import { Timestamp } from "firebase/firestore";
-import { Story } from "../types";
 import { debounce } from "lodash";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { AuthContext } from "../context/AuthContext";
+import { Story } from "../types";
+import dbApi from "../utils/firebaseService";
 
 type RecentPlay = {
   id: string;
@@ -22,29 +30,43 @@ type RecentPlayContextType = {
   currentTimeRef: React.MutableRefObject<number>;
 };
 
-const debouncedFetchRecentPlay = debounce(async (user, setRecentPlay, setStoryInfo) => {
-  if (user) {
-    const condition = {
-      user: user.uid,
-    };
-    const recentPlays = await dbApi.queryCollection("recentPlays", condition, 1, "updated_at", "desc");
-    if (recentPlays.length > 0) {
-      console.log("最近播放" + JSON.stringify(recentPlays));
-      const recentPlay = recentPlays[0] as RecentPlay;
-      setRecentPlay(recentPlay);
-
-      const StoryCondition = {
-        id: recentPlay.story_id,
+const debouncedFetchRecentPlay = debounce(
+  async (user, setRecentPlay, setStoryInfo) => {
+    if (user) {
+      const condition = {
+        user: user.uid,
       };
-      const storyDocs = await dbApi.queryCollection("stories", StoryCondition, 1);
-      if (storyDocs) {
-        setStoryInfo(storyDocs[0] as Story);
+      const recentPlays = await dbApi.queryCollection(
+        "recentPlays",
+        condition,
+        1,
+        "updated_at",
+        "desc",
+      );
+      if (recentPlays.length > 0) {
+        const recentPlay = recentPlays[0] as RecentPlay;
+        setRecentPlay(recentPlay);
+
+        const StoryCondition = {
+          id: recentPlay.story_id,
+        };
+        const storyDocs = await dbApi.queryCollection(
+          "stories",
+          StoryCondition,
+          1,
+        );
+        if (storyDocs) {
+          setStoryInfo(storyDocs[0] as Story);
+        }
       }
     }
-  }
-}, 1000);
+  },
+  1000,
+);
 
-export const RecentPlayContext = createContext<RecentPlayContextType | undefined>(undefined);
+export const RecentPlayContext = createContext<
+  RecentPlayContextType | undefined
+>(undefined);
 export const RecentPlayProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useContext(AuthContext);
   const [recentPlay, setRecentPlay] = useState<RecentPlay | null>(null);
@@ -58,12 +80,18 @@ export const RecentPlayProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     fetchRecentPlay();
-    console.log("useEffect抓取 fetchRecentPlay ");
   }, [user, fetchRecentPlay]);
 
   return (
     <RecentPlayContext.Provider
-      value={{ currentTimeRef, recentPlay, storyInfo, isPlaying, setIsPlaying, fetchRecentPlay }}
+      value={{
+        currentTimeRef,
+        recentPlay,
+        storyInfo,
+        isPlaying,
+        setIsPlaying,
+        fetchRecentPlay,
+      }}
     >
       {children}
     </RecentPlayContext.Provider>

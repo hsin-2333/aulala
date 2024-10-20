@@ -1,7 +1,7 @@
-import { useContext, useEffect, useRef, useMemo, useState } from "react";
-import { RecentPlayContext } from "../../context/RecentPlayContext";
-import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { RecentPlayContext } from "../../context/RecentPlayContext";
 import { Story } from "../../types";
 import dbApi from "../../utils/firebaseService";
 
@@ -44,7 +44,6 @@ const SubtitlesComponent = () => {
         const totalSegments = segments.length;
         const element = subtitlesRef.current.children[activeIndex] as HTMLDivElement;
 
-        // 滾動到字幕
         if (activeIndex < totalSegments - 4) {
           element.scrollIntoView({ behavior: "smooth", block: "center" });
         } else {

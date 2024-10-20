@@ -1,28 +1,28 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import dbApi from "../../../utils/firebaseService";
-import { Story } from "../../../types";
-import { AuthContext } from "../../../context/AuthContext";
-import { useContext, useState, useEffect } from "react";
-import { Timestamp } from "firebase/firestore";
 import {
-  Chip,
   Button,
-  DropdownTrigger,
+  Chip,
   Dropdown,
-  DropdownMenu,
   DropdownItem,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
+  DropdownMenu,
+  DropdownTrigger,
   Input,
-  useDisclosure,
-  Textarea,
   Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Textarea,
+  useDisclosure,
 } from "@nextui-org/react";
-import { SlOptionsVertical } from "react-icons/sl";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Timestamp } from "firebase/firestore";
+import { useContext, useEffect, useState } from "react";
 import { IoAddCircleOutline } from "react-icons/io5";
+import { SlOptionsVertical } from "react-icons/sl";
+import { AuthContext } from "../../../context/AuthContext";
+import { Story } from "../../../types";
+import dbApi from "../../../utils/firebaseService";
 
 const StoryTable = () => {
   const { user } = useContext(AuthContext);
@@ -46,10 +46,8 @@ const StoryTable = () => {
 
   useEffect(() => {
     if (!user?.userName) return;
-    console.log("進入useEffect -----------------");
 
     const fetchData = async () => {
-      console.log("進入Subscribing to story data");
       const unsubscribe = await dbApi.subscribeToStory(user?.userName as string, (storyData) => {
         queryClient.setQueryData(["stories", user?.userName], storyData);
       });
@@ -67,17 +65,6 @@ const StoryTable = () => {
     queryKey: ["stories", user?.userName],
     select: (data) => data || [],
   });
-
-  // const { data: storyData, error } = useQuery({
-  //   queryKey: ["stories", user?.userName],
-  //   queryFn: async () => {
-  //     const story = await dbApi.queryCollection("stories", { author: user?.userName }, 10, "created_at", "desc");
-  //     return story as Story[];
-  //   },
-  // });
-
-  // if (error) return <div>Error loading story data: {error.message}</div>;
-  // console.log(storyData);
 
   const handleDelete = async (storyId: string) => {
     await dbApi.deleteStory(storyId);
@@ -188,7 +175,6 @@ const StoryTable = () => {
                         <DropdownItem onPress={() => handleEdit(story)}>Edit</DropdownItem>
                         <DropdownItem
                           onPress={() => {
-                            console.log(story.id);
                             if (story.id) {
                               handleDelete(story.id);
                             }

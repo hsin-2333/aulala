@@ -1,23 +1,35 @@
+import { Button, Card, Input, Link, Skeleton } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-//@ts-expect-error(123)
-import lunr from "lunr";
-import { SearchResultCard } from "../components/Card";
-import { index } from "../../algoliaClient"; // Import Algolia index
-import { Input, Link, Button } from "@nextui-org/react";
 import { FiSearch } from "react-icons/fi";
+import { useLocation, useNavigate } from "react-router-dom";
+import { index } from "../../../algoliaClient";
+import { SearchResultCard } from "../../components/Card";
+
+type SearchResult = {
+  objectID: string;
+  img_url?: string[];
+  title?: string;
+  tags?: string[];
+  author?: string;
+  intro?: string;
+  duration?: number;
+};
+
 const SearchResultsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [searchResults, setSearchResults] = useState<lunr.Index.Result[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const query = new URLSearchParams(location.search).get("q") || "";
 
   useEffect(() => {
     const fetchAlgoliaResults = async () => {
+      setIsLoading(true);
       const { hits } = await index.search(query);
       setSearchResults(hits);
+      setIsLoading(false);
     };
 
     fetchAlgoliaResults();
@@ -27,8 +39,6 @@ const SearchResultsPage = () => {
     if (type === "script") navigate(`/script/${id}`);
     if (type === "story") navigate(`/story/${id}`);
   };
-
-  console.log("searchResults", searchResults);
 
   const [searchTerm, setSearchTerm] = useState("");
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,8 +53,11 @@ const SearchResultsPage = () => {
     .filter((tag, index, self) => self.indexOf(tag) === index);
   return (
     <>
-      <div className="mx-auto flex flex-col align-middle ">
-        <form onSubmit={handleSearchSubmit} className="flex justify-center  items-center ">
+      <div className="mx-auto flex flex-col items-center align-middle">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="flex w-full items-center justify-center"
+        >
           <Input
             classNames={{
               base: " max-w-[848px] shadow-xl shadow-indigo-200/20",
@@ -61,9 +74,11 @@ const SearchResultsPage = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </form>
-        <p className="font-bold text-2xl mt-4">{query}</p>
-        <p className="text-default-400 text-md mt-1">Search Results for "{query}"</p>
-        <div className="flex flex-wrap mt-2 mx-auto">
+        <p className="mt-4 text-2xl font-bold">{query}</p>
+        <p className="text-md mt-1 text-default-400">
+          Search Results for "{query}"
+        </p>
+        <div className="mx-auto mt-2 flex flex-wrap">
           {allTags.map((tag, index) => (
             <Button
               as={Link}
@@ -72,25 +87,26 @@ const SearchResultsPage = () => {
               color="default"
               size="sm"
               radius="sm"
-              className="mt-1 mr-2"
+              className="mr-2 mt-1"
               variant="flat"
             >
               {tag}
             </Button>
           ))}
         </div>
-        <section className="grid grid-cols-1 align-middle mx-auto mt-8">
-          {searchResults.length > 0 ? (
+        <section className="mt-8 grid w-full max-w-[848px] grid-cols-1 align-middle">
+          {isLoading ? (
+            <SearchResultSkeleton />
+          ) : searchResults.length > 0 ? (
             searchResults.map((result) => {
-              console.log("result", result);
               return (
                 result && (
                   <SearchResultCard
                     key={result.objectID}
                     id={result.objectID}
-                    image={result.img_url?.[0]}
+                    image={result.img_url?.[0] || ""}
                     title={result.title || "Untitled"}
-                    tags={result.tags}
+                    tags={result.tags || []}
                     author={result.author || "Unknown"}
                     onClick={() => handleContentClick(result.objectID, "story")}
                     intro={result.intro}
@@ -113,3 +129,29 @@ const SearchResultsPage = () => {
 };
 
 export default SearchResultsPage;
+
+const SearchResultSkeleton = () => {
+  return (
+    <Card
+      className="mt-8 flex flex-row gap-4 p-4"
+      radius="lg"
+      shadow="sm"
+      fullWidth={true}
+    >
+      <Skeleton className="rounded-lg">
+        <div className="h-24 w-24 rounded-lg bg-default-300"></div>
+      </Skeleton>
+      <div className="mt-2 w-full space-y-3">
+        <Skeleton className="w-3/5 rounded-lg">
+          <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+        </Skeleton>
+        <Skeleton className="w-4/5 rounded-lg">
+          <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+        </Skeleton>
+        <Skeleton className="w-2/5 rounded-lg">
+          <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
+        </Skeleton>
+      </div>
+    </Card>
+  );
+};

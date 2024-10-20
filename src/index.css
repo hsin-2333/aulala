@@ -4,12 +4,6 @@
 
 #root {
   font-family: "Inter", sans-serif;
-  /* line-height: 1.5;
-  font-weight: 400; */
-
-  /* color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424; */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -55,15 +49,15 @@
 }
 
 .custom-scrollbar {
-  /* overflow-x: auto; */
   position: relative;
 }
 
-/* 自定義滾動條 */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
   height: 4px;
-  transition: visibility 0.3s, opacity 0.3s;
+  transition:
+    visibility 0.3s,
+    opacity 0.3s;
   visibility: hidden;
 }
 
@@ -76,23 +70,20 @@
   opacity: 0;
 }
 .custom-scrollbar:hover::-webkit-scrollbar-track {
-  /* 滾動條的背景色 */
-  /* background: #f1f1f1; */
   border-radius: 10px;
 }
 
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-  background: #2e3e4a00; /* 滾動條的顏色  */
+  background: #2e3e4a00;
   border-radius: 4px;
   height: 4px;
   width: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #3a434945; /* 滾動條 hover 的顏色 */
+  background: #3a434945;
 }
 
-/* 增加滾動條和容器内元素之间的距离 */
 .scroll-padding {
   padding-bottom: 4px;
 }
@@ -103,131 +94,12 @@
   }
 }
 
-/* button {
-  border-radius: 8px;
-  border: 1px solid #747bff;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-
-a {
-  text-decoration: inherit;
-}
-
-form {
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-h1 {
-  font-weight: 100;
-  color: white;
-  text-align: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgb(79, 98, 148);
-}
-
-.form {
-  background: #0e101c;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-p {
-  color: #bf1650;
-}
-
-input {
-  display: block;
-  box-sizing: border-box;
-  width: 100%;
-  border-radius: 4px;
-  border: 1px solid rgb(0, 0, 0);
-  padding: 10px 15px;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-label {
-  line-height: 2;
-  text-align: left;
-  display: block;
-  margin-bottom: 13px;
-  margin-top: 20px;
-  color: rgb(7, 7, 7);
-  font-size: 14px;
-  font-weight: 200;
-}
-
-button[type="submit"],
-input[type="submit"] {
-  background: #ec5990;
-  color: rgb(0, 0, 0);
-  text-transform: uppercase;
-  border: none;
-  margin-top: 40px;
-  padding: 20px;
-  font-size: 16px;
-  font-weight: 100;
-  letter-spacing: 10px;
-}
-
-button[type="submit"]:hover,
-input[type="submit"]:hover {
-  background: #bf1650;
-}
-
-button[type="submit"]:active,
-input[type="button"]:active,
-input[type="submit"]:active {
-  transition: 0.3s all;
-  transform: translateY(3px);
-  border: 1px solid transparent;
-  opacity: 0.8;
-}
-
-input:disabled {
-  opacity: 0.4;
-}
-
-input[type="button"]:hover {
-  transition: 0.3s all;
-}
-
-button[type="submit"],
-input[type="button"],
-input[type="submit"] {
-  -webkit-appearance: none;
-}
-
-.App {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-button[type="button"] {
-  display: block;
-  appearance: none;
-  background: #333;
-  color: rgb(5, 5, 5);
-  border: none;
-  text-transform: uppercase;
-  padding: 10px 20px;
-  border-radius: 4px;
-}
-*/
 .highlight {
   background-color: #82ca9e40;
 }
 
 .wavesurfer-container .wavesurfer-cursor {
-  height: 10px; /* 設置中間線的高度 */
+  height: 10px;
 }
 
 input[type="range"],
@@ -245,30 +117,15 @@ input[type="range"] {
   border-radius: 24px;
 }
 
-/* 滑動鈕 樣式 */
 input[type="range"]::-webkit-slider-thumb {
   position: relative;
   height: 16px;
   width: 16px;
-  margin-top: 0px; /* 會受到寬高影響定位，需微調 */
-  background-color: transparent; /* 默認為透明 */
+  margin-top: 0px;
+  background-color: transparent;
   border-radius: 50%;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  background-color: white; /* hover 時顯示白色 */
+  background-color: white;
 }
-
-/*
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-} */

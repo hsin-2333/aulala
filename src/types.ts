@@ -1,4 +1,4 @@
-import { Timestamp, FieldValue } from "firebase/firestore";
+import { FieldValue, Timestamp } from "firebase/firestore";
 
 export interface User {
   uid?: string;
@@ -64,7 +64,7 @@ export interface Story {
   id?: string;
   title: string;
   author: string;
-  img_url?: string[];
+  img_url: string[];
   status?: string;
   image?: string;
   summary?: string;

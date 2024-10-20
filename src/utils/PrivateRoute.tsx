@@ -1,8 +1,8 @@
 import { ReactNode, useContext } from "react";
 import { Navigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import { UserHomeLayout } from "../components/Layout";
 import loadingGif from "../assets/loadingGif.gif";
+import { UserHomeLayout } from "../components/Layout";
+import { AuthContext } from "../context/AuthContext";
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -14,7 +14,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   if (loading) {
     return (
       <UserHomeLayout>
-        <div className="flex justify-center items-center h-fit">
+        <div className="flex h-fit items-center justify-center">
           <img src={loadingGif} width="400px" alt="Loading..." />
         </div>
       </UserHomeLayout>

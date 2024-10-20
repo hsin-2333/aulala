@@ -1,28 +1,32 @@
-import { db, storage } from "../../firebaseConfig";
-import { v4 as uuidv4 } from "uuid";
+import { getAuth } from "firebase/auth";
 import {
-  collection,
+  QueryConstraint,
   addDoc,
-  setDoc,
+  collection,
+  deleteDoc,
+  deleteField,
+  doc,
   getDoc,
-  updateDoc,
   getDocs,
   limit,
   onSnapshot,
-  serverTimestamp,
-  doc,
-  query,
-  where,
-  QueryConstraint,
-  deleteDoc,
   orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
   writeBatch,
-  deleteField,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import { getAuth } from "firebase/auth";
-import { QueryConditions, Story, InteractionType } from "../types";
-import { User } from "../types";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
+import { db, storage } from "../../firebaseConfig";
+import { InteractionType, QueryConditions, Story, User } from "../types";
 interface IUserData {
   id?: string;
   uid: string;
@@ -52,7 +56,6 @@ const dbApi = {
         ...userData,
         created_at: serverTimestamp(),
       });
-      console.log("User created with ID: ", userData.uid);
     } catch (e) {
       console.error("Error creating user: ", e);
     }
@@ -68,7 +71,6 @@ const dbApi = {
         ...userData,
         updated_at: serverTimestamp(),
       });
-      console.log("User updated with ID: ", userData.uid);
     } catch (e) {
       console.error("Error updating user: ", e);
     }
@@ -76,7 +78,9 @@ const dbApi = {
 
   async checkUserName(userName: string) {
     const userRef = collection(db, "users");
-    const querySnapshot = await getDocs(query(userRef, where("userName", "==", userName)));
+    const querySnapshot = await getDocs(
+      query(userRef, where("userName", "==", userName)),
+    );
     return querySnapshot.empty;
   },
 
@@ -111,14 +115,17 @@ const dbApi = {
     });
   },
 
-  async sendNotification(notificationData: { recipient: string; message: string; link: string }) {
+  async sendNotification(notificationData: {
+    recipient: string;
+    message: string;
+    link: string;
+  }) {
     try {
       const notificationRef = collection(db, "notifications");
       await addDoc(notificationRef, {
         ...notificationData,
         created_at: serverTimestamp(),
       });
-      console.log("Notification sent successfully");
     } catch (e) {
       console.error("Error sending notification: ", e);
     }
@@ -148,47 +155,6 @@ const dbApi = {
       }
     });
   },
-  // async getUserData(userName: string) {
-  //   try {
-  //     const userDocRef = doc(db, "users", userName);
-  //     const docSnap = await getDoc(userDocRef);
-  //     if (docSnap.exists()) {
-  //       return { id: docSnap.id, ...docSnap.data() };
-  //     } else {
-  //       console.log("No such document!");
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     console.error("Error getting document: ", e);
-  //     return null;
-  //   }
-  // },
-
-  async addStoryData(storyData: Story) {
-    try {
-      const docRef = await addDoc(collection(db, "stories"), {
-        ...storyData,
-        created_at: serverTimestamp(),
-        updated_at: serverTimestamp(),
-      });
-      console.log("Story document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding story document: ", e);
-    }
-  },
-
-  async addScriptData(scriptData: Story) {
-    try {
-      const docRef = await addDoc(collection(db, "scripts"), {
-        ...scriptData,
-        created_at: serverTimestamp(),
-        updated_at: serverTimestamp(),
-      });
-      console.log("Script document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding script document: ", e);
-    }
-  },
 
   async getTags() {
     const tagsRef = collection(db, "tags");
@@ -203,14 +169,22 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => doc.data().collectionName);
   },
 
-  async addOrUpdateTag(tagName: string, scriptId: string | null, storyId: string | null) {
+  async addOrUpdateTag(
+    tagName: string,
+    scriptId: string | null,
+    storyId: string | null,
+  ) {
     const tagRef = doc(db, "tags", tagName);
     const tagDoc = await getDoc(tagRef);
 
     if (tagDoc.exists()) {
       const existingData = tagDoc.data();
-      const updatedScriptIds = scriptId ? [...new Set([...existingData.scriptIds, scriptId])] : existingData.scriptIds;
-      const updatedStoryIds = storyId ? [...new Set([...existingData.storyIds, storyId])] : existingData.storyIds;
+      const updatedScriptIds = scriptId
+        ? [...new Set([...existingData.scriptIds, scriptId])]
+        : existingData.scriptIds;
+      const updatedStoryIds = storyId
+        ? [...new Set([...existingData.storyIds, storyId])]
+        : existingData.storyIds;
 
       await updateDoc(tagRef, {
         scriptIds: updatedScriptIds,
@@ -257,7 +231,7 @@ const dbApi = {
     conditions: QueryConditions,
     limitNum: number = 10,
     orderByField: string | null = null,
-    orderDirection: "asc" | "desc" = "asc"
+    orderDirection: "asc" | "desc" = "asc",
   ) {
     const constraints: QueryConstraint[] = [];
 
@@ -291,15 +265,11 @@ const dbApi = {
     }
 
     if (conditions.interaction_type) {
-      constraints.push(where("interaction_type", "==", conditions.interaction_type));
+      constraints.push(
+        where("interaction_type", "==", conditions.interaction_type),
+      );
     }
-    // if (conditions.timestamp) {
-    //   constraints.push(where("timestamp", ">=", conditions.timestamp.start));
-    //   constraints.push(where("timestamp", "<=", conditions.timestamp.end));
-    // }
-    // if (conditions.likes) {
-    //   constraints.push(where("likes", ">=", conditions.likes));
-    // }
+
     if (conditions.author) {
       constraints.push(where("author", "==", conditions.author));
     }
@@ -315,48 +285,11 @@ const dbApi = {
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 
-  // async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
-  //   try {
-  //     const tempAudioRef = ref(storage, `stories/temp_${file.name}`);
-  //     await uploadBytes(tempAudioRef, file);
-  //     const tempAudioUrl = await getDownloadURL(tempAudioRef);
-
-  //     let imageUrl = null;
-  //     if (imageFile) {
-  //       const imageRef = ref(storage, `images/${imageFile.name}`);
-  //       await uploadBytes(imageRef, imageFile);
-  //       imageUrl = await getDownloadURL(imageRef);
-  //     }
-  //     const storyData = {
-  //       ...data,
-  //       audio_url: tempAudioUrl,
-  //       img_url: imageUrl ? [imageUrl] : [],
-  //       created_at: serverTimestamp(),
-  //       updated_at: serverTimestamp(),
-  //       tags: data.tags,
-  //     };
-
-  //     const storyRef = await addDoc(collection(db, "stories"), storyData);
-  //     const storyId = storyRef.id;
-
-  //     // Step 3: Rename the audio file in Firebase Storage using the storyId
-  //     const newAudioRef = ref(storage, `stories/audio_${storyId}`);
-  //     await uploadBytes(newAudioRef, file);
-  //     const newAudioUrl = await getDownloadURL(newAudioRef);
-
-  //     // Delete the temporary audio file
-  //     await deleteObject(tempAudioRef);
-
-  //     // Step 4: Update the Firestore document with the new audio URL
-  //     await updateDoc(storyRef, { audio_url: newAudioUrl });
-
-  //     return storyId;
-  //   } catch (e) {
-  //     console.error("Error uploading audio and saving story: ", e);
-  //     throw e;
-  //   }
-  // },
-  async uploadAudioAndSaveStory(file: File, imageFile: File | null, data: Story) {
+  async uploadAudioAndSaveStory(
+    file: File,
+    imageFile: File | null,
+    data: Story,
+  ) {
     try {
       const tempAudioRef = ref(storage, `stories/temp_${file.name}`);
       await uploadBytes(tempAudioRef, file);
@@ -379,8 +312,6 @@ const dbApi = {
         collections: data.collections || [],
       };
 
-      console.log("資料庫存取: ", storyData, "data.collections: ", data.collections);
-
       const storyRef = await addDoc(collection(db, "stories"), storyData);
       const storyId = storyRef.id;
 
@@ -388,18 +319,24 @@ const dbApi = {
       const newAudioRef = ref(storage, `stories/audio_${storyId}`);
       await uploadBytes(newAudioRef, file);
       const newAudioUrl = await getDownloadURL(newAudioRef);
-      console.log("newAudioUrl: ", newAudioUrl, "storyId: ", storyId);
+
       await deleteObject(tempAudioRef);
       await updateDoc(storyRef, { audio_url: newAudioUrl });
 
-      // Trigger transcription
-      const transcriptionResponse = await fetch("https://us-central1-aulala-a8757.cloudfunctions.net/transcribeAudio", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const transcriptionResponse = await fetch(
+        "https://us-central1-aulala-a8757.cloudfunctions.net/transcribeAudio",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            audioUrl: newAudioUrl,
+            storyId: storyId,
+            author: data.author,
+          }),
         },
-        body: JSON.stringify({ audioUrl: newAudioUrl, storyId: storyId, author: data.author }),
-      });
+      );
       if (!transcriptionResponse.ok) throw new Error("Transcription failed");
 
       return storyId;
@@ -428,8 +365,7 @@ const dbApi = {
         updated_at: serverTimestamp(),
         tags: data.tags,
       };
-      console.log("scriptData: ", scriptData);
-      console.log("data.tags: ", data.tags);
+
       const scriptRef = await addDoc(collection(db, "scripts"), scriptData);
       return scriptRef.id;
     } catch (e) {
@@ -443,7 +379,7 @@ const dbApi = {
     userName: string,
     storyId: string | null,
     scriptId: string | null,
-    interactionType: string
+    interactionType: string,
   ) {
     const interactionId = `${userName}_${storyId || scriptId}_${interactionType}`;
     const interactionRef = doc(db, "interactions", interactionId);
@@ -457,15 +393,13 @@ const dbApi = {
     storyId: string | null,
     scriptId: string | null,
     interactionType: string,
-    comment?: string
+    comment?: string,
   ) {
     try {
       let interactionId: string;
       if (interactionType === "comment" && comment) {
-        // 對於留言，使用 UUID 生成唯一的 interactionId
         interactionId = `${userName}_${storyId || scriptId}_${interactionType}_${uuidv4()}`;
       } else {
-        // 對於點讚和收藏，保持原有的 interactionId 生成方式
         interactionId = `${userName}_${storyId || scriptId}_${interactionType}`;
       }
       const interactionRef = doc(db, "interactions", interactionId);
@@ -473,9 +407,7 @@ const dbApi = {
 
       if (interactionDoc.exists()) {
         if (interactionType === "like" || interactionType === "bookmarked") {
-          // 如果是第二次點讚or收藏，則刪除互動(取消收藏or取消讚)
           await deleteDoc(interactionRef);
-          console.log("Interaction removed successfully");
         }
       } else {
         const data: InteractionType = {
@@ -492,7 +424,6 @@ const dbApi = {
         }
 
         await setDoc(interactionRef, data);
-        console.log("Interaction added successfully");
       }
     } catch (e) {
       console.error("Error updating interaction: ", e);
@@ -515,25 +446,25 @@ const dbApi = {
       const batch = writeBatch(db);
 
       if (followerDoc.data().following?.[followingDoc.id]) {
-        // 移除 follow
         batch.update(followerRef, {
           [`following.${followingDoc.id}`]: deleteField(),
         });
         batch.update(followingRef, {
           [`followers.${followerDoc.id}`]: deleteField(),
         });
-
-        console.log("Follow removed successfully");
       } else {
-        // 新增 follow
         batch.update(followerRef, {
-          [`following.${followingDoc.id}`]: { userName: following, created_at: serverTimestamp() },
+          [`following.${followingDoc.id}`]: {
+            userName: following,
+            created_at: serverTimestamp(),
+          },
         });
         batch.update(followingRef, {
-          [`followers.${followerDoc.id}`]: { userName: follower, created_at: serverTimestamp() },
+          [`followers.${followerDoc.id}`]: {
+            userName: follower,
+            created_at: serverTimestamp(),
+          },
         });
-
-        console.log("Follow added successfully");
       }
       await batch.commit();
     } catch (e) {
@@ -553,7 +484,6 @@ const dbApi = {
         updated_at: serverTimestamp(),
       };
       await setDoc(recentPlayRef, data);
-      console.log("Recent play updated successfully");
     } catch (e) {
       console.error("Error updating recent play: ", e);
       throw e;
@@ -571,7 +501,11 @@ const dbApi = {
   },
 
   async subscribeToStory(author: string, callback: (data: Story[]) => void) {
-    const q = query(collection(db, "stories"), where("author", "==", author), orderBy("created_at", "desc"));
+    const q = query(
+      collection(db, "stories"),
+      where("author", "==", author),
+      orderBy("created_at", "desc"),
+    );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const StoryData: Story[] = [];
       querySnapshot.forEach((doc) => {
@@ -583,8 +517,14 @@ const dbApi = {
     return unsubscribe;
   },
 
-  async subscribeToInteractions(scriptId: string, callback: (data: Interactions) => void) {
-    const q = query(collection(db, "interactions"), where("script_id", "==", scriptId));
+  async subscribeToInteractions(
+    scriptId: string,
+    callback: (data: Interactions) => void,
+  ) {
+    const q = query(
+      collection(db, "interactions"),
+      where("script_id", "==", scriptId),
+    );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const interactionsData: InteractionType[] = [];
       querySnapshot.forEach((doc) => {
@@ -596,16 +536,22 @@ const dbApi = {
     return unsubscribe;
   },
 
-  async subscribeToNotifications(userName: string, callback: (data: Interactions) => void) {
+  async subscribeToNotifications(
+    userName: string,
+    callback: (data: Interactions) => void,
+  ) {
     const q = query(
       collection(db, "notifications"),
       where("recipient", "==", userName),
-      where("status", "==", "unread")
+      where("status", "==", "unread"),
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const notificationsData: InteractionType[] = [];
       querySnapshot.forEach((doc) => {
-        notificationsData.push({ id: doc.id, ...doc.data() } as InteractionType);
+        notificationsData.push({
+          id: doc.id,
+          ...doc.data(),
+        } as InteractionType);
       });
       callback(notificationsData);
     });
@@ -617,10 +563,9 @@ const dbApi = {
     const q = query(
       collection(db, "notifications"),
       where("recipient", "==", userName),
-      where("status", "==", "unread")
+      where("status", "==", "unread"),
     );
     const querySnapshot = await getDocs(q);
-    console.log("querySnapshot: ", querySnapshot);
     const batch = writeBatch(db);
 
     querySnapshot.forEach((doc) => {
@@ -634,19 +579,24 @@ const dbApi = {
     try {
       const storyRef = doc(db, "stories", storyId);
       await deleteDoc(storyRef);
-      console.log("Story deleted with ID: ", storyId);
     } catch (e) {
       console.error("Error deleting story: ", e);
     }
   },
 
-  async addStoryToCollection(storyId: string, collectionName: string, userName: string) {
+  async addStoryToCollection(
+    storyId: string,
+    collectionName: string,
+    userName: string,
+  ) {
     try {
       const collectionRef = doc(db, "collections", collectionName);
       const collectionDoc = await getDoc(collectionRef);
       if (collectionDoc.exists()) {
         const existingData = collectionDoc.data();
-        const updatedStoryIds = [...new Set([...existingData.storyIds, storyId])];
+        const updatedStoryIds = [
+          ...new Set([...existingData.storyIds, storyId]),
+        ];
         await updateDoc(collectionRef, {
           storyIds: updatedStoryIds,
         });
@@ -658,7 +608,7 @@ const dbApi = {
         });
       }
     } catch (e) {
-      console.error("Error adding story to collection: ", e); // 修改錯誤信息
+      console.error("Error adding story to collection: ", e);
     }
   },
 };

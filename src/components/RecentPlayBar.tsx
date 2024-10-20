@@ -1,18 +1,21 @@
-import { useState, useRef, useEffect, useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
-import { RecentPlayContext } from "../context/RecentPlayContext";
 import { AuthContext } from "../context/AuthContext";
+import { RecentPlayContext } from "../context/RecentPlayContext";
 import Icon from "./Icon";
 // import { debounce } from "lodash";
-import dbApi from "../utils/firebaseService";
-import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { Story } from "../types";
 import { Link } from "@nextui-org/link";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { Story } from "../types";
+import dbApi from "../utils/firebaseService";
 
 const RecentPlayBar = () => {
   const { user } = useContext(AuthContext);
-  const audioRef = useRef<{ instance: WaveSurfer | null; storyId: string | null }>({
+  const audioRef = useRef<{
+    instance: WaveSurfer | null;
+    storyId: string | null;
+  }>({
     instance: null,
     storyId: null,
   });
@@ -26,12 +29,12 @@ const RecentPlayBar = () => {
   if (context === undefined) {
     throw new Error("SomeComponent must be used within a RecentPlayProvider");
   }
-  const { currentTimeRef, isPlaying, setIsPlaying, recentPlay, storyInfo } = context;
+  const { currentTimeRef, isPlaying, setIsPlaying, recentPlay, storyInfo } =
+    context;
   const [currentStoryInfo, setCurrentStoryInfo] = useState<Story | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [istheSameStory, setIstheSameStory] = useState(false);
 
-  //取得故事資訊
   useEffect(() => {
     let isMounted = true;
     if (storyId) {
@@ -39,7 +42,6 @@ const RecentPlayBar = () => {
 
       if (storyInfo && storyInfo.id === storyId) {
         setIstheSameStory(true);
-        console.log("同一個故事, storyInfo", storyInfo, "storyId", storyId);
         setCurrentStoryInfo(storyInfo);
       } else {
         const fetchStoryInfo = async () => {
@@ -66,7 +68,6 @@ const RecentPlayBar = () => {
     };
   }, [storyId, storyInfo, setIsPlaying]);
 
-  //創建音頻播放器
   useEffect(() => {
     if (currentStoryInfo) {
       const existingStoryId = audioRef.current.storyId;
@@ -78,16 +79,15 @@ const RecentPlayBar = () => {
       //   audioRef.current.storyId
       // );
       if (
-        (existingStoryId === currentStoryInfo.id && audioRef.current.instance) ||
+        (existingStoryId === currentStoryInfo.id &&
+          audioRef.current.instance) ||
         (istheSameStory && audioRef.current.instance)
       ) {
-        console.log("-------使用舊的player------------------");
         return;
       } else {
         if (audioRef.current.instance) {
           audioRef.current.instance.destroy();
         }
-        console.log("-------新的player------------------");
         const wavesurfer = WaveSurfer.create({
           container: "#waveform_bottom",
           waveColor: "#CCE3FD",
@@ -100,14 +100,15 @@ const RecentPlayBar = () => {
         });
 
         if (currentStoryInfo.id) {
-          audioRef.current = { instance: wavesurfer, storyId: currentStoryInfo.id };
+          audioRef.current = {
+            instance: wavesurfer,
+            storyId: currentStoryInfo.id,
+          };
         }
-        // 設置播放時間更新與字幕更新邏輯
         let lastUpdateTime = 0;
 
         const updateRecentPlay = (currentTime: number) => {
           if (user && user.uid && currentStoryInfo.id) {
-            console.log("更新到資料庫", currentStoryInfo.id, currentTime);
             dbApi.updateRecentPlay(user.uid, currentStoryInfo.id, currentTime);
           }
         };
@@ -119,19 +120,29 @@ const RecentPlayBar = () => {
           if (currentTime - lastUpdateTime > 0.999) {
             lastUpdateTime = currentTime;
             updateRecentPlay(currentTime);
-            console.log("timeupdate event時間更新", currentTime);
           }
         });
 
         wavesurfer.on("ready", () => {
           setDuration(wavesurfer.getDuration());
 
-          console.log("確認id,", currentStoryInfo.id, existingStoryId, recentPlay?.story_id);
+          console.log(
+            "確認id,",
+            currentStoryInfo.id,
+            existingStoryId,
+            recentPlay?.story_id,
+          );
           if (istheSameStory && currentTimeRef.current > 0) {
             //從上次播放的時間開始播放(故事頁面)
-            wavesurfer.seekTo(currentTimeRef.current / wavesurfer.getDuration());
+            wavesurfer.seekTo(
+              currentTimeRef.current / wavesurfer.getDuration(),
+            );
             // console.log("Audio ready, seeking to currentTime:", currentTimeRef.current);
-          } else if (currentStoryInfo.id === recentPlay?.story_id && recentPlay && recentPlay.played_at > 0) {
+          } else if (
+            currentStoryInfo.id === recentPlay?.story_id &&
+            recentPlay &&
+            recentPlay.played_at > 0
+          ) {
             //從資料庫的最近播放時間 開始播放(主頁)
             // console.log("existingStoryId", existingStoryId, "recentPlay.story_id", recentPlay.story_id);
             wavesurfer.seekTo(recentPlay.played_at / wavesurfer.getDuration());
@@ -139,14 +150,12 @@ const RecentPlayBar = () => {
           }
         });
 
-        // 時間軸跳轉
         wavesurfer.on("seeking", (progress) => {
           const newTime = progress;
           setCurrentTime(newTime);
           currentTimeRef.current = newTime;
           lastUpdateTime = newTime;
           if (!istheSameStory) {
-            console.log("時間軸跳轉", newTime);
             updateRecentPlay(newTime);
           }
         });
@@ -154,18 +163,20 @@ const RecentPlayBar = () => {
         wavesurfer.on("finish", () => {
           setIsPlaying(false);
         });
-
-        // return () => {
-        //   wavesurfer.destroy();
-        // };
       }
     }
-  }, [currentStoryInfo, currentTimeRef, recentPlay, setIsPlaying, storyInfo?.id, user, istheSameStory]);
+  }, [
+    currentStoryInfo,
+    currentTimeRef,
+    recentPlay,
+    setIsPlaying,
+    storyInfo?.id,
+    user,
+    istheSameStory,
+  ]);
 
   const togglePlayPause = () => {
     const wavesurfer = audioRef.current.instance;
-    // console.log("togglePlayPause", wavesurfer);
-    console.log("暫停/播放====");
     if (wavesurfer) {
       if (isPlaying) {
         wavesurfer.pause();
@@ -187,48 +198,62 @@ const RecentPlayBar = () => {
   return (
     <>
       {!isLoading && currentStoryInfo ? (
-        <div className="h-12 sm:h-[80px] fixed bottom-14 sm:bottom-0 left-0 right-0 z-10">
-          <div className=" bg-slate-800 p-2 mx-1 rounded-md flex items-center space-x-4 justify-between sm:mx-0 sm:rounded-none sm:p-4 md:px-11">
-            <div className="text-left flex gap-2 w-5/6 sm:w-1/6  md:gap-4">
+        <div className="fixed bottom-14 left-0 right-0 z-10 h-12 sm:bottom-0 sm:h-[80px]">
+          <div className="mx-1 flex items-center justify-between space-x-4 rounded-md bg-slate-800 p-2 sm:mx-0 sm:rounded-none sm:p-4 md:px-11">
+            <div className="flex w-5/6 gap-2 text-left sm:w-1/6 md:gap-4">
               <img
-                src={currentStoryInfo?.img_url ? currentStoryInfo.img_url[0] : ""}
+                src={
+                  currentStoryInfo?.img_url ? currentStoryInfo.img_url[0] : ""
+                }
                 alt={`Cover for ${currentStoryInfo?.title}`}
-                className="w-8 h-8 md:w-12 md:h-12 rounded-sm"
+                className="h-8 w-8 rounded-sm md:h-12 md:w-12"
               />
-              <div className="flex flex-grow max-w-full flex-col">
-                <div className=" whitespace-nowrap overflow-hidden text-overflow-ellipsis text-xs sm:text-medium">
-                  <Link href={`/user/${currentStoryInfo?.voice_actor}`} underline="hover" className="text-white">
+              <div className="flex max-w-full flex-grow flex-col">
+                <div className="text-overflow-ellipsis overflow-hidden whitespace-nowrap text-xs sm:text-medium">
+                  <Link
+                    href={`/user/${currentStoryInfo?.voice_actor}`}
+                    underline="hover"
+                    className="text-white"
+                  >
                     {currentStoryInfo?.voice_actor}
                   </Link>
                 </div>
-                <div className=" whitespace-nowrap overflow-hidden text-overflow-ellipsis text-xs sm:text-medium">
-                  <Link href={`/story/${currentStoryInfo.id}`} underline="hover" className="text-gray-400">
+                <div className="text-overflow-ellipsis overflow-hidden whitespace-nowrap text-xs sm:text-medium">
+                  <Link
+                    href={`/story/${currentStoryInfo.id}`}
+                    underline="hover"
+                    className="text-gray-400"
+                  >
                     {currentStoryInfo?.title}
                   </Link>
                 </div>
               </div>
             </div>
-            <div className="flex justify-end w-fit sm:w-2/6 md:flex-grow flex-row sm:justify-center gap-4">
-              <button onClick={togglePlayPause} className="w-20 ">
+            <div className="flex w-fit flex-row justify-end gap-4 sm:w-2/6 sm:justify-center md:flex-grow">
+              <button onClick={togglePlayPause} className="w-20">
                 <Icon
                   name="play"
                   filled={isPlaying}
-                  className="mx-10 h-8 w-8 fill-[none] sm:text-gray-500 sm:mx-auto sm:fill-[hsl(var(--nextui-primary)/0.3)]"
+                  className="mx-10 h-8 w-8 fill-[none] sm:mx-auto sm:fill-[hsl(var(--nextui-primary)/0.3)] sm:text-gray-500"
                 />{" "}
               </button>
-              <div className="hidden sm:flex justify-between text-xs text-gray-400 mt-2">
-                <span className="leading-6">{new Date(currentTime * 1000).toISOString().substr(14, 5)}</span>
+              <div className="mt-2 hidden justify-between text-xs text-gray-400 sm:flex">
+                <span className="leading-6">
+                  {new Date(currentTime * 1000).toISOString().substr(14, 5)}
+                </span>
               </div>
-              <div className="hidden sm:block w-3/6">
+              <div className="hidden w-3/6 sm:block">
                 <div id="waveform_bottom" className="w-full"></div>
               </div>
-              <div className="hidden sm:flex justify-between text-xs text-gray-400 mt-2">
-                <span className="leading-6">{new Date(duration * 1000).toISOString().substr(14, 5)}</span>
+              <div className="mt-2 hidden justify-between text-xs text-gray-400 sm:flex">
+                <span className="leading-6">
+                  {new Date(duration * 1000).toISOString().substr(14, 5)}
+                </span>
               </div>
             </div>
-            <div className="hidden sm:flex w-2/6 items-center justify-center">
+            <div className="hidden w-2/6 items-center justify-center sm:flex">
               <button>
-                <Icon name="volume" className="h-6 w-6 " />
+                <Icon name="volume" className="h-6 w-6" />
               </button>
               <input
                 type="range"
@@ -250,14 +275,14 @@ const RecentPlayBar = () => {
           </div>
         </div>
       ) : (
-        <div className="h-12 sm:h-[80px] fixed bottom-14 sm:bottom-0 left-0 right-0 z-10 bg-slate-800 p-2 mx-1 rounded-md flex items-center space-x-4 justify-between sm:mx-0 sm:rounded-none sm:p-4 md:px-11">
-          <div className="w-8 h-8 md:w-12 md:h-12 rounded-sm bg-gray-700 animate-pulse"></div>
-          <div className="flex flex-grow max-w-full flex-col space-y-2">
-            <div className="h-4 bg-gray-700 rounded w-3/4 animate-pulse"></div>
+        <div className="fixed bottom-14 left-0 right-0 z-10 mx-1 flex h-12 items-center justify-between space-x-4 rounded-md bg-slate-800 p-2 sm:bottom-0 sm:mx-0 sm:h-[80px] sm:rounded-none sm:p-4 md:px-11">
+          <div className="h-8 w-8 animate-pulse rounded-sm bg-gray-700 md:h-12 md:w-12"></div>
+          <div className="flex max-w-full flex-grow flex-col space-y-2">
+            <div className="h-4 w-3/4 animate-pulse rounded bg-gray-700"></div>
           </div>
-          <div className="w-20 h-8 bg-gray-700 rounded animate-pulse"></div>
-          <div className="hidden sm:block w-3/6 h-8 bg-gray-700 rounded animate-pulse"></div>
-          <div className="hidden sm:flex w-2/6 h-8 bg-gray-700 rounded animate-pulse"></div>
+          <div className="h-8 w-20 animate-pulse rounded bg-gray-700"></div>
+          <div className="hidden h-8 w-3/6 animate-pulse rounded bg-gray-700 sm:block"></div>
+          <div className="hidden h-8 w-2/6 animate-pulse rounded bg-gray-700 sm:flex"></div>
         </div>
       )}
     </>
@@ -366,44 +391,48 @@ export const PlayBar = () => {
   return (
     <>
       {story && (
-        <div className="h-12 sm:h-[80px] fixed bottom-14 sm:bottom-0 left-0 right-0 z-10">
-          <div className=" bg-slate-800 p-2 mx-1 rounded-md flex items-center space-x-4 justify-between sm:mx-0 sm:rounded-none sm:p-4 md:px-11">
-            <div className="text-left flex gap-2 w-5/6 sm:w-1/6  md:gap-4">
+        <div className="fixed bottom-14 left-0 right-0 z-10 h-12 sm:bottom-0 sm:h-[80px]">
+          <div className="mx-1 flex items-center justify-between space-x-4 rounded-md bg-slate-800 p-2 sm:mx-0 sm:rounded-none sm:p-4 md:px-11">
+            <div className="flex w-5/6 gap-2 text-left sm:w-1/6 md:gap-4">
               <img
                 src={story?.img_url ? story.img_url[0] : ""}
                 alt={`Cover for ${story?.title}`}
-                className="w-8 h-8 md:w-12 md:h-12 rounded-sm"
+                className="h-8 w-8 rounded-sm md:h-12 md:w-12"
               />
-              <div className="flex flex-grow max-w-full flex-col">
-                <div className="text-white whitespace-nowrap overflow-hidden text-overflow-ellipsis text-xs sm:text-medium">
+              <div className="flex max-w-full flex-grow flex-col">
+                <div className="text-overflow-ellipsis overflow-hidden whitespace-nowrap text-xs text-white sm:text-medium">
                   {story?.voice_actor}
                 </div>
-                <div className="text-gray-400 whitespace-nowrap overflow-hidden text-overflow-ellipsis text-xs sm:text-medium">
+                <div className="text-overflow-ellipsis overflow-hidden whitespace-nowrap text-xs text-gray-400 sm:text-medium">
                   {story?.title}
                 </div>
               </div>
             </div>
-            <div className="flex justify-end w-fit sm:w-2/6 md:flex-grow flex-row sm:justify-center gap-4">
-              <button onClick={togglePlayPause} className="w-20 ">
+            <div className="flex w-fit flex-row justify-end gap-4 sm:w-2/6 sm:justify-center md:flex-grow">
+              <button onClick={togglePlayPause} className="w-20">
                 <Icon
                   name="play"
                   filled={isPlaying}
-                  className="mx-10 h-8 w-8 fill-[none] sm:text-gray-500 sm:mx-auto sm:fill-[hsl(var(--nextui-primary)/0.3)]"
+                  className="mx-10 h-8 w-8 fill-[none] sm:mx-auto sm:fill-[hsl(var(--nextui-primary)/0.3)] sm:text-gray-500"
                 />{" "}
               </button>
-              <div className="hidden sm:flex justify-between text-xs text-gray-400 mt-2">
-                <span className="leading-6">{new Date(currentTime * 1000).toISOString().substr(14, 5)}</span>
+              <div className="mt-2 hidden justify-between text-xs text-gray-400 sm:flex">
+                <span className="leading-6">
+                  {new Date(currentTime * 1000).toISOString().substr(14, 5)}
+                </span>
               </div>
-              <div className="hidden sm:block w-3/6">
+              <div className="hidden w-3/6 sm:block">
                 <div id="waveform_bottom" className="w-full"></div>
               </div>
-              <div className="hidden sm:flex justify-between text-xs text-gray-400 mt-2">
-                <span className="leading-6">{new Date(duration * 1000).toISOString().substr(14, 5)}</span>
+              <div className="mt-2 hidden justify-between text-xs text-gray-400 sm:flex">
+                <span className="leading-6">
+                  {new Date(duration * 1000).toISOString().substr(14, 5)}
+                </span>
               </div>
             </div>
-            <div className="hidden sm:flex w-2/6 items-center justify-center">
+            <div className="hidden w-2/6 items-center justify-center sm:flex">
               <button>
-                <Icon name="volume" className="h-6 w-6 " />
+                <Icon name="volume" className="h-6 w-6" />
               </button>
               <input
                 type="range"

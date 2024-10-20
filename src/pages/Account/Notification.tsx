@@ -1,9 +1,9 @@
-import { useState, useEffect, useContext } from "react";
-import dbApi from "../../utils/firebaseService";
-import { AuthContext } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
 import { Divider } from "@nextui-org/divider";
+import { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import empty_notification from "../../assets/empty_notification.png";
+import { AuthContext } from "../../context/AuthContext";
+import dbApi from "../../utils/firebaseService";
 
 type Notification = {
   id: string;
@@ -21,7 +21,6 @@ const Notifications = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       if (user && user.userName) {
-        console.log("Fetching notifications for user:", user.userName);
         try {
           const userNotifications = await dbApi.queryCollection("notifications", { recipient: user.userName }, 10);
           setNotifications(userNotifications as Notification[]);

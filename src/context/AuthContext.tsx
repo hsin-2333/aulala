@@ -1,17 +1,23 @@
 // AuthContext.jsx
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { createContext, useCallback, useEffect, useState, ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { auth } from "../../firebaseConfig";
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebaseConfig";
+import { AuthContextType, AuthUser, User } from "../types";
 import dbApi from "../utils/firebaseService";
-import { AuthContextType, User, AuthUser } from "../types";
 
 interface AuthContextProviderProps {
   children: ReactNode;
@@ -39,18 +45,13 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
-        console.log("User logged in:", authUser.uid);
         const dbUser = await dbApi.getUser(authUser.uid);
-        console.log("Database user:", dbUser);
         if (!dbUser) {
-          // setAuthUser(authUser as AuthUser); // Set authUser if user is not in the database
           setAuthUser(authUser as AuthUser);
           setUser(null);
-          // setUser("authUser"); //如果使用者不在資料庫中，則先設定為字串，再userInfo中等待使用者填入資料再創建為user
         } else {
           setUser(dbUser as User);
           setAuthUser(authUser);
-          console.log("User state after setting:", dbUser);
         }
       } else {
         setUser(null);
@@ -80,7 +81,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     signOut(auth)
       .then(() => {
         queryClient.invalidateQueries({ queryKey: ["auth"] });
-        console.log("Logout successful");
       })
       .catch((error) => {
         console.error("Error during logout:", error);
@@ -117,11 +117,22 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
           navigate("/error", { state: { errorMessage } });
         });
     },
-    [navigate, queryClient]
+    [navigate, queryClient],
   );
 
   return (
-    <AuthContext.Provider value={{ isLogin, loading, user, authUser, userExists, Login, LoginWithEmail, Logout }}>
+    <AuthContext.Provider
+      value={{
+        isLogin,
+        loading,
+        user,
+        authUser,
+        userExists,
+        Login,
+        LoginWithEmail,
+        Logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

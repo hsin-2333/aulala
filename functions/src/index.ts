@@ -1,11 +1,11 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
 import axios from "axios";
-import * as fs from "fs";
-import * as path from "path";
-import OpenAI from "openai";
-import { v4 as uuidv4 } from "uuid";
 import * as cors from "cors";
+import * as admin from "firebase-admin";
+import * as functions from "firebase-functions";
+import * as fs from "fs";
+import OpenAI from "openai";
+import * as path from "path";
+import { v4 as uuidv4 } from "uuid";
 interface Segment {
   text: string;
   start: number;

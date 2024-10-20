@@ -1,10 +1,10 @@
-interface Category {
+export interface Category {
   label: string;
   value: string | null;
   icon: React.ComponentType<IconBaseProps> | null;
 }
-import { LuFolderHeart, LuBookOpen, LuHeart } from "react-icons/lu";
 import { IconBaseProps } from "react-icons";
+import { LuBookOpen, LuFolderHeart, LuHeart } from "react-icons/lu";
 
 export const CategoryOptions: Category[] = [
   { label: "All", value: null, icon: null },

@@ -1,5 +1,10 @@
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthContextProvider } from "./context/AuthContext";
 import { RecentPlayProvider } from "./context/RecentPlayContext";
 import PrivateRoute from "./utils/PrivateRoute";
@@ -7,18 +12,22 @@ import PrivateRoute from "./utils/PrivateRoute";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import HomePage from "./pages/Home";
+import {
+  Layout,
+  OuterLayout,
+  ScriptLayout,
+  UserHomeLayout,
+} from "./components/Layout";
 import Account from "./pages/Account";
-import LoginComponent from "./pages/Login";
-import StoryContent from "./pages/UserContent/Story";
-import ScriptContent from "./pages/UserContent/Script";
-import { Layout, OuterLayout, ScriptLayout, UserHomeLayout } from "./components/Layout";
-import UploadScript from "./pages/Account/Upload/UploadScript";
-import UploadStory from "./pages/Account/Upload/UploadStory";
 import Notifications from "./pages/Account/Notification";
-import StoryTable from "./pages/Account/UploadsContent/Uploads";
-import TestUI from "./components/testUI";
-import SearchResultsPage from "./pages/SearchResultsPage";
+import StoryTable from "./pages/Account/UploadedContent/Uploads";
+import HomePage from "./pages/Home";
+import LoginComponent from "./pages/Login";
+import ScriptContent from "./pages/Script/index";
+import SearchResultsPage from "./pages/SearchResult/index";
+import StoryContent from "./pages/Story/index";
+import UploadScript from "./pages/UploadScript/UploadScript";
+import UploadStory from "./pages/UploadStory/UploadStory";
 const queryClient = new QueryClient();
 
 function App() {
@@ -28,14 +37,6 @@ function App() {
         <AuthContextProvider>
           <RecentPlayProvider>
             <Routes>
-              <Route
-                path="/testUI"
-                element={
-                  <>
-                    <TestUI />
-                  </>
-                }
-              />
               <Route
                 path="/"
                 element={

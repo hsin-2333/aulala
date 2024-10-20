@@ -1,25 +1,25 @@
-import { AuthContext } from "../../context/AuthContext";
-import { useContext, useState } from "react";
-import MyContent from "./MyContent";
-import { useParams } from "react-router-dom";
 import {
-  Tabs,
-  Tab,
-  Button,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-  Input,
   Avatar,
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Tab,
+  Tabs,
+  useDisclosure,
 } from "@nextui-org/react";
-import { BiSolidEditAlt } from "react-icons/bi";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import dbApi from "../../utils/firebaseService";
-import { User } from "../../types";
+import { useContext, useState } from "react";
+import { BiSolidEditAlt } from "react-icons/bi";
+import { useParams } from "react-router-dom";
 import Toast from "../../components/Toast";
+import { AuthContext } from "../../context/AuthContext";
+import { User } from "../../types";
+import dbApi from "../../utils/firebaseService";
+import MyContent from "./MyContent";
 
 interface FormData {
   selfIntro: string;
