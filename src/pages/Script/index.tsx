@@ -21,7 +21,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   CommentToolbar,
   InteractionToolbar,
-} from "../../components/InteractionToolbar";
+} from "../../components/Common/InteractionToolbar";
 import { AuthContext } from "../../context/AuthContext";
 import { Story, User as VoiceActor } from "../../types";
 import dbApi from "../../utils/firebaseService";

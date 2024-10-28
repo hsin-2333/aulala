@@ -3,11 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import WaveSurfer from "wavesurfer.js";
-import { AuthContext } from "../context/AuthContext";
-import { RecentPlayContext } from "../context/RecentPlayContext";
-import { Story } from "../types";
-import dbApi from "../utils/firebaseService";
-import Icon from "./Icon";
+import { AuthContext } from "../../context/AuthContext";
+import { RecentPlayContext } from "../../context/RecentPlayContext";
+import { Story } from "../../types";
+import dbApi from "../../utils/firebaseService";
+import Icon from "../Common/Icon";
 
 const RecentPlayBar = () => {
   const { user } = useContext(AuthContext);

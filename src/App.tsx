@@ -17,7 +17,7 @@ import {
   OuterLayout,
   ScriptLayout,
   UserHomeLayout,
-} from "./components/Layout";
+} from "./components/Common/Layout";
 import Account from "./pages/Account";
 import Notifications from "./pages/Account/Notification";
 import StoryTable from "./pages/Account/UploadedContent/Uploads";

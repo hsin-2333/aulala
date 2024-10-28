@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { index } from "../../../algoliaClient";
-import { SearchResultCard } from "../../components/Card";
+import { SearchResultCard } from "../../components/Common/Card";
 
 type SearchResult = {
   objectID: string;

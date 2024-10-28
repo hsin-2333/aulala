@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Timestamp } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { AudioCard, ScriptCard } from "../../../components/Card";
+import { AudioCard, ScriptCard } from "../../../components/Common/Card";
 import { AuthContext } from "../../../context/AuthContext";
 import { RecentPlayContext } from "../../../context/RecentPlayContext";
 import { Story } from "../../../types";

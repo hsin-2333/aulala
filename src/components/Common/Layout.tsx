@@ -3,11 +3,11 @@ import * as React from "react";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { FaBarsProgress } from "react-icons/fa6";
 import { NavLink, useLocation, useParams } from "react-router-dom";
-import { NavbarComponent } from "../components/Nav/Navbar";
-import { AuthContext } from "../context/AuthContext";
-import Icon from "./Icon";
-import RecentPlayBar, { PlayBar } from "./RecentPlayBar";
-import ContentInfoSideBar from "./Sidebar/ContentInfoSideBar";
+import { AuthContext } from "../../context/AuthContext";
+import RecentPlayBar, { PlayBar } from "../BottomBar/RecentPlayBar";
+import Icon from "../Common/Icon";
+import { NavbarComponent } from "../NavBar/Navbar";
+import ContentInfoSideBar from "../Sidebar/ContentInfoSideBar";
 
 interface LayoutProps {
   children: ReactNode;

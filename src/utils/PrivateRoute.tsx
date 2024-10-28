@@ -1,7 +1,7 @@
 import { ReactNode, useContext } from "react";
 import { Navigate } from "react-router-dom";
 import loadingGif from "../assets/loadingGif.gif";
-import { UserHomeLayout } from "../components/Layout";
+import { UserHomeLayout } from "../components/Common/Layout";
 import { AuthContext } from "../context/AuthContext";
 
 interface PrivateRouteProps {

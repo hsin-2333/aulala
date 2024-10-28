@@ -2,9 +2,9 @@ import { Button } from "@nextui-org/react";
 import { Timestamp } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
-import { RecentPlayContext } from "../context/RecentPlayContext";
-import { InteractionType } from "../types";
-import dbApi from "../utils/firebaseService";
+import { RecentPlayContext } from "../../context/RecentPlayContext";
+import { InteractionType } from "../../types";
+import dbApi from "../../utils/firebaseService";
 import Icon from "./Icon";
 
 import {

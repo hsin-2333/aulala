@@ -88,11 +88,9 @@ export function NavbarComponent() {
 
   return (
     <>
-
       <div className="hidden sm:block">
         <Navbar maxWidth="full" className="px-2">
           <NavbarBrand as={Link} className="cursor-pointer" href="/">
-            {/* <p className="font-bold text-[var(--color-primary)]">StoryBook LOGO</p> */}
             <Logo />
           </NavbarBrand>
 
@@ -261,7 +259,6 @@ export function NavbarComponent() {
         </Navbar>
       </div>
 
- 
       {location.pathname !== "/upload/story" && (
         <div className="fixed bottom-0 left-0 right-0 z-50 block h-[50px] bg-slate-300 sm:hidden">
           <div className="flex justify-around p-1">

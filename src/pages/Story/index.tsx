@@ -14,7 +14,7 @@ import { useParams } from "react-router-dom";
 import {
   CommentToolbar,
   InteractionToolbar,
-} from "../../components/InteractionToolbar";
+} from "../../components/Common/InteractionToolbar";
 import { AuthContext } from "../../context/AuthContext";
 import { RecentPlayContext } from "../../context/RecentPlayContext";
 import { Story, User } from "../../types";

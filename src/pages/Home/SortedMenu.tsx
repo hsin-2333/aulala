@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Icon from "../../components/Icon";
+import Icon from "../../components/Common/Icon";
 
 interface SortedMenuProps {
   onSortOrderChange: (order: string) => void;
@@ -16,7 +16,11 @@ const SortedMenu = ({ onSortOrderChange }: SortedMenuProps) => {
 
   const handleSortOrderChange = (order: string) => {
     setSortOrder(order);
-    setIconColor(order === "Descending" ? "currentColor" : "hsl(var(--nextui-primary-500))");
+    setIconColor(
+      order === "Descending"
+        ? "currentColor"
+        : "hsl(var(--nextui-primary-500))",
+    );
     setIsMenuOpen(false);
     onSortOrderChange(order);
   };
@@ -40,13 +44,16 @@ const SortedMenu = ({ onSortOrderChange }: SortedMenuProps) => {
   }, [isMenuOpen]);
 
   return (
-    <div ref={menuRef} className="relative w-40 flex justify-end items-center  text-left ">
-      <button onClick={toggleMenu} className="flex align-top justify-between ">
+    <div
+      ref={menuRef}
+      className="relative flex w-40 items-center justify-end text-left"
+    >
+      <button onClick={toggleMenu} className="flex justify-between align-top">
         <Icon name="sorted" className="mr-2 h-6 w-6" color={iconColor} />
         <span style={{ color: iconColor }}>{sortOrder}</span>
       </button>
       {isMenuOpen && (
-        <div className="z-10 absolute right-0 mt-28 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+        <div className="absolute right-0 z-10 mt-28 w-48 rounded-md border border-gray-200 bg-white shadow-lg">
           <button
             onClick={() => handleSortOrderChange("Descending")}
             className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"

@@ -15,7 +15,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext, useState } from "react";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { useParams } from "react-router-dom";
-import Toast from "../../components/Toast";
+import Toast from "../../components/Common/Toast";
 import { AuthContext } from "../../context/AuthContext";
 import { User } from "../../types";
 import dbApi from "../../utils/firebaseService";

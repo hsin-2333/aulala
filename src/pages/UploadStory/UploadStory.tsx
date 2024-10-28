@@ -14,7 +14,7 @@ import { FaCheck } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { SlCloudUpload } from "react-icons/sl";
 import { useLocation, useNavigate } from "react-router-dom";
-import Toast from "../../components/Toast";
+import Toast from "../../components/Common/Toast";
 import { AuthContext } from "../../context/AuthContext";
 import { useToast } from "../../hooks/useToast";
 import dbApi from "../../utils/firebaseService";

@@ -2,8 +2,8 @@ import { Button, Divider, Link, Textarea, User } from "@nextui-org/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { IoCreateOutline } from "react-icons/io5";
-import { Comment, User as UserType } from "../types";
-import dbApi from "../utils/firebaseService";
+import { Comment, User as UserType } from "../../types";
+import dbApi from "../../utils/firebaseService";
 import Icon from "./Icon";
 
 interface InteractionToolbarProps {

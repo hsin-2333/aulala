@@ -1,4 +1,4 @@
-import { ImageCard, ScriptCard } from "../../components/Card";
+import { ImageCard, ScriptCard } from "../../components/Common/Card";
 import { convertTimestampToDate } from "../../utils/convertTimestampToDate";
 
 interface Story {
