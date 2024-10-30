@@ -70,12 +70,13 @@ const UserSignUpForm = () => {
   };
 
   return (
-    <div className="flex align-middle flex-col mx-auto mt-32">
-      <h2 className="text-2xl font-bold mb-10">User Sign Up</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left w-96 flex flex-col gap-4 ">
+    <div className="mx-auto mt-32 flex flex-col align-middle">
+      <h2 className="mb-10 text-2xl font-bold">User Sign Up</h2>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex w-96 flex-col gap-4 space-y-4 text-left"
+      >
         <div>
-          {/* <label className="block text-sm font-medium text-gray-700">User Name</label> */}
-          {/* <input className="border border-input w-full" {...register("userName", { required: true, maxLength: 20 })} /> */}
           <Input
             type="text"
             label="User Name"
@@ -87,19 +88,19 @@ const UserSignUpForm = () => {
             placeholder="A Unique User Name"
             {...register("userName", { required: true, maxLength: 20 })}
           />
-          {errors?.userName?.type === "required" && <p className="text-red-500 text-sm">This field is required</p>}
-          {errors?.userName?.type === "maxLength" && (
-            <p className="text-red-500 text-sm">First name cannot exceed 20 characters</p>
+          {errors?.userName?.type === "required" && (
+            <p className="text-sm text-red-500">This field is required</p>
           )}
-          {!isUSerNameAvailable && <p className="text-red-500 text-sm">Username is already taken</p>}
+          {errors?.userName?.type === "maxLength" && (
+            <p className="text-sm text-red-500">
+              First name cannot exceed 20 characters
+            </p>
+          )}
+          {!isUSerNameAvailable && (
+            <p className="text-sm text-red-500">Username is already taken</p>
+          )}
         </div>
         <div>
-          {/* <label className="block text-sm font-medium text-gray-700">Age</label> */}
-          {/* <input
-            type="number"
-            className="border border-input w-full"
-            {...register("age", { min: 12, max: 99, required: true })}
-          /> */}
           <Input
             type="number"
             label="Age"
@@ -112,17 +113,12 @@ const UserSignUpForm = () => {
             {...register("age", { min: 12, max: 99, required: true })}
           />
           {errors.age && (
-            <p className="text-red-500 text-sm">You must be older than 12 and younger than 99 years old</p>
+            <p className="text-sm text-red-500">
+              You must be older than 12 and younger than 99 years old
+            </p>
           )}
         </div>
         <div>
-          {/* <label className="block text-sm font-medium text-gray-700">Gender</label> */}
-          {/* <select className="border border-input w-full" {...register("gender", { required: true })}>
-            
-            <option value="female">female</option>
-            <option value="male">male</option>
-            <option value="other">non-binary</option>
-          </select> */}
           <Select
             className="w-full"
             label="Gender"
@@ -137,16 +133,18 @@ const UserSignUpForm = () => {
             <SelectItem key="male">male</SelectItem>
             <SelectItem key="other">non-binary</SelectItem>
           </Select>
-          {errors.gender && <p className="text-red-500 text-sm">Gender is required</p>}
+          {errors.gender && (
+            <p className="text-sm text-red-500">Gender is required</p>
+          )}
         </div>
-        {/* <button
-          className=" rounded-md flex items-center size-default bg-primary text-white"
+
+        <Button
+          size="md"
+          radius="sm"
+          color="primary"
           type="submit"
-          disabled={!isValid || !isUSerNameAvailable}
+          isDisabled={!isValid || !isUSerNameAvailable}
         >
-          Submit
-        </button> */}
-        <Button size="md" radius="sm" color="primary" type="submit" isDisabled={!isValid || !isUSerNameAvailable}>
           Submit
         </Button>
       </form>

@@ -124,7 +124,7 @@ const UploadStory = () => {
             : [],
         };
 
-        navigate(`/user/${user?.userName}/uploads`);
+        navigate(`/account/${user?.userName}/uploads`);
         setTimeout(() => {
           queryClient.invalidateQueries({
             queryKey: ["stories", user?.userName],
@@ -220,7 +220,7 @@ const UploadStory = () => {
       <div className="container relative mx-auto w-full p-2">
         <Breadcrumbs>
           <BreadcrumbItem href="/">Home</BreadcrumbItem>
-          <BreadcrumbItem href={`/user/${user?.userName}/uploads`}>
+          <BreadcrumbItem href={`/account/${user?.userName}/uploads`}>
             Uploaded Content
           </BreadcrumbItem>
           <BreadcrumbItem>Upload</BreadcrumbItem>

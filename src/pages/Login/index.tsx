@@ -6,7 +6,8 @@ import { AuthContext } from "../../context/AuthContext";
 import UserSignUpForm from "../Login/UserInfo";
 
 const LoginComponent = () => {
-  const { user, authUser, Login, LoginWithEmail, userExists } = useContext(AuthContext);
+  const { user, authUser, Login, LoginWithEmail, userExists } =
+    useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("test@example.com");
   const [password, setPassword] = useState("testPWD");
@@ -19,21 +20,16 @@ const LoginComponent = () => {
 
   return (
     <div>
-      <div className="h-screen flex align-middle">
+      <div className="flex h-screen align-middle">
         {user || authUser ? (
-          <>
-            {/* <h2 key={user.uid}>{user.displayName}</h2>
-            {!userExists && <UserSignUpForm />}
-            <button onClick={Logout}>Logout</button> */}
-            {/* <h2 key={user?.uid || authUser?.uid}>{user?.userName || authUser?.displayName}</h2> */}
-            {!userExists && <UserSignUpForm />}
-            {/* <button onClick={Logout}>Logout</button> */}
-          </>
+          <>{!userExists && <UserSignUpForm />}</>
         ) : (
           <>
-            <div className="mx-auto flex w-full flex-col justify-center  space-y-6 sm:w-[350px]">
+            <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
               <div className="flex flex-col space-y-2 text-center">
-                <h1 className="text-2xl font-semibold tracking-tight mb-1">Login / Signup</h1>
+                <h1 className="mb-1 text-2xl font-semibold tracking-tight">
+                  Login / Signup
+                </h1>
                 <Input
                   type="email"
                   label="Email"
@@ -57,24 +53,25 @@ const LoginComponent = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
-                  className="rounded-md size-default border border-default bg-white text-default-900"
+                  className="size-default rounded-md border border-default bg-white text-default-900"
                   onClick={() => LoginWithEmail(email, password)}
                 >
                   Login with Email
                 </button>
-                {/* <p className="text-sm text-muted-foreground">Enter your email below to create your account</p> */}
               </div>
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">or continue with</span>
+                  <span className="text-muted-foreground bg-background px-2">
+                    or continue with
+                  </span>
                 </div>
               </div>
               <Button
                 startContent={<FaGoogle color="white" />}
-                className="rounded-md size-default border border-default bg-primary text-white "
+                className="size-default rounded-md border border-default bg-primary text-white"
                 onClick={Login}
               >
                 Google Account

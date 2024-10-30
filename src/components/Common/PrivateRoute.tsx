@@ -1,8 +1,8 @@
 import { ReactNode, useContext } from "react";
 import { Navigate } from "react-router-dom";
-import loadingGif from "../assets/loadingGif.gif";
-import { UserHomeLayout } from "../components/Common/Layout";
-import { AuthContext } from "../context/AuthContext";
+import loadingGif from "../../assets/loadingGif.gif";
+import { AuthContext } from "../../context/AuthContext";
+import { UserHomeLayout } from "./Layout";
 
 interface PrivateRouteProps {
   children: ReactNode;

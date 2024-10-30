@@ -5,9 +5,9 @@ import {
   Routes,
 } from "react-router-dom";
 import "./App.css";
+import PrivateRoute from "./components/Common/PrivateRoute";
 import { AuthContextProvider } from "./context/AuthContext";
 import { RecentPlayProvider } from "./context/RecentPlayContext";
-import PrivateRoute from "./utils/PrivateRoute";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -19,13 +19,13 @@ import {
   UserHomeLayout,
 } from "./components/Common/Layout";
 import Account from "./pages/Account";
-import Notifications from "./pages/Account/Notification";
-import StoryTable from "./pages/Account/UploadedContent/Uploads";
 import HomePage from "./pages/Home";
 import LoginComponent from "./pages/Login";
+import Notifications from "./pages/Notification";
 import ScriptContent from "./pages/Script/index";
 import SearchResultsPage from "./pages/SearchResult/index";
 import StoryContent from "./pages/Story/index";
+import StoryTable from "./pages/UploadedContent/Uploads";
 import UploadScript from "./pages/UploadScript/UploadScript";
 import UploadStory from "./pages/UploadStory/UploadStory";
 const queryClient = new QueryClient();
@@ -78,7 +78,7 @@ function App() {
                 }
               />
               <Route
-                path="/user/:userName/uploads"
+                path="/account/:userName/uploads"
                 element={
                   <Layout>
                     <StoryTable />

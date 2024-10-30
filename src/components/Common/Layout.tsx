@@ -68,6 +68,8 @@ export const ScriptLayout = ({ children }: LayoutProps) => {
   );
 };
 
+//FIXME: 將獨一的layout移進page中 (SCRIPTLAYOUT)
+
 export const UserHomeLayout = ({ children }: LayoutProps) => {
   return (
     <div className="flex h-screen flex-col">
@@ -162,7 +164,7 @@ const Sidebar = () => {
               Your Homepage
             </NavLink>
             <NavLink
-              to={`/user/${user?.userName}/uploads`}
+              to={`/account/${user?.userName}/uploads`}
               className={({ isActive }) =>
                 `size-default flex w-full items-center justify-start rounded hover:text-primary-400 ${
                   isActive ? "bg-primary-100" : "none"

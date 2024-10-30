@@ -20,9 +20,9 @@ import { Timestamp } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { SlOptionsVertical } from "react-icons/sl";
-import { AuthContext } from "../../../context/AuthContext";
-import { Story } from "../../../types";
-import dbApi from "../../../utils/firebaseService";
+import { AuthContext } from "../../context/AuthContext";
+import { Story } from "../../types";
+import dbApi from "../../utils/firebaseService";
 
 const StoryTable = () => {
   const { user } = useContext(AuthContext);
@@ -48,9 +48,12 @@ const StoryTable = () => {
     if (!user?.userName) return;
 
     const fetchData = async () => {
-      const unsubscribe = await dbApi.subscribeToStory(user?.userName as string, (storyData) => {
-        queryClient.setQueryData(["stories", user?.userName], storyData);
-      });
+      const unsubscribe = await dbApi.subscribeToStory(
+        user?.userName as string,
+        (storyData) => {
+          queryClient.setQueryData(["stories", user?.userName], storyData);
+        },
+      );
       return unsubscribe;
     };
 
@@ -91,7 +94,7 @@ const StoryTable = () => {
   return (
     <div className="space-y-4 text-left">
       <Button
-        className=" text-default-700 border-dashed "
+        className="border-dashed text-default-700"
         variant="bordered"
         type="button"
         radius="sm"
@@ -104,52 +107,63 @@ const StoryTable = () => {
       </Button>
 
       <div className="overflow-x-auto overflow-y-hidden">
-        <table className="min-w-full divide-y divide-gray-200 ">
-          <thead className="bg-gray-50 ">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
             <tr>
               <th
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-default-500 uppercase tracking-wider"
+                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-default-500"
               >
                 Audio Title
               </th>
               <th
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-default-500 uppercase tracking-wider"
+                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-default-500"
                 style={{ width: "33%" }}
               >
                 Summary
               </th>
               <th
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-default-500 uppercase tracking-wider"
+                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-default-500"
               >
                 Status
               </th>
               <th
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-default-500 uppercase tracking-wider"
+                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-default-500"
               >
                 Created At
               </th>
               <th
                 scope="col"
-                className="px-2 py-3 text-left text-xs font-medium text-default-500 uppercase tracking-wider"
+                className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider text-default-500"
               ></th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200 ">
+          <tbody className="divide-y divide-gray-200 bg-white">
             {storyData?.map((story) => (
               <tr key={story.id} className="hover:bg-gray-100">
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{story.title}</td>
-                <td className="px-6 py-4 text-sm text-gray-500" style={{ width: "200px" }}>
-                  <div className="line-clamp-5 overflow-hidden">{story.summary}</div>
+                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                  {story.title}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 ">
+                <td
+                  className="px-6 py-4 text-sm text-gray-500"
+                  style={{ width: "200px" }}
+                >
+                  <div className="line-clamp-5 overflow-hidden">
+                    {story.summary}
+                  </div>
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                   {story.status !== undefined && (
                     <Chip
                       className="capitalize"
-                      color={statusColorMap[story.status as keyof typeof statusColorMap]}
+                      color={
+                        statusColorMap[
+                          story.status as keyof typeof statusColorMap
+                        ]
+                      }
                       size="sm"
                       variant="flat"
                     >
@@ -157,13 +171,13 @@ const StoryTable = () => {
                     </Chip>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                   {story.created_at instanceof Timestamp
                     ? story.created_at.toDate().toLocaleString()
                     : story.created_at}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 ">
-                  <div className="relative flex justify-start items-center gap-2">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                  <div className="relative flex items-center justify-start gap-2">
                     <Dropdown>
                       <DropdownTrigger>
                         <Button isIconOnly size="sm" variant="light">
@@ -171,8 +185,12 @@ const StoryTable = () => {
                         </Button>
                       </DropdownTrigger>
                       <DropdownMenu>
-                        <DropdownItem href={`/story/${story.id}`}>View</DropdownItem>
-                        <DropdownItem onPress={() => handleEdit(story)}>Edit</DropdownItem>
+                        <DropdownItem href={`/story/${story.id}`}>
+                          View
+                        </DropdownItem>
+                        <DropdownItem onPress={() => handleEdit(story)}>
+                          Edit
+                        </DropdownItem>
                         <DropdownItem
                           onPress={() => {
                             if (story.id) {
@@ -196,7 +214,9 @@ const StoryTable = () => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Edit Story</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                Edit Story
+              </ModalHeader>
               <ModalBody>
                 <Input
                   autoFocus

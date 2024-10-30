@@ -23,9 +23,9 @@ import { IoAdd } from "react-icons/io5";
 import { SlCloudUpload } from "react-icons/sl";
 import { VscAccount } from "react-icons/vsc";
 import { useLocation, useNavigate } from "react-router-dom";
-import Logo from "../../assets/logo";
 import { AuthContext } from "../../context/AuthContext";
 import dbApi from "../../utils/firebaseService";
+import Logo from "./logo";
 
 export function NavbarComponent() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,7 +40,6 @@ export function NavbarComponent() {
     Logout();
     navigate("/");
   };
-
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchTerm.trim()) {
@@ -202,7 +201,7 @@ export function NavbarComponent() {
                       </DropdownItem>
                       <DropdownItem
                         key="contents"
-                        href={`/user/${user.userName}/uploads`}
+                        href={`/account/${user.userName}/uploads`}
                         startContent={<FaBarsProgress size={16} />}
                         textValue="My Content"
                       >
