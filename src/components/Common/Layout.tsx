@@ -41,7 +41,7 @@ export const OuterLayout = ({ children }: LayoutProps) => {
   );
 };
 
-export const ScriptLayout = ({ children }: LayoutProps) => {
+export const GradientHeaderLayout = ({ children }: LayoutProps) => {
   const { scriptId } = useParams();
 
   return (
@@ -67,8 +67,6 @@ export const ScriptLayout = ({ children }: LayoutProps) => {
     </div>
   );
 };
-
-//FIXME: 將獨一的layout移進page中 (SCRIPTLAYOUT)
 
 export const UserHomeLayout = ({ children }: LayoutProps) => {
   return (
