@@ -336,14 +336,8 @@ export const SearchResultCard = ({
             <div className="relative col-span-2 w-fit sm:col-span-2 md:col-span-2 md:h-full">
               <img
                 alt={title}
-                className="ml-0 h-full w-full rounded-lg object-cover sm:ml-6 md:max-h-32 md:max-w-32"
+                className="ml-0 h-[100px] w-[100px] rounded-lg object-cover sm:ml-6 md:max-h-32 md:max-w-32"
                 src={image}
-                width="100%"
-                style={{
-                  height: "100px",
-                  width: "100px",
-                  borderRadius: "0.5rem",
-                }}
               />
             </div>
 
