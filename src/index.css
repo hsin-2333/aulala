@@ -3,8 +3,6 @@
 @tailwind utilities;
 
 #root {
-  font-family: "Inter", sans-serif;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -32,25 +30,6 @@
 .hover\:bg-primary\/90:hover {
   background-color: var(--color-primary-hover);
 }
-.active-bg {
-  background-color: #103c7515;
-}
-
-.size-default {
-  height: 2.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
-.border-input {
-  border: 1px solid #e2e8f0;
-}
-
-.custom-scrollbar {
-  position: relative;
-}
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
@@ -59,6 +38,7 @@
     visibility 0.3s,
     opacity 0.3s;
   visibility: hidden;
+  position: relative;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -84,18 +64,10 @@
   background: #3a434945;
 }
 
-.scroll-padding {
-  padding-bottom: 4px;
-}
-
 @media (max-width: 640px) {
   .custom-scrollbar::-webkit-scrollbar {
     display: none;
   }
-}
-
-.highlight {
-  background-color: #82ca9e40;
 }
 
 .wavesurfer-container .wavesurfer-cursor {

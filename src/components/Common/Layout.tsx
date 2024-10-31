@@ -153,7 +153,7 @@ const Sidebar = () => {
               to={`/account/${user?.userName}`}
               end
               className={({ isActive }) =>
-                `size-default flex w-full items-center justify-start rounded hover:text-primary-400 ${
+                `flex h-10 w-full items-center justify-start rounded pb-2 pl-4 pr-4 pt-2 hover:text-primary-400 ${
                   isActive ? "bg-primary-100" : "none"
                 }`
               }
@@ -164,7 +164,7 @@ const Sidebar = () => {
             <NavLink
               to={`/account/${user?.userName}/uploads`}
               className={({ isActive }) =>
-                `size-default flex w-full items-center justify-start rounded hover:text-primary-400 ${
+                `flex h-10 w-full items-center justify-start rounded pb-2 pl-4 pr-4 pt-2 hover:text-primary-400 ${
                   isActive ? "bg-primary-100" : "none"
                 }`
               }
@@ -175,7 +175,7 @@ const Sidebar = () => {
             <NavLink
               to={`/account/${user?.userName}/notification`}
               className={({ isActive }) =>
-                `size-default flex w-full items-center justify-start rounded hover:text-primary-400 ${
+                `flex h-10 w-full items-center justify-start rounded pb-2 pl-4 pr-4 pt-2 hover:text-primary-400 ${
                   isActive ? "bg-primary-100" : "none"
                 }`
               }

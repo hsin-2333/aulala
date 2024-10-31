@@ -64,7 +64,7 @@ const ContentInfoSideBar = ({ setIsDetailVisible }: ClickHandler) => {
     <>
       {storyInfo && (
         <div
-          className="custom-scrollbar m-4 overflow-y-auto rounded-lg bg-default-100 pb-12"
+          className="m-4 overflow-y-auto rounded-lg bg-default-100 pb-12"
           style={{ height: "calc(100vh - 190px)" }}
         >
           <div className="space-y-4 py-4">

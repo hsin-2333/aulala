@@ -53,7 +53,7 @@ const LoginComponent = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
-                  className="size-default rounded-md border border-default bg-white text-default-900"
+                  className="h-10 rounded-md border border-default bg-white pb-2 pl-4 pr-4 pt-2 text-default-900"
                   onClick={() => LoginWithEmail(email, password)}
                 >
                   Login with Email
@@ -71,7 +71,7 @@ const LoginComponent = () => {
               </div>
               <Button
                 startContent={<FaGoogle color="white" />}
-                className="size-default rounded-md border border-default bg-primary text-white"
+                className="h-10 rounded-md border border-default bg-primary pb-2 pl-4 pr-4 pt-2 text-white"
                 onClick={Login}
               >
                 Google Account

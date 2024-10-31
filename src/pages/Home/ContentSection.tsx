@@ -38,7 +38,7 @@ export const ContentSection = ({
         </div>
       </div>
       <section
-        className={`mb-4 h-auto ${isScript ? "mt-4 flex flex-wrap gap-2 sm:gap-4" : "mt-2 flex space-x-8 overflow-x-auto whitespace-nowrap"} custom-scrollbar scroll-padding`}
+        className={`mb-4 h-auto ${isScript ? "mt-4 flex flex-wrap gap-2 sm:gap-4" : "mt-2 flex space-x-8 overflow-x-auto whitespace-nowrap"} custom-scrollbar pb-1`}
       >
         {items.map((item: Story) => {
           const date = item.created_at
