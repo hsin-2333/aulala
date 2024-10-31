@@ -41,7 +41,7 @@ export const OuterLayout = ({ children }: LayoutProps) => {
   );
 };
 
-export const ScriptLayout = ({ children }: LayoutProps) => {
+export const GradientHeaderLayout = ({ children }: LayoutProps) => {
   const { scriptId } = useParams();
 
   return (
@@ -67,8 +67,6 @@ export const ScriptLayout = ({ children }: LayoutProps) => {
     </div>
   );
 };
-
-//FIXME: 將獨一的layout移進page中 (SCRIPTLAYOUT)
 
 export const UserHomeLayout = ({ children }: LayoutProps) => {
   return (
@@ -155,7 +153,7 @@ const Sidebar = () => {
               to={`/account/${user?.userName}`}
               end
               className={({ isActive }) =>
-                `size-default flex w-full items-center justify-start rounded hover:text-primary-400 ${
+                `flex h-10 w-full items-center justify-start rounded pb-2 pl-4 pr-4 pt-2 hover:text-primary-400 ${
                   isActive ? "bg-primary-100" : "none"
                 }`
               }
@@ -166,7 +164,7 @@ const Sidebar = () => {
             <NavLink
               to={`/account/${user?.userName}/uploads`}
               className={({ isActive }) =>
-                `size-default flex w-full items-center justify-start rounded hover:text-primary-400 ${
+                `flex h-10 w-full items-center justify-start rounded pb-2 pl-4 pr-4 pt-2 hover:text-primary-400 ${
                   isActive ? "bg-primary-100" : "none"
                 }`
               }
@@ -177,7 +175,7 @@ const Sidebar = () => {
             <NavLink
               to={`/account/${user?.userName}/notification`}
               className={({ isActive }) =>
-                `size-default flex w-full items-center justify-start rounded hover:text-primary-400 ${
+                `flex h-10 w-full items-center justify-start rounded pb-2 pl-4 pr-4 pt-2 hover:text-primary-400 ${
                   isActive ? "bg-primary-100" : "none"
                 }`
               }

@@ -129,7 +129,7 @@ const UploadScript = () => {
             Title
           </label>
           <input
-            className="border-input w-full border"
+            className="w-full border-2 border-default-200"
             {...register("title", { required: true })}
           />
           {errors.title && (
@@ -141,7 +141,7 @@ const UploadScript = () => {
             Upload Script
           </label>
           <input
-            className="border-input w-full border"
+            className="w-full border-2 border-default-200"
             type="file"
             accept=".doc,.docx,.pdf"
             onChange={handleScriptUpload}
@@ -250,7 +250,7 @@ const UploadScript = () => {
           )}
         </div>
         <button
-          className="size-default flex items-center bg-primary text-white"
+          className="flex h-10 items-center bg-primary pb-2 pl-4 pr-4 pt-2 text-white"
           type="submit"
         >
           Submit

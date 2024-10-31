@@ -13,9 +13,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import {
+  GradientHeaderLayout,
   Layout,
   OuterLayout,
-  ScriptLayout,
   UserHomeLayout,
 } from "./components/Common/Layout";
 import Account from "./pages/Account";
@@ -48,9 +48,9 @@ function App() {
               <Route
                 path="/search"
                 element={
-                  <ScriptLayout>
+                  <GradientHeaderLayout>
                     <SearchResultsPage />
-                  </ScriptLayout>
+                  </GradientHeaderLayout>
                 }
               />
               <Route
@@ -64,9 +64,9 @@ function App() {
               <Route
                 path="/script/:scriptId"
                 element={
-                  <ScriptLayout>
+                  <GradientHeaderLayout>
                     <ScriptContent />
-                  </ScriptLayout>
+                  </GradientHeaderLayout>
                 }
               />
               <Route

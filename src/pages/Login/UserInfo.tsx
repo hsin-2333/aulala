@@ -1,9 +1,9 @@
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { getAuth } from "firebase/auth";
+import { debounce } from "lodash";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import debounce from "../../utils/debounce";
 import dbApi from "../../utils/firebaseService";
 
 enum GenderEnum {

@@ -168,23 +168,11 @@ function Account() {
       {urlName && userData && (
         <div>
           <div className="relative">
-            <div
-              className="absolute h-32 w-full bg-gradient-to-tr from-blue-200 to-cyan-200 bg-cover bg-center"
-              style={{
-                top: "-50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-            ></div>
+            <div className="absolute -top-1/2 left-1/2 h-32 w-full -translate-x-1/2 -translate-y-1/2 bg-gradient-to-tr from-blue-200 to-cyan-200 bg-cover bg-center"></div>
             {user && user.userName === userData.userName && (
               <Button
                 isIconOnly
-                style={{
-                  right: "2%",
-                  transform: "translate(0%, 80%)",
-                  position: "absolute",
-                }}
-                className="h-8 w-8 rounded bg-slate-200"
+                className="right-2p absolute h-8 w-8 translate-y-3/4 rounded bg-slate-200"
                 aria-label="EditIcon"
                 onPress={handleEdit}
               >

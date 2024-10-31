@@ -118,8 +118,7 @@ const StoryTable = () => {
               </th>
               <th
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-default-500"
-                style={{ width: "33%" }}
+                className="w-1/3 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-default-500"
               >
                 Summary
               </th>
@@ -147,10 +146,7 @@ const StoryTable = () => {
                 <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
                   {story.title}
                 </td>
-                <td
-                  className="px-6 py-4 text-sm text-gray-500"
-                  style={{ width: "200px" }}
-                >
+                <td className="w-[200px] px-6 py-4 text-sm text-gray-500">
                   <div className="line-clamp-5 overflow-hidden">
                     {story.summary}
                   </div>

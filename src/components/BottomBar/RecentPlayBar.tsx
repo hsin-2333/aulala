@@ -119,12 +119,6 @@ const RecentPlayBar = () => {
         wavesurfer.on("ready", () => {
           setDuration(wavesurfer.getDuration());
 
-          console.log(
-            "確認id,",
-            currentStoryInfo.id,
-            existingStoryId,
-            recentPlay?.story_id,
-          );
           if (istheSameStory && currentTimeRef.current > 0) {
             wavesurfer.seekTo(
               currentTimeRef.current / wavesurfer.getDuration(),
@@ -223,7 +217,7 @@ const RecentPlayBar = () => {
                   name="play"
                   filled={isPlaying}
                   className="mx-10 h-8 w-8 fill-[none] sm:mx-auto sm:fill-[hsl(var(--nextui-primary)/0.3)] sm:text-gray-500"
-                />{" "}
+                />
               </button>
               <div className="mt-2 hidden justify-between text-xs text-gray-400 sm:flex">
                 <span className="leading-6">
@@ -327,7 +321,6 @@ export const PlayBar = () => {
 
         if (currentTime - lastUpdateTime > 0.8) {
           lastUpdateTime = currentTime;
-          console.log("timeupdate event時間更新", currentTime);
         }
       });
 
@@ -401,7 +394,7 @@ export const PlayBar = () => {
                   name="play"
                   filled={isPlaying}
                   className="mx-10 h-8 w-8 fill-[none] sm:mx-auto sm:fill-[hsl(var(--nextui-primary)/0.3)] sm:text-gray-500"
-                />{" "}
+                />
               </button>
               <div className="mt-2 hidden justify-between text-xs text-gray-400 sm:flex">
                 <span className="leading-6">
